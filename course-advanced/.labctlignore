@@ -1,0 +1,49 @@
+# (paste contents from above)
+# Ignore VCS and editor metadata
+.git/
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+
+# Build artifacts, packages and installers (do NOT include ColdFusion installer if already in rootfs)
+*.zip
+*.tar.gz
+*.tgz
+*.iso
+*.bin
+
+# Large binary blobs and caches
+node_modules/
+bower_components/
+dist/
+build/
+tmp/
+cache/
+*.log
+*.sqlite
+*.db
+
+# OS / local files
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+
+# Sensitive files / environment
+.env
+*.pem
+*.key
+credentials.yml
+
+# Rootfs / installer work you promised not to change
+rootfs/
+installers/
+Adobe_CF_*.zip
+
+# Optional: ignore course exports or archives
+*.labpkg
+*.tar
+
+# Local test output
+.playground/
