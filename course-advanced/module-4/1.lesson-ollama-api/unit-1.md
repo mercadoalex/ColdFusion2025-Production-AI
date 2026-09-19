@@ -89,6 +89,17 @@ curl -s http://localhost:11434/api/generate \
   }' | python3 -m json.tool
 ```
 
+
+::image-box
+---
+:src: __static__/ollama-generate-response-v1.png
+:alt: Terminal output of curl /api/generate — JSON response from phi3:mini answering "In one sentence, what is ColdFusion?"
+:max-width: 860px
+---
+_The full JSON response from `/api/generate` — the `response` field contains the model's answer._
+::
+
+
 The key response fields:
 
 | Field | Type | Meaning |
