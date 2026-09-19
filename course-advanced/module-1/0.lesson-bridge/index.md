@@ -44,9 +44,7 @@ tasks:
     run: |
       RESULT=$(ssh -o StrictHostKeyChecking=no \
                    -o ConnectTimeout=10 \
-                   -o PasswordAuthentication=no \
-                   -o BatchMode=yes \
-                   root@cf-prod "echo reachable" 2>/dev/null)
+                   laborant@cf-prod "echo reachable" 2>/dev/null)
       if [ "${RESULT}" != "reachable" ]; then
         echo "Cannot SSH from cf-dev to cf-prod — check network connectivity"
         exit 1
