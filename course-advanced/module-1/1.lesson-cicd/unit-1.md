@@ -3,7 +3,7 @@ kind: unit
 
 title: DevOps for ColdFusion
 
-name: devops-for-coldfusion-unit-1
+name: cicd-pipelines-coldfusion-unit-1
 ---
 
 ## What is DevOps?
