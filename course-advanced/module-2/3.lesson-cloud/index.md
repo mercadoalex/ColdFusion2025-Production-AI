@@ -21,7 +21,6 @@ tagz:
 - coldfusion
 - docker
 - aws
-- cloud
 
 playground:
   name: cf-training-advanced-7442b9e0

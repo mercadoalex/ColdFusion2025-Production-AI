@@ -20,7 +20,6 @@ tagz:
 - coldfusion
 - github-actions
 - docker
-- ci-cd
 
 playground:
   name: cf-training-advanced-7442b9e0

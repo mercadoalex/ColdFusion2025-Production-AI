@@ -14,7 +14,7 @@ categories:
 tagz:
   - coldfusion
   - docker
-  - cloud
+  - docker-compose
 
 difficulty: medium
 

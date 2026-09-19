@@ -36,6 +36,9 @@ Thumbs.db
 *.key
 credentials.yml
 
+# Challenges live as standalone content — uploaded separately, not as part of the course push
+challenges/
+
 # Rootfs / installer work you promised not to change
 rootfs/
 installers/

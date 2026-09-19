@@ -12,9 +12,8 @@ categories:
 
 tagz:
   - coldfusion
-  - ci-cd
-  - docker
   - github-actions
+  - docker
 
 difficulty: medium
 
