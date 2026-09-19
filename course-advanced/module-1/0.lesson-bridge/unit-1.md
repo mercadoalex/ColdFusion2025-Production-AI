@@ -62,6 +62,23 @@ The gap between "it works on my machine" and "it works reliably in production" i
 
 ### Problem 1 — "Who broke it?"
 
+::hint-box
+---
+:summary: FTP-rally? What is FTP and why don't we use it anymore?
+---
+**FTP (File Transfer Protocol)** is a decades-old protocol for transferring files between computers over a network. In the early days of web development — ColdFusion included — "deploying" meant opening an FTP client like FileZilla or WinSCP, connecting to the production server, and dragging `.cfm` files from your local machine into the remote webroot. That was it. No versioning, no rollback, no record of what changed.
+
+It still works technically. You can absolutely FTP a `.cfm` file to a server today and it will run. But in modern production DevOps environments **FTP is not used** — for several reasons:
+
+- **No audit trail** — there is no record of who uploaded what file, when, or why
+- **No atomicity** — if you're mid-upload and something fails, the server has half the old files and half the new ones
+- **No rollback** — to undo a bad deploy you have to FTP the old files back, manually, from wherever you saved them
+- **Security** — FTP transmits credentials in plaintext; SFTP/SCP are safer but still lack the pipeline benefits
+- **No testing gate** — nothing stops you from deploying broken code directly to production
+
+What replaced it: **git + CI/CD pipelines**. You push code to a git repository, the pipeline runs tests, builds a container image, and deploys it — automatically, consistently, with a full record of every step. That's what this module teaches.
+::
+
 It's 2am. Production is down. Your CF app is returning 500 errors. You check the server and find that someone deployed 4 hours ago — but the deployment was done by copying files over FTP, with no log of what changed, no version tag, and no way to roll back quickly.
 
 You spend 2 hours figuring out what changed instead of fixing the problem.
