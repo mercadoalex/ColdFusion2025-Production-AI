@@ -34,7 +34,7 @@ Ollama is an open-source runtime that serves large language models (LLMs) throug
 
 ::image-box
 ---
-:src: __static__/ollama-ai-logo-v1.png
+:src: __static__/ollama-ai-logo-v2.png
 :alt: Ollama logo
 :max-width: 320px
 ---
