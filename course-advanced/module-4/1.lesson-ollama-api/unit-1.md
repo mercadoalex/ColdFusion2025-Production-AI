@@ -256,6 +256,30 @@ curl -s http://localhost:11434/api/chat \
 
 The `system` message sets the assistant's persona and constraints — always include one for consistent, predictable output.
 
+You should see a response similar to this:
+
+```
+1. Confirm the printer's status lights are on and no error messages are displayed.
+
+2. Check if the printer is properly connected to the computer or if it's on a network.
+
+3. Ensure the printer has enough paper, ink, and toner.
+
+4. Verify the printer is set as the default printer in Windows settings.
+
+5. Restart both the computer and the printer.
+
+6. Check the network connection if the printer is networked.
+
+7. Update or reinstall printer drivers.
+
+8. Run the built-in Windows printer troubleshooter.
+
+9. Check if the problem persists after reconnecting the printer.
+
+10. If all else fails, consult the printer's manual or support for further instructions.
+```
+
 ---
 
 ## 5. Reach Ollama from cf-dev
