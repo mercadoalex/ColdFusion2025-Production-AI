@@ -1,20 +1,29 @@
 ---
 kind: unit
 
-title: From Developer to DevOps Engineer
+title: From Solid Foundations to Full Domination
 
 name: from-developer-to-devops-unit-1
 ---
 
-## You know ColdFusion. Now what?
+## From solid foundations to full domination
 
-In the Foundations course you built real things: CFML pages, database queries, REST APIs, CFCs with inheritance. You ran them on a single VM and they worked. 
+The Foundations course gave you exactly that — a solid base. You can write CFML in tag and script syntax, query databases, build REST APIs, work with CFCs and object-oriented patterns, and understand the CF application lifecycle. That is a real, professional skill set.
 
-That's the easy part.
+But it's just the beginning of what ColdFusion — and modern software development — has to offer.
 
-The hard part is making them work **reliably**, for real users, across multiple environments, deployed by multiple people, without breaking at 2am. That's what this module is about — and it requires a different way of thinking.
+This Advanced course takes you across the full landscape of what a senior CF developer looks like in the real world:
 
-This lesson doesn't have any commands. It has stories. Read them carefully — they are the "why" behind every tool you'll use in Module 1.
+| Area | What you'll explore |
+|---|---|
+| **Operations & DevOps** | Deploy CF apps with Docker, automate pipelines, manage multi-server environments |
+| **Platform integrations** | Java interop, XML processing, Solr search, cloud deployment |
+| **AI-powered development** | Build features using local LLMs with Ollama — no cloud, no API keys |
+| **Enterprise frameworks** | ColdBox MVC, WireBox dependency injection, TestBox, REST resource routing |
+
+Module 1 starts with Operations — because before you can build great software at scale, you need to understand how to ship it reliably. This lesson explains the thinking behind that, before any tools appear.
+
+This lesson has no commands. It has stories. Read them carefully — they are the "why" behind every tool you'll use in Module 1.
 
 ---
 

@@ -1,11 +1,11 @@
 ---
 kind: lesson
 
-title: From Developer to DevOps Engineer
+title: From Solid Foundations to Full Domination
 description: |
-  Bridge the gap between writing ColdFusion code and running it reliably in
-  production. Understand the three core problems DevOps solves, why containers
-  exist, and what you will build in this module — before touching any tooling.
+  Survey the full landscape of the Advanced course — Operations, AI development,
+  platform integrations, and enterprise frameworks. Then get your lab environment
+  ready for Module 1 with two quick verification checks.
 
 name: from-developer-to-devops
 slug: from-developer-to-devops
