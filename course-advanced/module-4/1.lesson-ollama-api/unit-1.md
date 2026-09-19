@@ -235,6 +235,15 @@ The trade-off is hardware: phi3:mini needs ~2.3 GB RAM and is noticeably slower 
 
 `/api/chat` maintains a conversation via a `messages` array. Each message has a `role` (`system`, `user`, or `assistant`). This is the endpoint you'll use for most real features.
 
+**Activity — Terminal (ollama):** Use the chat endpoint with a system prompt to get a context-aware answer.
+
+The purpose of this activity is to confirm that:
+1. The `/api/chat` endpoint accepts a `messages` array with `system` + `user` roles
+2. The system prompt shapes the model's persona and response style
+3. You can extract the answer from `d['message']['content']`
+
+Run the following in the **Terminal (ollama)** tab:
+
 ```bash
 curl -s http://localhost:11434/api/chat \
   -H "Content-Type: application/json" \
@@ -280,18 +289,36 @@ You should see a response similar to this:
 10. If all else fails, consult the printer's manual or support for further instructions.
 ```
 
+::simple-task
+---
+:tasks: tasks
+:name: verify_chat_endpoint
+---
+#active
+In the **Terminal (ollama)** tab, run the `/api/chat` curl command above and confirm a non-empty IT support response is printed to the terminal.
+
+#completed
+Chat endpoint verified — system prompt shaping works. ✓
+::
+
 ---
 
 ## 5. Reach Ollama from cf-dev
 
-Switch to the **Terminal (dev)** tab — all ColdFusion code will call Ollama using the hostname `ollama`:
+**Activity — Terminal (dev):** Verify network connectivity from the ColdFusion VM to the Ollama VM, then send a real prompt across the private network.
+
+The purpose of this activity is to confirm that:
+1. The `ollama` hostname resolves correctly from `cf-dev`
+2. HTTP traffic on port `11434` is allowed on the private network
+3. `cf-dev` can receive a model response — proving the full path works end-to-end
+
+Switch to the **Terminal (dev)** tab and run both commands:
 
 ```bash
-# Verify connectivity from cf-dev
+# Step 1 — verify connectivity (should print 200)
 curl -s -o /dev/null -w "%{http_code}\n" http://ollama:11434/api/tags
-# Expected: 200
 
-# Quick test from the ColdFusion VM
+# Step 2 — send a prompt from cf-dev to the ollama VM
 curl -s http://ollama:11434/api/generate \
   -H "Content-Type: application/json" \
   -d '{"model":"phi3:mini","prompt":"Say hello in one word","stream":false}' \
@@ -306,10 +333,22 @@ This is the base URL you'll use in all ColdFusion code: **`http://ollama:11434`*
 :name: verify_reachable_from_dev
 ---
 #active
-From the **Terminal (dev)** tab, run `curl -s -o /dev/null -w "%{http_code}\n" http://ollama:11434/api/tags` and confirm 200.
+In the **Terminal (dev)** tab, run `curl -s -o /dev/null -w "%{http_code}\n" http://ollama:11434/api/tags` — confirm it prints `200`.
 
 #completed
 Ollama is reachable from cf-dev. ✓
+::
+
+::simple-task
+---
+:tasks: tasks
+:name: verify_cf_dev_prompt
+---
+#active
+In the **Terminal (dev)** tab, send the generate prompt above and confirm a non-empty word is returned from `phi3:mini`.
+
+#completed
+cf-dev can send prompts to Ollama across the private network. ✓
 ::
 
 ---
