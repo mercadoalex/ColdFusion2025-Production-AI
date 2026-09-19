@@ -512,7 +512,7 @@ In **production**, set `reloadOnChange: false`. The background file-watch thread
 
 ```bash
 # Create lib directory in the webroot
-mkdir -p /opt/coldfusion2025/cfusion/wwwroot/lib
+sudo mkdir -p /opt/coldfusion2025/cfusion/wwwroot/lib
 
 # Create Application.cfc with javaSettings
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/Application.cfc << 'EOF'
@@ -526,7 +526,7 @@ component {
 EOF
 
 # Touch Application.cfc to force a ColdFusion application re-initialisation
-touch /opt/coldfusion2025/cfusion/wwwroot/Application.cfc
+sudo touch /opt/coldfusion2025/cfusion/wwwroot/Application.cfc
 
 # Confirm the app still loads without error
 curl -sf http://localhost:8500/java_demo.cfm && echo "Application reloaded OK"
