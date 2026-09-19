@@ -1,0 +1,28 @@
+[Unit]
+Description=Ollama AI Server
+Documentation=https://ollama.ai
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=laborant
+Group=laborant
+
+Environment="OLLAMA_HOST=0.0.0.0"
+Environment="OLLAMA_MODELS=/home/laborant/.ollama/models"
+Environment="HOME=/home/laborant"
+
+ExecStart=/usr/local/bin/ollama serve
+Restart=on-failure
+RestartSec=5
+
+# Give the model enough time to initialise on first request
+TimeoutStartSec=120
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ollama
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  instances.xml — ColdFusion server instance configuration
+  Location: /opt/coldfusion2025/cfusion/lib/instances.xml
+
+  Pre-configured for the training environment:
+  - Instance name: cfusion (default single-server install)
+  - HTTP port: 8500 (published to the student browser via iximiuz http-port tab)
+  - AJP disabled (no external web server needed)
+  - Admin port: 45564 (internal cluster manager, localhost only)
+-->
+<instances>
+  <instance name="cfusion">
+    <host>0.0.0.0</host>
+    <httpport>8500</httpport>
+    <httpenable>true</httpenable>
+
+    <!-- HTTPS — disabled in training (no TLS cert needed) -->
+    <httpsport>8501</httpsport>
+    <httpsenable>false</httpsenable>
+
+    <!-- AJP connector — disabled (no Apache/nginx front-end) -->
+    <ajpport>8012</ajpport>
+    <ajpenable>false</ajpenable>
+
+    <!-- Cluster manager — localhost only -->
+    <adminport>45564</adminport>
+
+    <!-- JVM options for training (lean memory footprint) -->
+    <jvmargs>-server -Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200</jvmargs>
+
+    <!-- CF home -->
+    <cfhome>/opt/coldfusion2025/cfusion</cfhome>
+  </instance>
+</instances>

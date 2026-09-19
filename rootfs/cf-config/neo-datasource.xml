@@ -1,0 +1,84 @@
+<wddxPacket version='1.0'>
+<header/>
+<data>
+<array length='2'>
+<struct type='coldfusion.server.ConfigMap'>
+<var name='training_db'>
+<struct type='coldfusion.server.ConfigMap'>
+<var name='alter'><boolean value='true'/></var>
+<var name='create'><boolean value='true'/></var>
+<var name='disable_clob'><boolean value='true'/></var>
+<var name='DRIVER'><string>/opt/coldfusion2025/cfusion/lib/h2-2.2.224.jar</string></var>
+<var name='CLASS'><string>org.h2.Driver</string></var>
+<var name='url'><string>jdbc:h2:/opt/coldfusion2025/cfusion/db/training;AUTO_SERVER=FALSE;DB_CLOSE_ON_EXIT=FALSE</string></var>
+<var name='drop'><boolean value='true'/></var>
+<var name='clientinfo'>
+<struct type='coldfusion.server.ConfigMap'>
+<var name='ApplicationName'><boolean value='false'/></var>
+<var name='ApplicationNamePrefix'><string></string></var>
+<var name='ClientHostName'><boolean value='false'/></var>
+<var name='ClientUser'><boolean value='false'/></var>
+</struct>
+</var>
+<var name='delete'><boolean value='true'/></var>
+<var name='disable_autogenkeys'><boolean value='false'/></var>
+<var name='description'><string>H2 embedded DB for training exercises</string></var>
+<var name='pooling'><boolean value='true'/></var>
+<var name='username'><string>sa</string></var>
+<var name='update'><boolean value='true'/></var>
+<var name='storedproc'><boolean value='true'/></var>
+<var name='interval'><number>420.0</number></var>
+<var name='disable'><boolean value='false'/></var>
+<var name='disable_blob'><boolean value='true'/></var>
+<var name='revoke'><boolean value='true'/></var>
+<var name='validationQuery'><string></string></var>
+<var name='blob_buffer'><number>64000.0</number></var>
+<var name='buffer'><number>64000.0</number></var>
+<var name='select'><boolean value='true'/></var>
+<var name='NAME'><string>training_db</string></var>
+<var name='login_timeout'><number>30.0</number></var>
+<var name='grant'><boolean value='true'/></var>
+<var name='password'><string></string></var>
+<var name='ISJ2EE'><boolean value='false'/></var>
+<var name='validateConnection'><boolean value='false'/></var>
+<var name='insert'><boolean value='true'/></var>
+<var name='timeout'><number>1200.0</number></var>
+<var name='urlmap'>
+<struct type='coldfusion.server.ConfigMap'>
+<var name='informixServer'><string></string></var>
+<var name='args'><string></string></var>
+<var name='systemDatabaseFile'><string></string></var>
+<var name='defaultusername'><string></string></var>
+<var name='supportLinks'><string>true</string></var>
+<var name='host'><string></string></var>
+<var name='selectMethod'><string>direct</string></var>
+<var name='useSpyLog'><boolean value='false'/></var>
+<var name='pageTimeout'><string></string></var>
+<var name='CONNECTIONPROPS'><struct></struct></var>
+<var name='datasource'><string></string></var>
+<var name='TimeStampAsString'><string>no</string></var>
+<var name='applicationintent'><string></string></var>
+<var name='_logintimeout'><number>30.0</number></var>
+<var name='isnewdb'><string>false</string></var>
+<var name='defaultpassword'><string></string></var>
+<var name='port'><string></string></var>
+<var name='spyLogFile'><string></string></var>
+<var name='MaxPooledStatements'><string>100</string></var>
+<var name='qTimeout'><string>0</string></var>
+<var name='SID'><string></string></var>
+<var name='database'><string></string></var>
+<var name='sendStringParametersAsUnicode'><string>false</string></var>
+<var name='databaseFile'><string></string></var>
+<var name='maxBufferSize'><string></string></var>
+<var name='UseTrustedConnection'><string>false</string></var>
+</struct>
+</var>
+</struct>
+</var>
+</struct>
+<struct type='coldfusion.server.ConfigMap'>
+<var name='maxcachecount'><number>100.0</number></var>
+</struct>
+</array>
+</data>
+</wddxPacket>

@@ -1,0 +1,104 @@
+kind: playground
+name: cf-training-advanced-7442b9e0
+base: flexbox
+title: Hungry Minds — ColdFusion 2025 Production & AI
+description: |-
+    Multi-VM advanced training environment: CF dev + CF prod + Ollama AI node.
+    Course content by Alejandro Mercado / Hungry Minds.
+categories:
+    - linux
+playground:
+    networks:
+        - name: local
+          subnet: 172.16.0.0/24
+    machines:
+        - name: cf-dev
+          users:
+            - name: root
+            - name: laborant
+              default: true
+          drives:
+            - mount: /
+              source: oci://ghcr.io/mercadoalex/cf-training:advanced
+          network:
+            interfaces:
+                - network: local
+          resources:
+            cpuCount: 2
+            ramSize: 2Gi
+
+        - name: cf-prod
+          users:
+            - name: root
+            - name: laborant
+              default: true
+          drives:
+            - mount: /
+              source: oci://ghcr.io/mercadoalex/cf-training:advanced
+          network:
+            interfaces:
+                - network: local
+          resources:
+            cpuCount: 2
+            ramSize: 2Gi
+
+        - name: ollama
+          users:
+            - name: root
+            - name: laborant
+              default: true
+          drives:
+            - mount: /
+              source: oci://ghcr.io/mercadoalex/cf-ollama:latest
+          network:
+            interfaces:
+                - network: local
+          resources:
+            cpuCount: 2
+            ramSize: 4Gi
+
+    tabs:
+        - id: terminal-dev
+          kind: terminal
+          name: Terminal (dev)
+          machine: cf-dev
+        - id: ide-dev
+          kind: ide
+          name: IDE
+          machine: cf-dev
+        - id: http-cf-dev
+          kind: http-port
+          name: ColdFusion (dev)
+          machine: cf-dev
+          number: 8500
+        - id: http-lucee-dev
+          kind: http-port
+          name: Lucee (dev)
+          machine: cf-dev
+          number: 8888
+        - id: terminal-prod
+          kind: terminal
+          name: Terminal (prod)
+          machine: cf-prod
+        - id: http-cf-prod
+          kind: http-port
+          name: ColdFusion (prod)
+          machine: cf-prod
+          number: 8500
+        - id: terminal-ollama
+          kind: terminal
+          name: Terminal (ollama)
+          machine: ollama
+        - id: http-ollama
+          kind: http-port
+          name: Ollama API
+          machine: ollama
+          number: 11434
+
+    accessControl:
+        canList:
+            - owner
+        canRead:
+            - anyone
+        canStart:
+            - anyone

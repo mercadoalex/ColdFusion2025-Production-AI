@@ -1,0 +1,45 @@
+[Unit]
+Description=CommandBox / Lucee Development Server
+Documentation=https://commandbox.ortusbooks.com/
+After=network-online.target syslog.target
+Wants=network-online.target
+# Lucee dev server is optional — CF is the primary server
+# It runs on port 8888 so it does not conflict with CF on 8500
+
+[Service]
+Type=simple
+User=laborant
+Group=laborant
+Environment="HOME=/home/laborant"
+Environment="JAVA_HOME=/opt/coldfusion2025/jre"
+Environment="BOX_HOME=/opt/commandbox"
+Environment="COMMANDBOX_HOME=/opt/commandbox"
+Environment="PATH=/opt/coldfusion2025/jre/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+# Suppress CommandBox's attempt to open a browser window (no display in a microVM)
+Environment="BOX_SERVER_OPENBROWSER=false"
+WorkingDirectory=/home/laborant/app
+
+# Copy the H2 JDBC driver from the CF installation into Lucee's lib dir on every
+# start. The Lucee server home is unpacked by CommandBox on first start and may
+# not exist yet — this runs as root via a helper script so it can create dirs.
+ExecStartPre=/usr/local/bin/lucee-inject-h2
+
+# Use the absolute path to box (/usr/local/bin/box installed via Ortus APT repo)
+# --console keeps the process in the foreground so systemd can track it.
+# First start downloads the Lucee engine if the cache is missing — allow 3 min.
+ExecStart=/usr/local/bin/box server start --console
+ExecStop=/usr/local/bin/box server stop
+
+# Allow up to 3 minutes for first start (engine download / unzip on slow links)
+TimeoutStartSec=180
+TimeoutStopSec=30
+
+Restart=on-failure
+RestartSec=20
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lucee-server
+
+[Install]
+WantedBy=multi-user.target

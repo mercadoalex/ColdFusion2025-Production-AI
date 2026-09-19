@@ -1,0 +1,25 @@
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── Downloads (large binaries — never commit) ─────────────────────────────────
+downloads/*.bin
+downloads/*.zip
+downloads/*.deb
+downloads/*.rpm
+downloads/*.tar.gz
+
+# ── Docker build artifacts ────────────────────────────────────────────────────
+rootfs copy/
+*.bak
+
+# ── Editor & IDE ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── iximiuz labctl ────────────────────────────────────────────────────────────
+.labctl/

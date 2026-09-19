@@ -1,0 +1,39 @@
+[Unit]
+Description=Adobe ColdFusion 2025 Server
+Documentation=https://helpx.adobe.com/coldfusion/
+After=network-online.target syslog.target
+Wants=network-online.target
+# Must start before the readiness probe
+Before=cf-readiness-probe.service
+
+[Service]
+Type=forking
+User=root
+Group=root
+Environment="CF_HOME=/opt/coldfusion2025"
+Environment="JAVA_HOME=/opt/coldfusion2025/jre"
+Environment="PATH=/opt/coldfusion2025/jre/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+WorkingDirectory=/opt/coldfusion2025/cfusion/bin
+
+# CF 2025 ZIP installer uses 'coldfusion start|stop' as the main control script
+ExecStart=/opt/coldfusion2025/cfusion/bin/coldfusion start
+ExecStop=/opt/coldfusion2025/cfusion/bin/coldfusion stop
+
+# Give CF up to 120 seconds to start (JVM warmup)
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+# Restart on unexpected exit — not on stop/reload
+Restart=on-failure
+RestartSec=10
+
+# Log to journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=coldfusion
+
+# Resource limits (Developer Edition is single-core, but we give headroom)
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

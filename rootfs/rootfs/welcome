@@ -1,0 +1,23 @@
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║            Welcome to the ColdFusion Training Playground!               ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║                                                                          ║
+║  Servers:                                                                ║
+║    • Adobe ColdFusion 2025  → port 8500  (CF tab in the browser)        ║
+║    • Lucee / CommandBox      → port 8888  (Lucee tab)                   ║
+║                                                                          ║
+║  Useful aliases:                                                         ║
+║    cf-start     sudo systemctl start cf-server                           ║
+║    cf-stop      sudo systemctl stop  cf-server                           ║
+║    cf-logs      sudo journalctl -u cf-server -f                          ║
+║    lucee-start  sudo systemctl start lucee-server                        ║
+║    lucee-logs   sudo journalctl -u lucee-server -f                       ║
+║                                                                          ║
+║  CF Admin:  http://localhost:8500/CFIDE/administrator/                   ║
+║             User: admin  /  Password: training                           ║
+║                                                                          ║
+║  Student app:   ~/app/           (Lucee/CommandBox server)               ║
+║  CF wwwroot:    /opt/coldfusion2025/cfusion/wwwroot/                     ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝

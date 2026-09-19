@@ -1,0 +1,19 @@
+[Unit]
+Description=ColdFusion Readiness Probe
+Documentation=man:systemd.service(5)
+# Run after cf-server starts; this is a one-shot that waits for port 8500
+After=cf-server.service lucee-server.service
+Requires=cf-server.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cf-readiness-probe
+RemainAfterExit=yes
+TimeoutStartSec=180
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cf-readiness-probe
+
+[Install]
+WantedBy=multi-user.target

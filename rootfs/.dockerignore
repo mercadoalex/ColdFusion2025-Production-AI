@@ -1,0 +1,18 @@
+# Files to exclude from the Docker build context
+# (speeds up docker build by not sending large/irrelevant files to the daemon)
+
+# Git
+.git/
+.gitignore
+
+# Downloads — the CF installer is bind-mounted via --secret, not copied
+downloads/
+
+# Documentation
+README.md
+docs/
+
+# Build artifacts
+*.log
+*.bak
+.DS_Store

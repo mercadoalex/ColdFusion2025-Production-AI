@@ -1,0 +1,195 @@
+# syntax=docker/dockerfile:1
+# =============================================================================
+# Ollama AI Node — iximiuz rootfs image
+# Base: Ubuntu 24.04 LTS
+#
+# What this image provides:
+#   - Ollama server (latest) listening on 0.0.0.0:11434
+#   - phi3-mini model pre-pulled into /home/laborant/.ollama/models
+#   - laborant user (uid 1001, passwordless sudo) — matches cf-dev / cf-prod
+#   - SSH server for iximiuz terminal access
+#   - systemd as PID 1 (Firecracker microVM requirement)
+#
+# Registry: ghcr.io/mercadoalex/cf-ollama:latest
+# Used by:  playground/playground-advanced.yaml  (ollama VM, 4 GiB RAM)
+# =============================================================================
+
+ARG UBUNTU_VERSION=24.04
+FROM ubuntu:${UBUNTU_VERSION}
+
+ARG LAB_USER=laborant
+ARG OLLAMA_MODEL=phi3:mini
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+ENV OLLAMA_HOST=0.0.0.0
+ENV OLLAMA_MODELS=/home/${LAB_USER}/.ollama/models
+
+# =============================================================================
+# LAYER 1 — Base OS  (mirrors cf-training base layer pattern)
+# =============================================================================
+RUN <<EOF
+set -eu
+
+cat > /etc/apt/preferences.d/no-backports <<'APT'
+Package: *
+Pin: release a=noble-backports
+Pin-Priority: -1
+APT
+
+apt-get update
+apt-get upgrade -y
+apt-get install -y \
+  bash-completion \
+  ca-certificates \
+  curl \
+  dbus \
+  dnsutils \
+  git \
+  htop \
+  iproute2 \
+  iputils-ping \
+  locales \
+  lsof \
+  net-tools \
+  procps \
+  psmisc \
+  socat \
+  sudo \
+  systemd \
+  tree \
+  udev \
+  unzip \
+  vim \
+  wget \
+  zstd
+
+apt-get clean
+rm -rf /var/lib/apt/lists/*
+
+# microVM boot requirements
+rm -f /.dockerenv
+mkdir -p /boot
+
+echo "" > /etc/machine-id
+mkdir -p /var/lib/dbus/
+echo "" > /var/lib/dbus/machine-id
+
+# Serial console for iximiuz terminal access
+mkdir -p /etc/systemd/system/getty.target.wants
+ln -sf /usr/lib/systemd/system/getty@.service \
+       /etc/systemd/system/getty.target.wants/getty@ttyS0.service
+
+systemctl mask systemd-machine-id-commit.service 2>/dev/null || true
+
+echo "root:root" | chpasswd
+EOF
+
+# =============================================================================
+# LAYER 2 — SSH server
+# =============================================================================
+RUN <<EOF
+set -eu
+apt-get update -o APT::Get::List-Cleanup=0
+apt-get install -y openssh-server
+apt-get clean
+rm -rf /var/lib/apt/lists/*
+
+cat >> /etc/ssh/sshd_config <<EOT
+HostKey /etc/ssh/ssh_host_ed25519_key
+AuthenticationMethods publickey
+PrintLastLog no
+AddressFamily inet
+UseDNS no
+MaxAuthTries 50
+EOT
+
+systemctl disable ssh.socket  2>/dev/null || true
+systemctl enable  ssh.service 2>/dev/null || true
+rm -f /etc/ssh/ssh_host_*
+EOF
+
+# =============================================================================
+# LAYER 3 — Lab user  (uid 1001, matches cf-dev/cf-prod)
+# =============================================================================
+RUN <<EOF
+set -eu
+useradd -m -u 1001 -s /bin/bash laborant
+echo "laborant:laborant" | chpasswd
+echo "laborant ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/laborant
+chmod 440 /etc/sudoers.d/laborant
+EOF
+
+# =============================================================================
+# LAYER 4 — Ollama
+# =============================================================================
+RUN <<EOF
+set -eu
+curl -fsSL https://ollama.ai/install.sh | sh
+EOF
+
+# =============================================================================
+# LAYER 5 — Pull phi3:mini at build time
+# The model is stored at /home/laborant/.ollama/models (OLLAMA_MODELS env).
+# We start the server briefly, pull the model, then stop it so the layer
+# is committed with the model weights already present — no download at runtime.
+# =============================================================================
+RUN <<EOF
+set -eu
+mkdir -p /home/laborant/.ollama/models
+chown -R laborant:laborant /home/laborant/.ollama
+
+# Start server in background, wait for it, pull, stop
+OLLAMA_HOST=0.0.0.0 OLLAMA_MODELS=/home/laborant/.ollama/models \
+  ollama serve &
+OLLAMA_PID=$!
+
+echo "Waiting for Ollama server..."
+for i in $(seq 1 30); do
+  curl -sf http://localhost:11434/api/tags > /dev/null 2>&1 && break
+  sleep 2
+done
+
+OLLAMA_MODELS=/home/laborant/.ollama/models ollama pull phi3:mini
+kill $OLLAMA_PID || true
+wait $OLLAMA_PID 2>/dev/null || true
+echo "phi3:mini pulled successfully."
+EOF
+
+# =============================================================================
+# LAYER 6 — Systemd service
+# =============================================================================
+COPY rootfs/scripts/ollama.service /etc/systemd/system/ollama.service
+RUN systemctl enable ollama.service
+
+# =============================================================================
+# LAYER 7 — Ownership + welcome message
+# =============================================================================
+RUN <<EOF
+set -eu
+chown -R laborant:laborant /home/laborant/.ollama
+
+cat > /home/laborant/.welcome <<'MSG'
+╔══════════════════════════════════════════════════════╗
+║          Hungry Minds — Ollama AI Node               ║
+╠══════════════════════════════════════════════════════╣
+║  Ollama API  : http://localhost:11434                 ║
+║  Model       : phi3:mini                             ║
+║  From cf-dev : http://ollama:11434                   ║
+╠══════════════════════════════════════════════════════╣
+║  Quick test:                                         ║
+║    curl http://localhost:11434/api/tags               ║
+║    ollama run phi3:mini "Hello!"                     ║
+╚══════════════════════════════════════════════════════╝
+MSG
+chown laborant:laborant /home/laborant/.welcome
+EOF
+
+# =============================================================================
+# Metadata
+# =============================================================================
+USER root
+LABEL org.opencontainers.image.title="cf-ollama" \
+      org.opencontainers.image.description="Ollama AI node (phi3:mini) for ColdFusion 2025 advanced training" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.base.name="ubuntu:24.04"
