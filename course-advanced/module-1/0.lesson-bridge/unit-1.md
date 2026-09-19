@@ -46,6 +46,14 @@ Real production looks like this:
 | **Change is constant** | New features, bug fixes, security patches — every day |
 | **Things fail** | Servers crash, deployments go wrong, databases get corrupted |
 
+::image-box
+---
+:src: __static__/it-works-on-my-machine.png
+:alt: Humorous illustration of a developer saying "it works on my machine" while the operations team deals with a broken production server
+:max-width: 680px
+---
+::
+
 The gap between "it works on my machine" and "it works reliably in production" is where DevOps lives.
 
 ---
