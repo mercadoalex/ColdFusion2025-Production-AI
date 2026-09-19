@@ -10,6 +10,15 @@ name: cicd-pipelines-coldfusion-unit-1
 
 **DevOps** is a culture, a set of practices, and a toolchain that breaks down the wall between software **development** (Dev) and IT **operations** (Ops). The goal is simple: ship better software, faster, with fewer failures — by automating everything that can be automated and making collaboration the default.
 
+::image-box
+---
+:src: __static__/devops-infinity-loop-v1.png
+:alt: DevOps infinity loop diagram showing the eight stages — Plan, Code, Build, Test, Release, Deploy, Operate, Monitor — arranged as a continuous figure-eight, with DEV on the left and OPS on the right, and CI/CD at the centre crossing point
+:max-width: 860px
+---
+_The DevOps lifecycle: eight stages flowing continuously from development through operations and back again._
+::
+
 ::hint-box
 ---
 :summary: The traditional Dev vs Ops conflict — and why it matters
