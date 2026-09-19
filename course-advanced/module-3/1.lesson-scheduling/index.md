@@ -24,6 +24,9 @@ tagz:
 playground:
   name: cf-training-advanced-7442b9e0
 
+challenges:
+  scheduling-XXXXXXXX: {}
+
 tasks:
   verify_task_created:
     machine: cf-dev
@@ -34,7 +37,7 @@ tasks:
         echo "schedule_setup.cfm threw an error"
         exit 1
       fi
-      echo "schedule_setup.cfm ran without errors"
+      echo "schedule_setup.cfm ran without errors ✓"
 
   verify_cfschedule_used:
     machine: cf-dev
@@ -43,11 +46,11 @@ tasks:
       - verify_task_created
     run: |
       FILE="/opt/coldfusion2025/cfusion/wwwroot/schedule_setup.cfm"
-      if ! grep -qi "cfschedule\|cfschedule" "${FILE}" 2>/dev/null; then
+      if ! grep -qi "cfschedule" "${FILE}" 2>/dev/null; then
         echo "cfschedule tag not found in schedule_setup.cfm"
         exit 1
       fi
-      echo "cfschedule is used"
+      echo "cfschedule is used ✓"
 
   verify_task_page_exists:
     machine: cf-dev
@@ -60,69 +63,13 @@ tasks:
         echo "tasks/nightly_report.cfm not found — task target page missing"
         exit 1
       fi
-      echo "Task target page exists"
+      echo "Task target page exists ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_task_page_exists
+    run: |
+      echo "Scheduling lesson complete ✓"
 ---
-
-## Create a scheduled task with cfschedule
-
-```cfml
-<cfschedule
-  action    = "update"
-  task      = "NightlyReport"
-  operation = "HTTPRequest"
-  url       = "http://localhost:8500/tasks/nightly_report.cfm"
-  startDate = "2026-01-01"
-  startTime = "02:00 AM"
-  interval  = "daily"
-  requestTimeOut = "120"
-  publish   = "no">
-```
-
-## List and delete tasks
-
-```cfml
-<cfscript>
-  // list all tasks
-  cfschedule(action="list", result="tasks");
-  writeDump(tasks);
-
-  // delete a task
-  cfschedule(action="delete", task="NightlyReport");
-</cfscript>
-```
-
-## Task target page pattern
-
-```cfml
-<!--- tasks/nightly_report.cfm --->
-<cfscript>
-  // guard: only allow internal calls
-  if (!cgi.remote_addr == "127.0.0.1") {
-    cfheader(statuscode=403, statustext="Forbidden");
-    abort;
-  }
-
-  cflog(file="scheduler", text="nightly_report started");
-
-  // do work
-  queryExecute(
-    "INSERT INTO reports (created_at) VALUES (NOW())",
-    {},
-    {datasource: "training_db"}
-  );
-
-  cflog(file="scheduler", text="nightly_report completed");
-</cfscript>
-```
-
-## Manage via CF Admin API
-
-```cfml
-<cfscript>
-  scheduler = createObject("component", "cfide.adminapi.scheduler");
-  scheduler.login("admin123");
-  tasks = scheduler.getAllTasks();
-  writeDump(tasks);
-</cfscript>
-```
-

@@ -8,15 +8,30 @@ description: |
   and response status codes — replacing raw .cfm endpoints with a proper
   MVC layer.
 
-createdAt: 2026-09-03
-updatedAt: 2026-09-03
+name: coldbox-rest-api
+slug: coldbox-rest-api
+
+createdAt: "2026-09-03"
+updatedAt: "2026-09-03"
+
+categories:
+- programming
+
+tagz:
+- coldfusion
+- coldbox
+- rest
+- api
 
 playground:
-  name: cf-alex-edcdf975
+  name: cf-training-advanced-7442b9e0
+
+challenges:
+  coldbox-rest-XXXXXXXX: {}
 
 tasks:
   verify_api_handler:
-    machine: dev-machine
+    machine: cf-dev
     user: laborant
     run: |
       HANDLER=$(grep -rl "renderData\|event.renderData" /home/laborant/app/handlers/ 2>/dev/null | head -1)
@@ -24,10 +39,10 @@ tasks:
         echo "No renderData() call found in handlers"
         exit 1
       fi
-      echo "API handler with renderData found"
+      echo "API handler with renderData found ✓"
 
   verify_api_responds:
-    machine: dev-machine
+    machine: cf-dev
     user: laborant
     needs:
       - verify_api_handler
@@ -37,5 +52,13 @@ tasks:
         echo "API endpoint did not return valid JSON"
         exit 1
       fi
-      echo "API returns valid JSON"
+      echo "API returns valid JSON ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_api_responds
+    run: |
+      echo "ColdBox REST API lesson complete ✓"
 ---

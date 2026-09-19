@@ -1,11 +1,11 @@
 ---
 kind: lesson
 
-title: Integration with Other Technologies
+title: External Integration — cfhttp and cfmail
 description: |
   Connect ColdFusion with external systems via HTTP, messaging queues,
-  LDAP, FTP, and email. Understand integration architectures and
-  cross-platform interoperability patterns.
+  and email. Consume REST APIs with cfhttp, send rich HTML email with
+  cfmail, and handle cross-platform interoperability patterns.
 
 name: integration-other-technologies
 slug: integration-other-technologies
@@ -20,10 +20,13 @@ tagz:
 - coldfusion
 - integration
 - cfhttp
-- ldap
+- cfmail
 
 playground:
   name: cf-training-advanced-7442b9e0
+
+challenges:
+  integration-XXXXXXXX: {}
 
 tasks:
   verify_cfhttp_page:
@@ -35,7 +38,7 @@ tasks:
         echo "integration_demo.cfm not found (got ${STATUS})"
         exit 1
       fi
-      echo "integration_demo.cfm is accessible"
+      echo "integration_demo.cfm is accessible ✓"
 
   verify_cfhttp_used:
     machine: cf-dev
@@ -48,7 +51,7 @@ tasks:
         echo "cfhttp not found in integration_demo.cfm"
         exit 1
       fi
-      echo "cfhttp is used"
+      echo "cfhttp is used ✓"
 
   verify_cfmail_used:
     machine: cf-dev
@@ -61,72 +64,13 @@ tasks:
         echo "No cfmail usage found in the project"
         exit 1
       fi
-      echo "cfmail is used in ${COUNT} location(s)"
+      echo "cfmail is used in ${COUNT} location(s) ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_cfmail_used
+    run: |
+      echo "Integration lesson complete ✓"
 ---
-
-## HTTP integration with cfhttp
-
-```cfml
-<cfscript>
-  cfhttp(
-    url    = "https://jsonplaceholder.typicode.com/users",
-    method = "GET",
-    result = "resp"
-  );
-  users = deserializeJSON(resp.fileContent);
-  for (user in users) {
-    writeOutput(user.name & "<br>");
-  }
-</cfscript>
-```
-
-## POST JSON to external API
-
-```cfml
-<cfscript>
-  payload = serializeJSON({name: "Alex", email: "alex@example.com"});
-  cfhttp(
-    url         = "https://api.example.com/students",
-    method      = "POST",
-    result      = "resp",
-    charset     = "utf-8"
-  ) {
-    cfhttpparam(type="header", name="Content-Type", value="application/json");
-    cfhttpparam(type="body", value=payload);
-  }
-  writeOutput("Status: " & resp.statusCode);
-</cfscript>
-```
-
-## Send email with cfmail
-
-```cfml
-<cfmail
-  to      = "student@example.com"
-  from    = "noreply@training.dev"
-  subject = "Welcome to CF Training"
-  type    = "html"
-  server  = "localhost"
-  port    = "25">
-  <p>Hello, welcome to the course!</p>
-</cfmail>
-```
-
-## FTP operations with cfftp
-
-```cfml
-<cfscript>
-  cfftp(
-    action      = "open",
-    username    = "ftpuser",
-    password    = "ftppass",
-    server      = "ftp.example.com",
-    connection  = "myFTP"
-  );
-  cfftp(action="getFile", connection="myFTP",
-        remotefile="/reports/latest.csv",
-        localfile=expandPath("/downloads/latest.csv"));
-  cfftp(action="close", connection="myFTP");
-</cfscript>
-```
-

@@ -1,11 +1,11 @@
 ---
 kind: lesson
 
-title: Complementary ColdFusion Features
+title: PDF, Excel, and ZIP Generation
 description: |
-  Round out your ColdFusion expertise with platform features that
-  don't fit neatly elsewhere: PDF generation, spreadsheet handling,
-  ZIP manipulation, server-side validation, and enterprise best practices.
+  Round out your ColdFusion expertise with document generation features:
+  create PDFs with cfdocument, export Excel files with spreadsheet functions,
+  compress files with cfzip, and validate form inputs with cfparam.
 
 name: complementary-coldfusion-features
 slug: complementary-coldfusion-features
@@ -25,6 +25,9 @@ tagz:
 playground:
   name: cf-training-advanced-7442b9e0
 
+challenges:
+  complementary-XXXXXXXX: {}
+
 tasks:
   verify_pdf_page:
     machine: cf-dev
@@ -35,7 +38,7 @@ tasks:
         echo "pdf_demo.cfm not found (got ${STATUS})"
         exit 1
       fi
-      echo "pdf_demo.cfm is accessible"
+      echo "pdf_demo.cfm is accessible ✓"
 
   verify_cfdocument_used:
     machine: cf-dev
@@ -48,7 +51,7 @@ tasks:
         echo "cfdocument/cfpdf not found in pdf_demo.cfm"
         exit 1
       fi
-      echo "cfdocument/cfpdf is used"
+      echo "cfdocument/cfpdf is used ✓"
 
   verify_spreadsheet_page:
     machine: cf-dev
@@ -61,66 +64,13 @@ tasks:
         echo "export.cfm not found"
         exit 1
       fi
-      echo "export.cfm exists"
+      echo "export.cfm exists ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_spreadsheet_page
+    run: |
+      echo "Complementary features lesson complete ✓"
 ---
-
-## PDF generation with cfdocument
-
-```cfml
-<cfdocument format="PDF" filename="/tmp/report.pdf" overwrite="true">
-  <html>
-  <body>
-    <h1>Student Report</h1>
-    <cfquery name="students" datasource="training_db">
-      SELECT name, score FROM students ORDER BY score DESC
-    </cfquery>
-    <table border="1">
-      <tr><th>Name</th><th>Score</th></tr>
-      <cfoutput query="students">
-        <tr><td>#name#</td><td>#score#</td></tr>
-      </cfoutput>
-    </table>
-  </body>
-  </html>
-</cfdocument>
-<cfoutput>PDF saved to /tmp/report.pdf</cfoutput>
-```
-
-## Excel export with spreadsheet functions
-
-```cfml
-<cfscript>
-  students = queryExecute("SELECT name, score FROM students", {}, {datasource:"training_db"});
-
-  ss = spreadsheetNew("Students", true);
-  spreadsheetSetHeader(ss, "Name,Score");
-
-  row = 2;
-  for (s in students) {
-    spreadsheetSetCellValue(ss, s.name,  row, 1);
-    spreadsheetSetCellValue(ss, s.score, row, 2);
-    row++;
-  }
-
-  spreadsheetWrite(ss, expandPath("/exports/students.xlsx"), true);
-  writeOutput("Excel exported");
-</cfscript>
-```
-
-## ZIP files with cfzip
-
-```cfml
-<cfzip action="zip"
-       file="/tmp/reports.zip"
-       source="/opt/coldfusion2025/cfusion/wwwroot/exports/"
-       overwrite="true">
-```
-
-## Server-side form validation with cfparam
-
-```cfml
-<cfparam name="form.name"  type="string"  minlength="2" maxlength="100">
-<cfparam name="form.email" type="email">
-<cfparam name="form.age"   type="integer" min="18" max="120">
-```
-

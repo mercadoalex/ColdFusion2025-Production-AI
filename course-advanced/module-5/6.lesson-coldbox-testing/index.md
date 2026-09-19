@@ -7,25 +7,40 @@ description: |
   Write unit and integration tests for ColdBox handlers and services
   using TestBox BDD specs and MockBox for dependency mocking.
 
-createdAt: 2026-09-03
-updatedAt: 2026-09-03
+name: coldbox-testing-testbox
+slug: coldbox-testing-testbox
+
+createdAt: "2026-09-03"
+updatedAt: "2026-09-03"
+
+categories:
+- programming
+
+tagz:
+- coldfusion
+- coldbox
+- testbox
+- testing
 
 playground:
-  name: cf-alex-edcdf975
+  name: cf-training-advanced-7442b9e0
+
+challenges:
+  coldbox-testing-XXXXXXXX: {}
 
 tasks:
   verify_testbox_installed:
-    machine: dev-machine
+    machine: cf-dev
     user: laborant
     run: |
       if [ ! -d "/home/laborant/app/testbox" ]; then
         echo "TestBox not installed — run: box install testbox"
         exit 1
       fi
-      echo "TestBox installed"
+      echo "TestBox installed ✓"
 
   verify_test_spec_exists:
-    machine: dev-machine
+    machine: cf-dev
     user: laborant
     needs:
       - verify_testbox_installed
@@ -35,10 +50,10 @@ tasks:
         echo "No TestBox spec found in tests/"
         exit 1
       fi
-      echo "Test spec found: $SPEC"
+      echo "Test spec found: $SPEC ✓"
 
   verify_tests_pass:
-    machine: dev-machine
+    machine: cf-dev
     user: laborant
     needs:
       - verify_test_spec_exists
@@ -48,5 +63,13 @@ tasks:
         echo "TestBox tests have failures or errors"
         exit 1
       fi
-      echo "All tests pass"
+      echo "All tests pass ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_tests_pass
+    run: |
+      echo "TestBox testing lesson complete ✓"
 ---

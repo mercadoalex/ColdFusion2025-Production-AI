@@ -7,15 +7,30 @@ description: |
   Use WireBox — ColdBox's built-in IoC container — to inject services
   into handlers, manage singletons, and decouple your application layers.
 
-createdAt: 2026-09-03
-updatedAt: 2026-09-03
+name: coldbox-wirebox-di
+slug: coldbox-wirebox-di
+
+createdAt: "2026-09-03"
+updatedAt: "2026-09-03"
+
+categories:
+- programming
+
+tagz:
+- coldfusion
+- coldbox
+- wirebox
+- dependency-injection
 
 playground:
-  name: cf-alex-edcdf975
+  name: cf-training-advanced-7442b9e0
+
+challenges:
+  wirebox-di-XXXXXXXX: {}
 
 tasks:
   verify_service_exists:
-    machine: dev-machine
+    machine: cf-dev
     user: laborant
     run: |
       SVC=$(find /home/laborant/app/models -name "*.cfc" 2>/dev/null | head -1)
@@ -23,10 +38,10 @@ tasks:
         echo "No model/service CFC found in models/"
         exit 1
       fi
-      echo "Service found: $SVC"
+      echo "Service found: $SVC ✓"
 
   verify_injection_used:
-    machine: dev-machine
+    machine: cf-dev
     user: laborant
     needs:
       - verify_service_exists
@@ -36,5 +51,13 @@ tasks:
         echo "No WireBox injection found in handler"
         exit 1
       fi
-      echo "WireBox injection found"
+      echo "WireBox injection found ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_injection_used
+    run: |
+      echo "WireBox DI lesson complete ✓"
 ---

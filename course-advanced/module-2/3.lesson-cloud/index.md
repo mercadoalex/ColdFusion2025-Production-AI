@@ -1,133 +1,64 @@
 ---
 kind: lesson
 
-title: ColdFusion in Cloud Environments
+title: Cloud Deployment with Docker and AWS
 description: |
-  Deploy ColdFusion 2025 applications to cloud platforms.
-  Understand architectural considerations, environment configuration,
-  scalability, high availability, and integration with cloud services.
+  Deploy ColdFusion applications to cloud environments. Build a Docker Compose
+  multi-container stack, push images to a registry, and deploy to AWS using
+  Elastic Beanstalk or EC2.
 
-name: coldfusion-cloud-environments
-slug: coldfusion-cloud-environments
+name: cloud-deployment-docker-aws
+slug: cloud-deployment-docker-aws
 
 createdAt: "2026-09-03"
 updatedAt: "2026-09-03"
 
 categories:
 - programming
+- ci-cd
 
 tagz:
 - coldfusion
 - docker
 - aws
+- cloud
 
 playground:
   name: cf-training-advanced-7442b9e0
 
+challenges:
+  cloud-deployment-XXXXXXXX: {}
+
 tasks:
-  verify_docker_running:
+  verify_compose_file:
     machine: cf-dev
     user: laborant
     run: |
-      if ! docker info > /dev/null 2>&1; then
-        echo "Docker is not running"
-        exit 1
-      fi
-      echo "Docker is running"
-
-  verify_cf_container:
-    machine: cf-dev
-    user: laborant
-    needs:
-      - verify_docker_running
-    run: |
-      if ! docker ps 2>/dev/null | grep -q "coldfusion\|cfml\|lucee"; then
-        echo "No ColdFusion/Lucee container is running"
-        exit 1
-      fi
-      echo "ColdFusion/Lucee container is running"
-
-  verify_env_config:
-    machine: cf-dev
-    user: laborant
-    needs:
-      - verify_cf_container
-    run: |
-      FILE=$(find /home/laborant /opt/coldfusion2025/cfusion/wwwroot -name ".env" -o -name "docker-compose.yml" 2>/dev/null | head -1)
+      FILE=$(find /home/laborant -name "docker-compose.yml" -o -name "docker-compose.yaml" 2>/dev/null | head -1)
       if [ -z "${FILE}" ]; then
-        echo "No .env or docker-compose.yml found"
+        echo "No docker-compose.yml found under /home/laborant"
         exit 1
       fi
-      echo "Environment configuration found at ${FILE}"
+      echo "docker-compose.yml found at ${FILE} ✓"
+
+  verify_compose_has_cf:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_compose_file
+    run: |
+      FILE=$(find /home/laborant -name "docker-compose.yml" -o -name "docker-compose.yaml" 2>/dev/null | head -1)
+      if ! grep -qi "coldfusion\|cf-server\|8500" "${FILE}" 2>/dev/null; then
+        echo "docker-compose.yml does not reference ColdFusion"
+        exit 1
+      fi
+      echo "docker-compose.yml references ColdFusion ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_compose_has_cf
+    run: |
+      echo "Cloud deployment lesson complete ✓"
 ---
-
-## Docker Compose for ColdFusion + MySQL
-
-```yaml
-# docker-compose.yml
-version: "3.9"
-
-services:
-  cf:
-    image: adobecoldfusion/coldfusion2025:latest
-    ports:
-      - "8500:8500"
-    environment:
-      - acceptEULA=YES
-      - password=admin123
-      - datasource_name=training_db
-      - datasource_driver=mysql
-      - datasource_host=db
-      - datasource_port=3306
-      - datasource_database=training
-      - datasource_username=cfuser
-      - datasource_password=cfpass
-    depends_on:
-      - db
-
-  db:
-    image: mysql:8
-    environment:
-      - MYSQL_DATABASE=training
-      - MYSQL_USER=cfuser
-      - MYSQL_PASSWORD=cfpass
-      - MYSQL_ROOT_PASSWORD=rootpass
-    volumes:
-      - db_data:/var/lib/mysql
-
-volumes:
-  db_data:
-```
-
-## Environment variables in Application.cfc
-
-```cfml
-component {
-  this.name = "MyApp";
-  this.datasource = {
-    driver:   "MySQL",
-    host:     createObject("java","java.lang.System").getenv("DB_HOST"),
-    port:     createObject("java","java.lang.System").getenv("DB_PORT"),
-    database: createObject("java","java.lang.System").getenv("DB_NAME"),
-    username: createObject("java","java.lang.System").getenv("DB_USER"),
-    password: createObject("java","java.lang.System").getenv("DB_PASS")
-  };
-}
-```
-
-## Health check for load balancer
-
-```cfml
-<!--- health.cfm — used by AWS ELB / ALB target group --->
-<cfscript>
-  try {
-    queryExecute("SELECT 1", {}, {datasource:"training_db"});
-    cfheader(statuscode=200, statustext="OK");
-    writeOutput('{"status":"ok"}');
-  } catch(any e) {
-    cfheader(statuscode=503, statustext="Service Unavailable");
-    writeOutput('{"status":"degraded"}');
-  }
-</cfscript>
-```
-

@@ -331,11 +331,39 @@ challenges won't appear but can still be pulled and are accessible to the author
 
 ## 7. Slugs reference
 
-### Challenges
+### Challenges — Foundations course
 
 | Local directory | Platform slug |
 |---|---|
 | `challenges/multimedia` | `multimedia-2ed52176` |
+
+### Challenges — Advanced course (Production & AI)
+
+> Run `labctl content create challenge <name> -d course-advanced/challenges/<name> --no-open -q`
+> for each directory below to get the platform slug, then replace `XXXXXXXX` in
+> `index.md`, the lesson `index.md` `challenges:` section, and the unit-1.md `::card` block.
+
+| Local directory | Platform slug (replace XXXXXXXX after labctl create) |
+|---|---|
+| `course-advanced/challenges/cicd-pipelines` | `cicd-pipelines-XXXXXXXX` |
+| `course-advanced/challenges/production-deploy` | `production-deploy-XXXXXXXX` |
+| `course-advanced/challenges/java-integration` | `java-integration-XXXXXXXX` |
+| `course-advanced/challenges/xml-processing` | `xml-processing-XXXXXXXX` |
+| `course-advanced/challenges/cloud-deployment` | `cloud-deployment-XXXXXXXX` |
+| `course-advanced/challenges/cf-administration` | `cf-administration-XXXXXXXX` |
+| `course-advanced/challenges/scheduling` | `scheduling-XXXXXXXX` |
+| `course-advanced/challenges/integration` | `integration-XXXXXXXX` |
+| `course-advanced/challenges/solr-search` | `solr-search-XXXXXXXX` |
+| `course-advanced/challenges/complementary` | `complementary-XXXXXXXX` |
+| `course-advanced/challenges/ollama-api` | `ollama-api-XXXXXXXX` |
+| `course-advanced/challenges/cfml-ai-integration` | `cfml-ai-integration-XXXXXXXX` |
+| `course-advanced/challenges/ai-helpdesk` | `ai-helpdesk-XXXXXXXX` |
+| `course-advanced/challenges/coldbox-intro` | `coldbox-intro-XXXXXXXX` |
+| `course-advanced/challenges/coldbox-scaffold` | `coldbox-scaffold-XXXXXXXX` |
+| `course-advanced/challenges/coldbox-handlers` | `coldbox-handlers-XXXXXXXX` |
+| `course-advanced/challenges/wirebox-di` | `wirebox-di-XXXXXXXX` |
+| `course-advanced/challenges/coldbox-rest` | `coldbox-rest-XXXXXXXX` |
+| `course-advanced/challenges/coldbox-testing` | `coldbox-testing-XXXXXXXX` |
 
 ### Courses
 
@@ -349,3 +377,4 @@ challenges won't appear but can still be pulled and are accessible to the author
 | Name | Slug |
 |---|---|
 | Foundations (Course 1) | `cf-alex-edcdf975` |
+| Advanced — Production & AI (Course 2) | `cf-training-advanced-7442b9e0` |

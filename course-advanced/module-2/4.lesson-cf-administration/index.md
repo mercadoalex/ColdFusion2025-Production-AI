@@ -1,115 +1,90 @@
 ---
 kind: lesson
 
-title: Advanced ColdFusion Administration
+title: CF Administration Automation
 description: |
-  Master the ColdFusion Administrator console. Configure server settings,
-  manage datasources, mail servers, caching, logging, and scheduled tasks.
-  Understand neo-*.xml configuration files for automation.
+  Automate ColdFusion server configuration using the CF Admin API
+  (cfide.adminapi) and CFConfig JSON files. Manage datasources, mail servers,
+  and JVM settings programmatically — no clicking through the admin UI.
 
-name: advanced-cf-administration
-slug: advanced-cf-administration
+name: cf-admin-api-cfconfig-automation
+slug: cf-admin-api-cfconfig-automation
 
 createdAt: "2026-09-03"
 updatedAt: "2026-09-03"
 
 categories:
 - programming
+- ci-cd
 
 tagz:
 - coldfusion
-- administration
-- configuration
+- admin-api
+- cfconfig
+- automation
 
 playground:
   name: cf-training-advanced-7442b9e0
 
+challenges:
+  cf-administration-XXXXXXXX: {}
+
 tasks:
-  verify_admin_accessible:
+  verify_admin_api_accessible:
     machine: cf-dev
     user: laborant
     run: |
       STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8500/CFIDE/administrator/index.cfm)
-      if [ "${STATUS}" != "200" ] && [ "${STATUS}" != "302" ]; then
-        echo "CF Admin not accessible (got ${STATUS})"
+      if [ "${STATUS}" = "000" ]; then
+        echo "CF Admin is not reachable (connection refused)"
         exit 1
       fi
-      echo "CF Admin is accessible (got ${STATUS})"
+      echo "CF Admin is reachable (HTTP ${STATUS}) ✓"
 
-  verify_neo_datasource:
+  verify_admin_api_script:
     machine: cf-dev
     user: laborant
     needs:
-      - verify_admin_accessible
+      - verify_admin_api_accessible
     run: |
-      FILE="/opt/coldfusion2025/cfusion/lib/neo-datasource.xml"
+      FILE="/opt/coldfusion2025/cfusion/wwwroot/admin_api_demo.cfm"
       if [ ! -f "${FILE}" ]; then
-        echo "neo-datasource.xml not found at ${FILE}"
+        echo "admin_api_demo.cfm not found at ${FILE}"
         exit 1
       fi
-      echo "neo-datasource.xml exists"
+      echo "admin_api_demo.cfm exists ✓"
 
-  verify_cf_log:
+  verify_admin_api_runs:
     machine: cf-dev
     user: laborant
     needs:
-      - verify_neo_datasource
+      - verify_admin_api_script
     run: |
-      LOG_DIR="/opt/coldfusion2025/cfusion/logs"
-      if [ ! -d "${LOG_DIR}" ]; then
-        echo "ColdFusion logs directory not found at ${LOG_DIR}"
+      BODY=$(curl -s http://localhost:8500/admin_api_demo.cfm)
+      if echo "${BODY}" | grep -qi "error\|exception\|login failed"; then
+        echo "admin_api_demo.cfm threw an error: ${BODY}"
         exit 1
       fi
-      COUNT=$(ls "${LOG_DIR}"/*.log 2>/dev/null | wc -l)
-      echo "Found ${COUNT} log file(s) in ${LOG_DIR}"
+      echo "admin_api_demo.cfm ran without errors ✓"
+
+  verify_cfconfig_file:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_admin_api_runs
+    run: |
+      FILE=$(find /home/laborant /opt/coldfusion2025 -name ".CFConfig.json" 2>/dev/null | head -1)
+      if [ -z "${FILE}" ]; then
+        echo ".CFConfig.json not found — create one to capture server config"
+        exit 1
+      fi
+      echo ".CFConfig.json found at ${FILE} ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_cfconfig_file
+    run: |
+      echo "CF Administration lesson complete ✓"
 ---
-
-## Key neo-*.xml configuration files
-
-| File | Purpose |
-|---|---|
-| `neo-datasource.xml` | Datasource definitions |
-| `neo-security.xml` | Admin password, RDS, sandbox |
-| `neo-mail.xml` | Mail server settings |
-| `neo-caching.xml` | Cache configuration |
-| `neo-logging.xml` | Log levels and rotation |
-| `neo-runtime.xml` | JVM and runtime settings |
-
-## Automate datasource creation (admin API)
-
-```cfml
-<cfscript>
-  adminObj = createObject("component", "cfide.adminapi.datasource");
-  adminObj.login("admin123");
-
-  dsn = {
-    name:     "new_db",
-    driver:   "MySQL5",
-    host:     "localhost",
-    port:     3306,
-    database: "mydb",
-    username: "dbuser",
-    password: "dbpass"
-  };
-  adminObj.setMysql(argumentCollection=dsn);
-  writeOutput("Datasource created");
-</cfscript>
-```
-
-## Check server status from CFML
-
-```cfml
-<cfscript>
-  monitor = createObject("java", "coldfusion.server.ServiceFactory")
-              .getServerMonitorService();
-  writeOutput("Active requests: " & monitor.getActiveRequestCount());
-</cfscript>
-```
-
-## Tail CF logs from terminal
-
-```bash
-tail -f /opt/coldfusion2025/cfusion/logs/application.log
-tail -f /opt/coldfusion2025/cfusion/logs/exception.log
-```
-

@@ -7,15 +7,29 @@ description: |
   Scaffold a ColdBox application with `coldbox create app`, understand
   the folder structure, and get the app running locally.
 
-createdAt: 2026-09-03
-updatedAt: 2026-09-03
+name: coldbox-scaffold-commandbox
+slug: coldbox-scaffold-commandbox
+
+createdAt: "2026-09-03"
+updatedAt: "2026-09-03"
+
+categories:
+- programming
+
+tagz:
+- coldfusion
+- coldbox
+- commandbox
 
 playground:
-  name: cf-alex-edcdf975
+  name: cf-training-advanced-7442b9e0
+
+challenges:
+  coldbox-scaffold-XXXXXXXX: {}
 
 tasks:
   verify_coldbox_app:
-    machine: dev-machine
+    machine: cf-dev
     user: laborant
     run: |
       if [ ! -f "/home/laborant/app/Application.cfc" ]; then
@@ -26,10 +40,10 @@ tasks:
         echo "Application.cfc does not extend ColdBox"
         exit 1
       fi
-      echo "ColdBox app scaffolded"
+      echo "ColdBox app scaffolded ✓"
 
   verify_app_running:
-    machine: dev-machine
+    machine: cf-dev
     user: laborant
     needs:
       - verify_coldbox_app
@@ -39,5 +53,13 @@ tasks:
         echo "App not responding on port 8888 (got $CODE)"
         exit 1
       fi
-      echo "App running on port 8888"
+      echo "App running on port 8888 ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_app_running
+    run: |
+      echo "ColdBox scaffold lesson complete ✓"
 ---
