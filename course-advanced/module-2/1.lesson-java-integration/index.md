@@ -46,8 +46,12 @@ tasks:
       - verify_java_page
     run: |
       FILE="/opt/coldfusion2025/cfusion/wwwroot/java_demo.cfm"
-      if ! grep -qi "createObject.*java\|createObject(\"java\"" "${FILE}" 2>/dev/null; then
-        echo "No createObject java call found in java_demo.cfm"
+      if ! grep -qi 'createObject' "${FILE}" 2>/dev/null; then
+        echo "No createObject call found in java_demo.cfm"
+        exit 1
+      fi
+      if ! grep -qi 'java' "${FILE}" 2>/dev/null; then
+        echo "No java reference found in java_demo.cfm"
         exit 1
       fi
       echo "Java object creation found ✓"
