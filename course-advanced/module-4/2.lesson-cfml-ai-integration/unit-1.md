@@ -120,21 +120,15 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_test.cfm << 'EOF'
     "stream": false
   };
 
-  cfhttp(
-    method  = "POST",
-    url     = "http://ollama:11434/api/generate",
-    result  = "httpResult",
-    timeout = 120
-  ) {
+  cfhttp(method="POST", url="http://ollama:11434/api/generate", result="httpResult", timeout=120) {
     cfhttpparam(type="header", name="Content-Type", value="application/json");
-    cfhttpparam(type="body",   value=serializeJSON(payload));
+    cfhttpparam(type="body", value=serializeJSON(payload));
   }
 
   if (httpResult.statusCode contains "200") {
     result = deserializeJSON(httpResult.fileContent);
     writeOutput("<p><strong>Model says:</strong> " & result.response & "</p>");
-    writeOutput("<p><em>Tokens generated: " & result.eval_count & " | Duration: "
-                & int(result.total_duration / 1000000) & " ms</em></p>");
+    writeOutput("<p><em>Tokens: " & result.eval_count & " | " & int(result.total_duration/1000000) & " ms</em></p>");
   } else {
     writeOutput("<p style='color:red'>Ollama error: " & httpResult.statusCode & "</p>");
   }
