@@ -112,28 +112,24 @@ Before building the service, confirm the raw pattern works end-to-end. This is t
 **Activity — Terminal (dev):** Create `ai_test.cfm` in the CF webroot:
 
 ```bash
-sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_test.cfm << 'EOF'
-<cfscript>
-  payload = {
-    "model":  "phi3:mini",
-    "prompt": "In exactly one sentence, what is ColdFusion?",
-    "stream": false
-  };
-
-  cfhttp(method="POST", url="http://ollama:11434/api/generate", result="httpResult", timeout=120) {
-    cfhttpparam(type="header", name="Content-Type", value="application/json");
-    cfhttpparam(type="body", value=serializeJSON(payload));
+python3 -c "
+content = '''<cfscript>
+  payload = {\"model\":\"phi3:mini\",\"prompt\":\"In exactly one sentence, what is ColdFusion?\",\"stream\":false};
+  cfhttp(method=\"POST\", url=\"http://ollama:11434/api/generate\", result=\"httpResult\", timeout=120) {
+    cfhttpparam(type=\"header\", name=\"Content-Type\", value=\"application/json\");
+    cfhttpparam(type=\"body\", value=serializeJSON(payload));
   }
-
-  if (httpResult.statusCode contains "200") {
+  if (httpResult.statusCode contains \"200\") {
     result = deserializeJSON(httpResult.fileContent);
-    writeOutput("<p><strong>Model says:</strong> " & result.response & "</p>");
-    writeOutput("<p><em>Tokens: " & result.eval_count & " | " & int(result.total_duration/1000000) & " ms</em></p>");
+    writeOutput(\"<p><strong>Model says:</strong> \" & result.response & \"</p>\");
+    writeOutput(\"<p><em>Tokens: \" & result.eval_count & \" | \" & int(result.total_duration/1000000) & \" ms</em></p>\");
   } else {
-    writeOutput("<p style='color:red'>Ollama error: " & httpResult.statusCode & "</p>");
+    writeOutput(\"<p style='color:red'>Ollama error: \" & httpResult.statusCode & \"</p>\");
   }
-</cfscript>
-EOF
+</cfscript>'''
+open('/opt/coldfusion2025/cfusion/wwwroot/ai_test.cfm','w').write(content)
+print('ai_test.cfm written')
+"
 ```
 
 **Activity — Terminal (dev):** Hit the page with curl:
@@ -325,14 +321,15 @@ CFEOF
 **Activity — Terminal (dev):** Verify the CFC is valid CFML and returns output:
 
 ```bash
-# Quick smoke test — create a one-liner test page
-sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_service_test.cfm << 'EOF'
-<cfscript>
-  svc   = createObject("component", "OllamaService");
-  reply = svc.generate("Reply with exactly one word: READY");
-  writeOutput("<p>Service test: " & trim(reply) & "</p>");
-</cfscript>
-EOF
+python3 -c "
+content = '''<cfscript>
+  svc   = createObject(\"component\", \"OllamaService\");
+  reply = svc.generate(\"Reply with exactly one word: READY\");
+  writeOutput(\"<p>Service test: \" & trim(reply) & \"</p>\");
+</cfscript>'''
+open('/opt/coldfusion2025/cfusion/wwwroot/ai_service_test.cfm','w').write(content)
+print('ai_service_test.cfm written')
+"
 
 curl -s http://localhost:8500/ai_service_test.cfm
 ```
@@ -584,22 +581,22 @@ if (!len(reply)) {
 **Activity — Terminal (dev):** Test the error path by sending a malformed request body to the raw Ollama API and observing the `OllamaService.Error`:
 
 ```bash
-# Create a test that deliberately triggers an Ollama 400
-sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_error_test.cfm << 'EOF'
-<cfscript>
-  svc = createObject("component", "OllamaService");
+python3 -c "
+content = '''<cfscript>
+  svc = createObject(\"component\", \"OllamaService\");
   try {
-    // Pass a deliberately empty prompt — Ollama will reject it
-    reply = svc.generate("");
-    writeOutput("Unexpected success: " & reply);
+    reply = svc.generate(\"\");
+    writeOutput(\"Unexpected success: \" & reply);
   } catch (OllamaService.Error e) {
-    writeOutput("<p><strong>Caught OllamaService.Error:</strong></p>");
-    writeOutput("<p>Message: " & e.message & "</p>");
-    writeOutput("<p>Detail:  " & e.detail  & "</p>");
-    writeOutput("<p style='color:green'>✓ Error handling works correctly</p>");
+    writeOutput(\"<p><strong>Caught OllamaService.Error:</strong></p>\");
+    writeOutput(\"<p>Message: \" & e.message & \"</p>\");
+    writeOutput(\"<p>Detail: \" & e.detail & \"</p>\");
+    writeOutput(\"<p style='color:green'>Error handling works correctly</p>\");
   }
-</cfscript>
-EOF
+</cfscript>'''
+open('/opt/coldfusion2025/cfusion/wwwroot/ai_error_test.cfm','w').write(content)
+print('ai_error_test.cfm written')
+"
 
 curl -s http://localhost:8500/ai_error_test.cfm
 ```
@@ -660,18 +657,18 @@ idea = svc.generate(
 **Activity — Terminal (dev):** Run a quick temperature comparison:
 
 ```bash
-sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_temperature_test.cfm << 'EOF'
-<cfscript>
-  svc    = createObject("component", "OllamaService");
-  prompt = "In three words, describe a web developer.";
-
-  writeOutput("<h3>Temperature 0.1 (deterministic)</h3>");
-  writeOutput("<p>" & svc.generate(prompt, 0.1) & "</p>");
-
-  writeOutput("<h3>Temperature 0.9 (creative)</h3>");
-  writeOutput("<p>" & svc.generate(prompt, 0.9) & "</p>");
-</cfscript>
-EOF
+python3 -c "
+content = '''<cfscript>
+  svc    = createObject(\"component\", \"OllamaService\");
+  prompt = \"In three words, describe a web developer.\";
+  writeOutput(\"<h3>Temperature 0.1 (deterministic)</h3>\");
+  writeOutput(\"<p>\" & svc.generate(prompt, 0.1) & \"</p>\");
+  writeOutput(\"<h3>Temperature 0.9 (creative)</h3>\");
+  writeOutput(\"<p>\" & svc.generate(prompt, 0.9) & \"</p>\");
+</cfscript>'''
+open('/opt/coldfusion2025/cfusion/wwwroot/ai_temperature_test.cfm','w').write(content)
+print('ai_temperature_test.cfm written')
+"
 
 curl -s http://localhost:8500/ai_temperature_test.cfm
 ```
