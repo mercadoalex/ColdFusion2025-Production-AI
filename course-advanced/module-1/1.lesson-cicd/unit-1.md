@@ -50,6 +50,24 @@ That reputation is outdated. ColdFusion 2025 runs cleanly in Docker, supports Co
 
 ## What is CI/CD and why does it matter for ColdFusion?
 
+::hint-box
+---
+:summary: Coming from the Foundations course? Here's where we left off.
+---
+In **ColdFusion 2025: Foundations** (Module 4 — CI/CD for CFML Applications) you built your first pipeline: a `box.json`-managed project packaged with CommandBox, a `Dockerfile` for the application, and a GitHub Actions workflow that built a Docker image on every push.
+
+That lesson established the basics: version-controlled code, a reproducible Docker build, and an automated trigger. **This lesson picks up exactly where that ended** — and goes further:
+
+| Foundations covered | This lesson adds |
+|---|---|
+| `box.json` + CommandBox packaging | Multi-stage deployment to a real `cf-prod` VM |
+| Single `Dockerfile` | Full GitHub Actions workflow with SSH deploy step |
+| Local `docker build` | GHCR image registry + commit-SHA tagging |
+| Concept of CI/CD | The DevOps culture and loop behind the tools |
+
+If you haven't completed the Foundations CI/CD lesson, you can still follow along — everything is built from scratch here.
+::
+
 **Continuous Integration / Continuous Delivery (CI/CD)** is the practice of automating the build, test, and deployment cycle every time code is pushed. For ColdFusion shops still relying on manual FTP uploads and click-through deploys, CI/CD is a transformative shift.
 
 ::image-box
