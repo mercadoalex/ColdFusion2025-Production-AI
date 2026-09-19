@@ -27,7 +27,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  production-deploy-XXXXXXXX: {}
+  production-deploy-ba4aeb6e: {}
 
 tasks:
   verify_ssh_to_prod:

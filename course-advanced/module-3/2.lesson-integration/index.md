@@ -26,7 +26,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  integration-XXXXXXXX: {}
+  integration-001a9503: {}
 
 tasks:
   verify_cfhttp_page:

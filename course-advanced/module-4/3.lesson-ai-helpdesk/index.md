@@ -28,7 +28,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  ai-helpdesk-XXXXXXXX: {}
+  ai-helpdesk-f87111e5: {}
 
 tasks:
   verify_triage_endpoint:

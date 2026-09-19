@@ -262,6 +262,6 @@ Handlers & routing lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.coldbox-handlers-XXXXXXXX
+:challenge: challenges.coldbox-handlers-e49109ab
 ---
 ::

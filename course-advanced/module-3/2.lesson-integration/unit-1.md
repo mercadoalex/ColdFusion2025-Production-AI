@@ -268,6 +268,6 @@ Integration lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.integration-XXXXXXXX
+:challenge: challenges.integration-001a9503
 ---
 ::

@@ -300,6 +300,6 @@ Apply what you've learned in the challenge below. You'll wire together a Dockerf
 
 ::card
 ---
-:challenge: challenges.cicd-pipelines-XXXXXXXX
+:challenge: challenges.cicd-pipelines-9fa2ce74
 ---
 ::

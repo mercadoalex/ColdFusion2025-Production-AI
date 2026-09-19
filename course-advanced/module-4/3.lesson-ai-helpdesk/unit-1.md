@@ -324,6 +324,6 @@ AI Help Desk lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.ai-helpdesk-XXXXXXXX
+:challenge: challenges.ai-helpdesk-f87111e5
 ---
 ::

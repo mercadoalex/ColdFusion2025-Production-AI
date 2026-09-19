@@ -266,6 +266,6 @@ Cloud deployment lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.cloud-deployment-XXXXXXXX
+:challenge: challenges.cloud-deployment-fe9fc951
 ---
 ::

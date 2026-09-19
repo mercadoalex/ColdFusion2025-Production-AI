@@ -25,7 +25,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  scheduling-XXXXXXXX: {}
+  scheduling-1e51e423: {}
 
 tasks:
   verify_task_created:

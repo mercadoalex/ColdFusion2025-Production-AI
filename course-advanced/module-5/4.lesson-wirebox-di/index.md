@@ -26,7 +26,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  wirebox-di-XXXXXXXX: {}
+  wirebox-di-49397f1b: {}
 
 tasks:
   verify_service_exists:

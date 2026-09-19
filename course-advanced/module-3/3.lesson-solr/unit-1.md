@@ -268,6 +268,6 @@ Solr lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.solr-search-XXXXXXXX
+:challenge: challenges.solr-search-7ec1ea17
 ---
 ::

@@ -296,6 +296,6 @@ Java integration lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.java-integration-XXXXXXXX
+:challenge: challenges.java-integration-2de4c4c3
 ---
 ::

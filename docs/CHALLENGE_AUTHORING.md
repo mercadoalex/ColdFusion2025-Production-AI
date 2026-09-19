@@ -345,25 +345,25 @@ challenges won't appear but can still be pulled and are accessible to the author
 
 | Local directory | Platform slug (replace XXXXXXXX after labctl create) |
 |---|---|
-| `course-advanced/challenges/cicd-pipelines` | `cicd-pipelines-XXXXXXXX` |
-| `course-advanced/challenges/production-deploy` | `production-deploy-XXXXXXXX` |
-| `course-advanced/challenges/java-integration` | `java-integration-XXXXXXXX` |
-| `course-advanced/challenges/xml-processing` | `xml-processing-XXXXXXXX` |
-| `course-advanced/challenges/cloud-deployment` | `cloud-deployment-XXXXXXXX` |
-| `course-advanced/challenges/cf-administration` | `cf-administration-XXXXXXXX` |
-| `course-advanced/challenges/scheduling` | `scheduling-XXXXXXXX` |
-| `course-advanced/challenges/integration` | `integration-XXXXXXXX` |
-| `course-advanced/challenges/solr-search` | `solr-search-XXXXXXXX` |
-| `course-advanced/challenges/complementary` | `complementary-XXXXXXXX` |
-| `course-advanced/challenges/ollama-api` | `ollama-api-XXXXXXXX` |
-| `course-advanced/challenges/cfml-ai-integration` | `cfml-ai-integration-XXXXXXXX` |
-| `course-advanced/challenges/ai-helpdesk` | `ai-helpdesk-XXXXXXXX` |
-| `course-advanced/challenges/coldbox-intro` | `coldbox-intro-XXXXXXXX` |
-| `course-advanced/challenges/coldbox-scaffold` | `coldbox-scaffold-XXXXXXXX` |
-| `course-advanced/challenges/coldbox-handlers` | `coldbox-handlers-XXXXXXXX` |
-| `course-advanced/challenges/wirebox-di` | `wirebox-di-XXXXXXXX` |
-| `course-advanced/challenges/coldbox-rest` | `coldbox-rest-XXXXXXXX` |
-| `course-advanced/challenges/coldbox-testing` | `coldbox-testing-XXXXXXXX` |
+| `course-advanced/challenges/cicd-pipelines` | `cicd-pipelines-9fa2ce74` |
+| `course-advanced/challenges/production-deploy` | `production-deploy-ba4aeb6e` |
+| `course-advanced/challenges/java-integration` | `java-integration-2de4c4c3` |
+| `course-advanced/challenges/xml-processing` | `xml-processing-b371ed76` |
+| `course-advanced/challenges/cloud-deployment` | `cloud-deployment-fe9fc951` |
+| `course-advanced/challenges/cf-administration` | `cf-administration-78ebd278` |
+| `course-advanced/challenges/scheduling` | `scheduling-1e51e423` |
+| `course-advanced/challenges/integration` | `integration-001a9503` |
+| `course-advanced/challenges/solr-search` | `solr-search-7ec1ea17` |
+| `course-advanced/challenges/complementary` | `complementary-364af0ee` |
+| `course-advanced/challenges/ollama-api` | `ollama-api-b6f93461` |
+| `course-advanced/challenges/cfml-ai-integration` | `cfml-ai-integration-001a9503` |
+| `course-advanced/challenges/ai-helpdesk` | `ai-helpdesk-f87111e5` |
+| `course-advanced/challenges/coldbox-intro` | `coldbox-intro-c174c787` |
+| `course-advanced/challenges/coldbox-scaffold` | `coldbox-scaffold-3a91a6cf` |
+| `course-advanced/challenges/coldbox-handlers` | `coldbox-handlers-e49109ab` |
+| `course-advanced/challenges/wirebox-di` | `wirebox-di-49397f1b` |
+| `course-advanced/challenges/coldbox-rest` | `coldbox-rest-b4e57e76` |
+| `course-advanced/challenges/coldbox-testing` | `coldbox-testing-132cd670` |
 
 ### Courses
 

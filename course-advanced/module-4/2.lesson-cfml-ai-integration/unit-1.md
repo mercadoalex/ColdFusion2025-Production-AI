@@ -346,6 +346,6 @@ CFML AI integration lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.cfml-ai-integration-XXXXXXXX
+:challenge: challenges.cfml-ai-integration-001a9503
 ---
 ::

@@ -27,7 +27,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  cfml-ai-integration-XXXXXXXX: {}
+  cfml-ai-integration-001a9503: {}
 
 tasks:
   verify_ollama_service_exists:

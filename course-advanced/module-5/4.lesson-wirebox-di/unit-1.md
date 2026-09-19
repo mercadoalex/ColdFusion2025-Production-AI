@@ -248,6 +248,6 @@ WireBox DI lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.wirebox-di-XXXXXXXX
+:challenge: challenges.wirebox-di-49397f1b
 ---
 ::

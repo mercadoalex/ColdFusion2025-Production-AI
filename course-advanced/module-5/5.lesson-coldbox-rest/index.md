@@ -27,7 +27,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  coldbox-rest-XXXXXXXX: {}
+  coldbox-rest-b4e57e76: {}
 
 tasks:
   verify_api_handler:

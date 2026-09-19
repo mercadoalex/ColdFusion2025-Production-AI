@@ -26,7 +26,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  complementary-XXXXXXXX: {}
+  complementary-364af0ee: {}
 
 tasks:
   verify_pdf_page:

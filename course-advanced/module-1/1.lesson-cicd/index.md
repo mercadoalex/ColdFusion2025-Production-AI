@@ -26,7 +26,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  cicd-pipelines-XXXXXXXX: {}
+  cicd-pipelines-9fa2ce74: {}
 
 tasks:
   verify_dockerfile_exists:

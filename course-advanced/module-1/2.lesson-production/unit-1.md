@@ -309,6 +309,6 @@ Production deployment lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.production-deploy-XXXXXXXX
+:challenge: challenges.production-deploy-ba4aeb6e
 ---
 ::

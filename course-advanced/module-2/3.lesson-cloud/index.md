@@ -27,7 +27,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  cloud-deployment-XXXXXXXX: {}
+  cloud-deployment-fe9fc951: {}
 
 tasks:
   verify_compose_file:

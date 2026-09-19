@@ -264,6 +264,6 @@ Complementary features lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.complementary-XXXXXXXX
+:challenge: challenges.complementary-364af0ee
 ---
 ::

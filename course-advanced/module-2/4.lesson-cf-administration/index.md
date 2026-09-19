@@ -27,7 +27,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  cf-administration-XXXXXXXX: {}
+  cf-administration-78ebd278: {}
 
 tasks:
   verify_admin_api_accessible:

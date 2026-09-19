@@ -263,6 +263,6 @@ TestBox testing lesson complete. ✓ You've finished the advanced course!
 
 ::card
 ---
-:challenge: challenges.coldbox-testing-XXXXXXXX
+:challenge: challenges.coldbox-testing-132cd670
 ---
 ::

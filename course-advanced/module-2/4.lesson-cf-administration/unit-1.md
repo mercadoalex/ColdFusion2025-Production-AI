@@ -258,6 +258,6 @@ CF Administration lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.cf-administration-XXXXXXXX
+:challenge: challenges.cf-administration-78ebd278
 ---
 ::

@@ -251,6 +251,6 @@ Scheduling lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.scheduling-XXXXXXXX
+:challenge: challenges.scheduling-1e51e423
 ---
 ::

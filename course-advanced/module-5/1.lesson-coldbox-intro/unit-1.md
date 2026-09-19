@@ -170,6 +170,6 @@ ColdBox intro lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.coldbox-intro-XXXXXXXX
+:challenge: challenges.coldbox-intro-c174c787
 ---
 ::

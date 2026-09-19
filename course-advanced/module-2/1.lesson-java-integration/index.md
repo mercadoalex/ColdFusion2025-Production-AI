@@ -25,7 +25,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  java-integration-XXXXXXXX: {}
+  java-integration-2de4c4c3: {}
 
 tasks:
   verify_java_page:

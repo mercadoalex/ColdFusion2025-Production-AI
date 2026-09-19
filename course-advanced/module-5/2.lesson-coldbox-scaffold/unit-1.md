@@ -239,6 +239,6 @@ ColdBox scaffold lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.coldbox-scaffold-XXXXXXXX
+:challenge: challenges.coldbox-scaffold-3a91a6cf
 ---
 ::

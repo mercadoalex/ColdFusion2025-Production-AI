@@ -26,7 +26,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  xml-processing-XXXXXXXX: {}
+  xml-processing-b371ed76: {}
 
 tasks:
   verify_xml_parse_page:

@@ -246,6 +246,6 @@ Ollama API lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.ollama-api-XXXXXXXX
+:challenge: challenges.ollama-api-b6f93461
 ---
 ::

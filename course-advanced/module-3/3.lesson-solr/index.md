@@ -25,7 +25,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  solr-search-XXXXXXXX: {}
+  solr-search-7ec1ea17: {}
 
 tasks:
   verify_solr_running:

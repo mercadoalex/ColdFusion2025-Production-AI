@@ -25,7 +25,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  coldbox-scaffold-XXXXXXXX: {}
+  coldbox-scaffold-3a91a6cf: {}
 
 tasks:
   verify_coldbox_app:

@@ -27,7 +27,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  ollama-api-XXXXXXXX: {}
+  ollama-api-b6f93461: {}
 
 tasks:
   verify_ollama_running:

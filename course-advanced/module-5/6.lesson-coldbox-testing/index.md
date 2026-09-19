@@ -26,7 +26,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  coldbox-testing-XXXXXXXX: {}
+  coldbox-testing-132cd670: {}
 
 tasks:
   verify_testbox_installed:

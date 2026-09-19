@@ -25,7 +25,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  coldbox-handlers-XXXXXXXX: {}
+  coldbox-handlers-e49109ab: {}
 
 tasks:
   verify_handler_exists:

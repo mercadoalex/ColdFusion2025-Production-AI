@@ -303,6 +303,6 @@ XML processing lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.xml-processing-XXXXXXXX
+:challenge: challenges.xml-processing-b371ed76
 ---
 ::

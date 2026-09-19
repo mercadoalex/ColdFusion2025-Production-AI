@@ -255,6 +255,6 @@ ColdBox REST API lesson complete. On to the next one! ✓
 
 ::card
 ---
-:challenge: challenges.coldbox-rest-XXXXXXXX
+:challenge: challenges.coldbox-rest-b4e57e76
 ---
 ::
