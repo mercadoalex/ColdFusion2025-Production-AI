@@ -31,6 +31,16 @@ _Your three-VM lab: cf-dev and cf-prod call the Ollama API at http://ollama:1143
 
 Ollama is an open-source runtime that serves large language models (LLMs) through a simple HTTP API. It handles model loading, CPU/GPU inference, and request queuing. The API design closely mirrors OpenAI's, so if you've used ChatGPT's API, the patterns will feel familiar.
 
+
+::image-box
+---
+:src: __static__/ollama-ai-logo-v1.png
+:alt: Ollama logo
+:max-width: 320px
+---
+::
+
+
 **phi3:mini** is Microsoft's 3.8-billion-parameter instruction-following model. At ~2.3 GB it fits in RAM, runs on CPU without a GPU, and is well-suited for:
 
 - Text classification and triage
