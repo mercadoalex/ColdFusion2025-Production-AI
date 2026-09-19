@@ -1,13 +1,14 @@
 ---
 kind: lesson
 
-title: CI/CD Pipelines for ColdFusion
+title: DevOps for ColdFusion
 description: |
-  Build automated CI/CD pipelines for ColdFusion applications using GitHub Actions
-  and Docker. Package, test, and deploy CF apps automatically on every push.
+  Understand DevOps culture and practices, then apply them to ColdFusion.
+  Build CI/CD pipelines with GitHub Actions and Docker, containerise CF apps,
+  and automate deployments to production — replacing manual FTP workflows forever.
 
-name: cicd-pipelines-coldfusion
-slug: cicd-pipelines-coldfusion
+name: devops-for-coldfusion
+slug: devops-for-coldfusion
 
 createdAt: "2026-09-03"
 updatedAt: "2026-09-03"
@@ -18,6 +19,7 @@ categories:
 
 tagz:
 - coldfusion
+- devops
 - github-actions
 - docker
 
@@ -57,5 +59,5 @@ tasks:
     needs:
       - verify_github_actions_workflow
     run: |
-      echo "CI/CD lesson complete ✓"
+      echo "DevOps lesson complete ✓"
 ---

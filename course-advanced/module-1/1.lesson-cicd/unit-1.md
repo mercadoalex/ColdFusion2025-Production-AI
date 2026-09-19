@@ -1,9 +1,42 @@
 ---
 kind: unit
 
-title: CI/CD Pipelines for ColdFusion
+title: DevOps for ColdFusion
 
-name: cicd-pipelines-coldfusion-unit-1
+name: devops-for-coldfusion-unit-1
+---
+
+## What is DevOps?
+
+**DevOps** is a culture, a set of practices, and a toolchain that breaks down the wall between software **development** (Dev) and IT **operations** (Ops). The goal is simple: ship better software, faster, with fewer failures — by automating everything that can be automated and making collaboration the default.
+
+::hint-box
+---
+:summary: The traditional Dev vs Ops conflict — and why it matters
+---
+In a traditional organisation, developers write code and throw it "over the wall" to operations, who are responsible for keeping production stable. Developers want to ship fast; operations wants stability. These goals clash constantly.
+
+DevOps resolves this by making both teams jointly responsible for the full software lifecycle — from writing code to running it in production. The team that builds it also deploys and monitors it. Incentives align: you don't ship something you can't support.
+::
+
+The three pillars of DevOps are:
+
+| Pillar | What it means |
+|---|---|
+| **People & Culture** | Shared ownership, blame-free postmortems, cross-functional teams |
+| **Process** | Lean workflows, small frequent releases, infrastructure as code |
+| **Tools** | Version control, CI/CD pipelines, containers, monitoring |
+
+DevOps is not a job title and not a single tool — it is an organisational approach that changes how teams work together.
+
+---
+
+## Where does ColdFusion fit?
+
+ColdFusion has a reputation as a technology that resists DevOps adoption. There are historical reasons for this: CF apps were often deployed by copying `.cfm` files over FTP, environments were configured by hand through the CF Admin UI, and "works on my machine" was an accepted explanation for production failures.
+
+That reputation is outdated. ColdFusion 2025 runs cleanly in Docker, supports CommandBox for dependency management and scripted server configuration, and integrates with any CI/CD platform that can run a shell command. Every DevOps practice covered in this lesson applies directly to a modern CF application.
+
 ---
 
 ## What is CI/CD and why does it matter for ColdFusion?
@@ -278,7 +311,7 @@ Here is the complete developer workflow once your pipeline is in place:
 
 ---
 
-When both tasks above are green, this lesson is complete.
+When both tasks above are green, this lesson is complete. You have applied the core DevOps loop to a ColdFusion application: code → build → test → deploy, automated end to end.
 
 ::simple-task
 ---
@@ -289,7 +322,7 @@ When both tasks above are green, this lesson is complete.
 Both the Dockerfile and workflow file are in place — hit **Check** to complete the lesson.
 
 #completed
-CI/CD lesson complete. On to the next one! ✓
+DevOps lesson complete. On to the next one! ✓
 ::
 
 ---
