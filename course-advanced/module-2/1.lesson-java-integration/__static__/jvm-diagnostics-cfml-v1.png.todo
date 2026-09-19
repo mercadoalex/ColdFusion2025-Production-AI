@@ -1,4 +1,0 @@
-ColdFusion page output showing JVM diagnostics — heap usage bar (used MB vs max MB), available CPU count, Java version, OS name, and uptime — all sourced from java.lang.Runtime and java.lang.System
-
-Size: 860px wide
-Used in: unit-1.md — section 5 (JVM diagnostics)
