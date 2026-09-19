@@ -199,6 +199,36 @@ In the **Terminal (ollama)** tab, run the curl command above and confirm a non-e
 Completion verified — phi3:mini returned a response. ✓
 ::
 
+::image-box
+---
+:src: __static__/ollama-completion-response-v1.png
+:alt: Terminal output showing phi3:mini listing three enterprise ColdFusion use cases in plain text
+:max-width: 860px
+---
+_phi3:mini answering a real question — no cloud, no API key, no internet._
+::
+
+::hint-box
+---
+:summary: How is AI inference possible with no internet connection?
+---
+This feels like magic, but the explanation is straightforward once you understand what a language model actually is.
+
+**A model is just a very large file of numbers.** When you run `ollama pull phi3:mini`, Ollama downloads a ~2.3 GB file called a *model weight checkpoint*. This file encodes everything the model learned during training — billions of mathematical relationships between words, concepts, and patterns — compressed into floating-point numbers.
+
+When you send a prompt, Ollama loads those numbers into RAM and runs a mathematical operation called *inference*: it multiplies your input through layer after layer of the weight matrix, producing a probability distribution over the next token, then the next, until it generates a complete response. **No network call is made.** The entire computation happens on the `ollama` VM's CPU.
+
+Think of it like a calculator: once you have the program, you don't need to phone anyone to do arithmetic. The knowledge is baked into the weights.
+
+**This is why local AI matters:**
+- **Air-gapped environments** — hospitals, banks, government systems that cannot send data outside their network
+- **Data privacy** — prompts never leave your infrastructure
+- **Zero latency variance** — no cloud rate limits, no API outages
+- **Cost predictability** — no per-token billing, ever
+
+The trade-off is hardware: phi3:mini needs ~2.3 GB RAM and is noticeably slower than a cloud GPU. For production workloads you'd size the VM appropriately — but the architecture is identical.
+::
+
 ---
 
 ## 4. The chat endpoint — preferred for system prompts
