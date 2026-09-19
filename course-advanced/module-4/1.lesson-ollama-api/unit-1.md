@@ -137,22 +137,19 @@ phi3:mini is loaded and available. ✓
 
 ## 3. The generate endpoint — single prompt
 
-Use `/api/generate` for single-turn prompts where you don't need conversational context:
+Use `/api/generate` for single-turn prompts where you don't need conversational context.
 
-```json
-POST http://ollama:11434/api/generate
-Content-Type: application/json
+> ⚠️ **Reference only — do not paste this into the terminal.** The block below shows the request structure. The runnable `curl` command is in the Activity section below.
 
-{
-  "model":  "phi3:mini",
-  "prompt": "Your question or instruction here",
-  "stream": false,
-  "options": {
-    "temperature": 0.7,
-    "num_predict": 200
-  }
-}
-```
+| Field | Value | Notes |
+|---|---|---|
+| Method | `POST` | |
+| URL | `http://ollama:11434/api/generate` | Use `localhost` when running on the ollama VM itself |
+| `model` | `phi3:mini` | Must match a pulled model name |
+| `prompt` | your question | Plain string |
+| `stream` | `false` | Wait for full response before returning |
+| `options.temperature` | `0.7` | 0.0 = deterministic, 1.0 = creative |
+| `options.num_predict` | `200` | Max tokens to generate (`-1` = unlimited) |
 
 Key `options`:
 
