@@ -84,6 +84,14 @@ The operations team spends a day recreating your machine by hand, from memory, p
 ---
 :summary: What is a container, really?
 ---
+::image-box
+---
+:src: __static__/what-is-a-container-v1.png
+:alt: Side-by-side diagram comparing traditional deployment (messy overlapping layers on one server) versus a container (clean stacked layers that run identically anywhere — laptop, cloud, server rack)
+:max-width: 780px
+---
+::
+
 A container is a packaged, isolated process. Think of it like a self-contained box that includes:
 - The operating system layer your app needs
 - The runtime (in CF's case: JVM + CF engine)
