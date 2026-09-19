@@ -60,7 +60,7 @@ tasks:
     needs:
       - verify_phi3_present
     run: |
-      RESPONSE=$(curl -s http://localhost:11434/api/generate \
+      RESPONSE=$(curl -s --max-time 120 http://localhost:11434/api/generate \
         -H "Content-Type: application/json" \
         -d '{"model":"phi3:mini","prompt":"Reply with only the word PONG","stream":false}')
       if ! echo "${RESPONSE}" | python3 -c "import sys,json; d=json.load(sys.stdin); assert len(d.get('response','')) > 0" 2>/dev/null; then
@@ -75,7 +75,7 @@ tasks:
     needs:
       - verify_completion
     run: |
-      RESPONSE=$(curl -s http://localhost:11434/api/chat \
+      RESPONSE=$(curl -s --max-time 120 http://localhost:11434/api/chat \
         -H "Content-Type: application/json" \
         -d '{"model":"phi3:mini","stream":false,"messages":[{"role":"system","content":"Reply only with the word OK."},{"role":"user","content":"Acknowledge."}]}')
       if ! echo "${RESPONSE}" | python3 -c "import sys,json; d=json.load(sys.stdin); assert len(d.get('message',{}).get('content','')) > 0" 2>/dev/null; then
@@ -103,7 +103,7 @@ tasks:
     needs:
       - verify_reachable_from_dev
     run: |
-      RESPONSE=$(curl -s http://ollama:11434/api/generate \
+      RESPONSE=$(curl -s --max-time 120 http://ollama:11434/api/generate \
         -H "Content-Type: application/json" \
         -d '{"model":"phi3:mini","prompt":"Reply with only the word HELLO","stream":false}')
       if ! echo "${RESPONSE}" | python3 -c "import sys,json; d=json.load(sys.stdin); assert len(d.get('response','')) > 0" 2>/dev/null; then
