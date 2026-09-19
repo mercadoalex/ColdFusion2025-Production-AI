@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="460" viewBox="0 0 900 460" font-family="monospace, 'Courier New'">
+  <rect width="900" height="460" fill="#ffffff"/>
+
+  <!-- Title (sans-serif override) -->
+  <text x="450" y="36" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2328" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif">cfhttp anatomy — calling the Ollama API</text>
+
+  <!-- Main code block background -->
+  <rect x="30" y="55" width="510" height="340" rx="8" fill="#1e1e2e" stroke="#374151" stroke-width="1.5"/>
+
+  <!-- Line 1 -->
+  <text x="60" y="86"  font-size="12.5" fill="#ff79c6">cfhttp(</text>
+
+  <!-- Line 2 -->
+  <text x="60" y="108" font-size="12.5" fill="#f1fa8c">  method  = "POST",</text>
+
+  <!-- Line 3 -->
+  <text x="60" y="130" font-size="12.5" fill="#a9dc76">  url     = "http://ollama:11434/api/generate",</text>
+
+  <!-- Line 4 -->
+  <text x="60" y="152" font-size="12.5" fill="#a9dc76">  result  = "httpResult",</text>
+
+  <!-- Line 5 -->
+  <text x="60" y="174" font-size="12.5" fill="#bd93f9">  timeout = 120</text>
+
+  <!-- Line 6 -->
+  <text x="60" y="196" font-size="12.5" fill="#ff79c6">) {</text>
+
+  <!-- Line 7 (blank spacer) -->
+
+  <!-- Line 8 -->
+  <text x="60" y="230" font-size="12.5" fill="#f8f8f2">  cfhttpparam(type="header",</text>
+  <text x="60" y="250" font-size="12.5" fill="#a9dc76">              name="Content-Type",</text>
+  <text x="60" y="270" font-size="12.5" fill="#a9dc76">              value="application/json");</text>
+
+  <!-- Line 11 -->
+  <text x="60" y="300" font-size="12.5" fill="#f8f8f2">  cfhttpparam(type="body",</text>
+  <text x="60" y="320" font-size="12.5" fill="#50fa7b">              value=serializeJSON(payload));</text>
+
+  <!-- Line 13 -->
+  <text x="60" y="350" font-size="12.5" fill="#ff79c6">}</text>
+
+  <!-- Line 14 -->
+  <text x="60" y="376" font-size="12.5" fill="#50fa7b">deserializeJSON(httpResult.fileContent)</text>
+
+  <!-- ─── Annotation callouts ─── -->
+
+  <!-- method → POST -->
+  <line x1="544" y1="86"  x2="582" y2="86"  stroke="#f1fa8c" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="584" y="72" width="285" height="28" rx="5" fill="#fef9c3" stroke="#fde047" stroke-width="1"/>
+  <text x="598" y="90" font-size="11" fill="#713f12" font-family="-apple-system,'Segoe UI',sans-serif">Always POST for Ollama API calls</text>
+
+  <!-- url → hostname -->
+  <line x1="544" y1="130" x2="582" y2="130" stroke="#a9dc76" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="584" y="116" width="285" height="28" rx="5" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="598" y="134" font-size="11" fill="#14532d" font-family="-apple-system,'Segoe UI',sans-serif">ollama hostname resolves on private network</text>
+
+  <!-- result → variable -->
+  <line x1="544" y1="152" x2="582" y2="152" stroke="#a9dc76" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="584" y="138" width="285" height="28" rx="5" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="598" y="156" font-size="11" fill="#14532d" font-family="-apple-system,'Segoe UI',sans-serif">result variable that holds the response struct</text>
+
+  <!-- timeout → cold start -->
+  <line x1="544" y1="174" x2="582" y2="174" stroke="#bd93f9" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="584" y="160" width="285" height="28" rx="5" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1"/>
+  <text x="598" y="178" font-size="11" fill="#581c87" font-family="-apple-system,'Segoe UI',sans-serif">120 s — model cold-start can take 30–90 s</text>
+
+  <!-- Content-Type header -->
+  <line x1="544" y1="250" x2="582" y2="220" stroke="#f1fa8c" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="584" y="205" width="285" height="28" rx="5" fill="#fef9c3" stroke="#fde047" stroke-width="1"/>
+  <text x="598" y="223" font-size="11" fill="#713f12" font-family="-apple-system,'Segoe UI',sans-serif">Required — tells Ollama to expect JSON</text>
+
+  <!-- serializeJSON -->
+  <line x1="544" y1="310" x2="582" y2="290" stroke="#50fa7b" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="584" y="275" width="285" height="28" rx="5" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="598" y="293" font-size="11" fill="#14532d" font-family="-apple-system,'Segoe UI',sans-serif">Serialise the payload struct to JSON string</text>
+
+  <!-- deserializeJSON -->
+  <line x1="544" y1="376" x2="582" y2="356" stroke="#50fa7b" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="584" y="340" width="285" height="28" rx="5" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="598" y="358" font-size="11" fill="#14532d" font-family="-apple-system,'Segoe UI',sans-serif">fileContent holds the raw JSON response body</text>
+
+  <!-- Caption -->
+  <text x="450" y="430" text-anchor="middle" font-size="12" fill="#57606a" font-style="italic" font-family="-apple-system,'Segoe UI',sans-serif">Every Ollama call follows this pattern — only the URL path and payload struct change.</text>
+</svg>

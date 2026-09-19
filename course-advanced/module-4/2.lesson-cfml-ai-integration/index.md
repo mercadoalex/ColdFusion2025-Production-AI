@@ -30,9 +30,27 @@ challenges:
   cfml-ai-integration-001a9503: {}
 
 tasks:
+  verify_ai_test_cfm:
+    machine: cf-dev
+    user: laborant
+    run: |
+      STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8500/ai_test.cfm)
+      if [ "${STATUS}" != "200" ]; then
+        echo "GET /ai_test.cfm returned HTTP ${STATUS}"
+        exit 1
+      fi
+      BODY=$(curl -s http://localhost:8500/ai_test.cfm)
+      if [ -z "${BODY}" ]; then
+        echo "ai_test.cfm returned an empty body"
+        exit 1
+      fi
+      echo "ai_test.cfm is responding with content ✓"
+
   verify_ollama_service_exists:
     machine: cf-dev
     user: laborant
+    needs:
+      - verify_ai_test_cfm
     run: |
       if [ ! -f /opt/coldfusion2025/cfusion/wwwroot/OllamaService.cfc ]; then
         echo "OllamaService.cfc not found at /opt/coldfusion2025/cfusion/wwwroot/"

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif">
+  <rect width="900" height="500" fill="#ffffff"/>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#374151"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="36" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2328">generate() vs chat() — when to use each</text>
+
+  <!-- ─── LEFT SIDE: generate() ─── -->
+  <rect x="30" y="60" width="390" height="380" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="225" y="90" text-anchor="middle" font-size="14" font-weight="700" fill="#15803d">generate(prompt)  →  /api/generate</text>
+  <text x="225" y="110" text-anchor="middle" font-size="11" fill="#57606a">Best for: single-turn, stateless prompts</text>
+
+  <!-- Code box -->
+  <rect x="50" y="122" width="350" height="120" rx="6" fill="#ffffff" stroke="#d1fae5" stroke-width="1.5"/>
+  <text x="70" y="144" font-size="11" font-family="'Courier New', monospace" fill="#15803d">svc.generate(</text>
+  <text x="70" y="160" font-size="11" font-family="'Courier New', monospace" fill="#374151">  prompt      = "Summarise this ticket",</text>
+  <text x="70" y="176" font-size="11" font-family="'Courier New', monospace" fill="#374151">  temperature  = 0.3,</text>
+  <text x="70" y="192" font-size="11" font-family="'Courier New', monospace" fill="#374151">  maxTokens    = 200</text>
+  <text x="70" y="208" font-size="11" font-family="'Courier New', monospace" fill="#374151">)  // returns string</text>
+  <text x="70" y="228" font-size="11" font-family="'Courier New', monospace" fill="#57606a">// ↓ payload sent</text>
+
+  <!-- JSON payload -->
+  <rect x="50" y="250" width="350" height="100" rx="6" fill="#fafafa" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="70" y="270" font-size="11" font-family="'Courier New', monospace" fill="#374151">{ "model": "phi3:mini",</text>
+  <text x="70" y="286" font-size="11" font-family="'Courier New', monospace" fill="#374151">  "prompt": "Summarise...",</text>
+  <text x="70" y="302" font-size="11" font-family="'Courier New', monospace" fill="#374151">  "stream": false,</text>
+  <text x="70" y="318" font-size="11" font-family="'Courier New', monospace" fill="#374151">  "options": { "temperature": 0.3 } }</text>
+  <text x="70" y="337" font-size="11" font-family="'Courier New', monospace" fill="#15803d">// response.response  ← your text</text>
+
+  <!-- Use cases -->
+  <text x="60" y="375" font-size="11" fill="#374151">✓  Text summarisation</text>
+  <text x="60" y="393" font-size="11" fill="#374151">✓  Classification / labelling</text>
+  <text x="60" y="411" font-size="11" fill="#374151">✓  One-shot extraction</text>
+  <text x="60" y="429" font-size="11" fill="#374151">✓  No prior context needed</text>
+
+  <!-- ─── RIGHT SIDE: chat() ─── -->
+  <rect x="480" y="60" width="390" height="380" rx="10" fill="#eff6ff" stroke="#3b82d4" stroke-width="2"/>
+  <text x="675" y="90" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">chat(messages[])  →  /api/chat</text>
+  <text x="675" y="110" text-anchor="middle" font-size="11" fill="#57606a">Best for: system prompts + conversational context</text>
+
+  <!-- Code box -->
+  <rect x="500" y="122" width="350" height="120" rx="6" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="520" y="144" font-size="11" font-family="'Courier New', monospace" fill="#1d4ed8">svc.chat([</text>
+  <text x="520" y="160" font-size="11" font-family="'Courier New', monospace" fill="#374151">  {role:"system", content:"You are…"},</text>
+  <text x="520" y="176" font-size="11" font-family="'Courier New', monospace" fill="#374151">  {role:"user",   content:userInput},</text>
+  <text x="520" y="192" font-size="11" font-family="'Courier New', monospace" fill="#374151">  {role:"assistant", content:prev},</text>
+  <text x="520" y="208" font-size="11" font-family="'Courier New', monospace" fill="#374151">  {role:"user",   content:followUp}</text>
+  <text x="520" y="224" font-size="11" font-family="'Courier New', monospace" fill="#1d4ed8">])</text>
+
+  <!-- JSON payload -->
+  <rect x="500" y="250" width="350" height="100" rx="6" fill="#fafafa" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="520" y="270" font-size="11" font-family="'Courier New', monospace" fill="#374151">{ "model": "phi3:mini",</text>
+  <text x="520" y="286" font-size="11" font-family="'Courier New', monospace" fill="#374151">  "stream": false,</text>
+  <text x="520" y="302" font-size="11" font-family="'Courier New', monospace" fill="#374151">  "messages": [ … ] }</text>
+  <text x="520" y="318" font-size="11" font-family="'Courier New', monospace" fill="#374151"> </text>
+  <text x="520" y="337" font-size="11" font-family="'Courier New', monospace" fill="#1d4ed8">// response.message.content  ← reply</text>
+
+  <!-- Use cases -->
+  <text x="510" y="375" font-size="11" fill="#374151">✓  System-prompted assistants</text>
+  <text x="510" y="393" font-size="11" fill="#374151">✓  Multi-turn conversations</text>
+  <text x="510" y="411" font-size="11" fill="#374151">✓  Persona + tone control</text>
+  <text x="510" y="429" font-size="11" fill="#374151">✓  Context-aware responses</text>
+
+  <!-- Caption -->
+  <text x="450" y="470" text-anchor="middle" font-size="12" fill="#57606a" font-style="italic">Use generate() for simple prompts; use chat() whenever you need a system prompt or conversation history.</text>
+</svg>
