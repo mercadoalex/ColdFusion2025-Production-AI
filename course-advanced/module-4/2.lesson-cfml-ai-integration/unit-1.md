@@ -249,66 +249,32 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/OllamaService.cfc << 'CFEOF'
     generate(prompt, temperature, maxTokens) → string
     Single-turn text generation from a plain prompt.
   ──────────────────────────────────────────────────────────────────── --->
-  <cffunction name="generate" access="public" returntype="string"
-              hint="Send a single prompt to the model and return the generated text.">
+  <cffunction name="generate" access="public" returntype="string" hint="Send a single prompt to the model and return the generated text.">
     <cfargument name="prompt"      type="string"  required="true" />
     <cfargument name="temperature" type="numeric" required="false" default="0.7" />
     <cfargument name="maxTokens"   type="numeric" required="false" default="#variables.maxTokens#" />
-
-    <cfset var payload = {
-      "model":   variables.model,
-      "prompt":  arguments.prompt,
-      "stream":  false,
-      "options": {
-        "temperature": javaCast("float", arguments.temperature),
-        "num_predict": javaCast("int",   arguments.maxTokens)
-      }
-    } />
-
+    <cfset var payload = {"model":variables.model,"prompt":arguments.prompt,"stream":false,"options":{"temperature":javaCast("float",arguments.temperature),"num_predict":javaCast("int",arguments.maxTokens)}} />
     <cfreturn makeRequest("/api/generate", payload).response />
   </cffunction>
 
-  <!--- ─────────────────────────────────────────────────────────────────
-    chat(messages, temperature) → string
-    Multi-turn chat via a messages array (system/user/assistant roles).
-  ──────────────────────────────────────────────────────────────────── --->
-  <cffunction name="chat" access="public" returntype="string"
-              hint="Send a messages array and return the assistant reply.">
+  <cffunction name="chat" access="public" returntype="string" hint="Send a messages array and return the assistant reply.">
     <cfargument name="messages"    type="array"   required="true" />
     <cfargument name="temperature" type="numeric" required="false" default="0.7" />
-
-    <cfset var payload = {
-      "model":    variables.model,
-      "stream":   false,
-      "messages": arguments.messages,
-      "options":  { "temperature": javaCast("float", arguments.temperature) }
-    } />
-
+    <cfset var payload = {"model":variables.model,"stream":false,"messages":arguments.messages,"options":{"temperature":javaCast("float",arguments.temperature)}} />
     <cfreturn makeRequest("/api/chat", payload).message.content />
   </cffunction>
 
-  <!--- ─────────────────────────────────────────────────────────────────
-    makeRequest(path, payload) → struct
-    Private: POST to Ollama, return deserialised response struct.
-    Throws OllamaService.Error on non-200 responses.
-  ──────────────────────────────────────────────────────────────────── --->
   <cffunction name="makeRequest" access="private" returntype="struct">
     <cfargument name="path"    type="string" required="true" />
     <cfargument name="payload" type="struct" required="true" />
-
     <cfset var httpResult = {} />
-
     <cfhttp method="POST" url="#variables.baseUrl##arguments.path#" result="httpResult" timeout="#variables.timeout#">
       <cfhttpparam type="header" name="Content-Type" value="application/json" />
       <cfhttpparam type="body" value="#serializeJSON(arguments.payload)#" />
     </cfhttp>
-
     <cfif NOT (httpResult.statusCode contains "200")>
-      <cfthrow type="OllamaService.Error"
-               message="Ollama API error: #httpResult.statusCode#"
-               detail="#left(httpResult.fileContent, 500)#" />
+      <cfthrow type="OllamaService.Error" message="Ollama API error: #httpResult.statusCode#" detail="#left(httpResult.fileContent,500)#" />
     </cfif>
-
     <cfreturn deserializeJSON(httpResult.fileContent) />
   </cffunction>
 
@@ -395,59 +361,40 @@ mkdir -p /opt/coldfusion2025/cfusion/wwwroot/api
 
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-chat.cfm << 'EOF'
 <cfscript>
-  cfheader(name="Content-Type",                value="application/json");
+  cfheader(name="Content-Type", value="application/json");
   cfheader(name="Access-Control-Allow-Origin", value="*");
-
   method = cgi.REQUEST_METHOD;
-
-  // ── GET → health check ───────────────────────────────────────────────
   if (method == "GET") {
-    writeOutput(serializeJSON({ "status": "ok", "model": "phi3:mini" }));
+    writeOutput(serializeJSON({"status":"ok","model":"phi3:mini"}));
     abort;
   }
-
-  // ── Reject non-POST ──────────────────────────────────────────────────
   if (method != "POST") {
     cfheader(statuscode="405", statustext="Method Not Allowed");
-    writeOutput(serializeJSON({ "error": "POST required" }));
+    writeOutput(serializeJSON({"error":"POST required"}));
     abort;
   }
-
-  // ── Parse request body ───────────────────────────────────────────────
   rawBody = toString(getHttpRequestData().content);
   if (!isJSON(rawBody)) {
     cfheader(statuscode="400", statustext="Bad Request");
-    writeOutput(serializeJSON({ "error": "JSON body required" }));
+    writeOutput(serializeJSON({"error":"JSON body required"}));
     abort;
   }
-
   data   = deserializeJSON(rawBody);
   prompt = structKeyExists(data, "prompt") ? trim(data.prompt) : "";
   system = structKeyExists(data, "system") ? data.system : "You are a helpful IT support assistant for Hungry Minds training.";
-
   if (!len(prompt)) {
     cfheader(statuscode="400", statustext="Bad Request");
-    writeOutput(serializeJSON({ "error": "prompt field is required" }));
+    writeOutput(serializeJSON({"error":"prompt field is required"}));
     abort;
   }
-
-  // ── Call the service layer ───────────────────────────────────────────
   svc      = createObject("component", "OllamaService");
-  messages = [
-    { "role": "system", "content": system },
-    { "role": "user",   "content": prompt }
-  ];
-
+  messages = [{"role":"system","content":system},{"role":"user","content":prompt}];
   try {
     reply = svc.chat(messages);
-    writeOutput(serializeJSON({
-      "response": reply,
-      "model":    "phi3:mini",
-      "prompt":   prompt
-    }));
+    writeOutput(serializeJSON({"response":reply,"model":"phi3:mini","prompt":prompt}));
   } catch (OllamaService.Error e) {
     cfheader(statuscode="503", statustext="Service Unavailable");
-    writeOutput(serializeJSON({ "error": "AI service unavailable: " & e.message }));
+    writeOutput(serializeJSON({"error":"AI service unavailable: " & e.message}));
   }
 </cfscript>
 EOF
