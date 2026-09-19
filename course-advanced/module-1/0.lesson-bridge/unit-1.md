@@ -64,7 +64,7 @@ The gap between "it works on my machine" and "it works reliably in production" i
 
 ::hint-box
 ---
-:summary: FTP-rally? What is FTP and why don't we use it anymore?
+:summary: FTP-really? What is FTP and why don't we use it anymore?
 ---
 **FTP (File Transfer Protocol)** is a decades-old protocol for transferring files between computers over a network. In the early days of web development — ColdFusion included — "deploying" meant opening an FTP client like FileZilla or WinSCP, connecting to the production server, and dragging `.cfm` files from your local machine into the remote webroot. That was it. No versioning, no rollback, no record of what changed.
 
