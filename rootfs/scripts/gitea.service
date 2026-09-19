@@ -1,0 +1,22 @@
+[Unit]
+Description=Gitea — self-hosted Git service
+Documentation=https://docs.gitea.com
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=git
+Group=git
+WorkingDirectory=/var/lib/gitea
+ExecStart=/usr/local/bin/gitea web --config /etc/gitea/app.ini --work-path /var/lib/gitea
+Restart=on-failure
+RestartSec=5s
+StandardOutput=append:/var/lib/gitea/log/gitea.log
+StandardError=append:/var/lib/gitea/log/gitea.log
+
+# Resource limits — keep it lean alongside CF
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

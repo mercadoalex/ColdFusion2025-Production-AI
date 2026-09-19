@@ -25,6 +25,7 @@ cover: __static__/cover.png
 
 ## What you'll learn
 
+- DevOps in the context of ColdFusion
 - Build and automate CI/CD pipelines for ColdFusion applications
 - Deploy CF apps with Docker and GitHub Actions
 - Integrate ColdFusion with Java classes and external JARs

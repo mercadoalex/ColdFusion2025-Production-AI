@@ -140,71 +140,23 @@ In production you would replace `localhost:3000` with your organisation's Gitea/
 
 ---
 
-## 0. Set up Gitea — your local Git server
+## 0. Confirm Gitea is running
 
-**Activity — Terminal (dev):** Install and configure Gitea on `cf-dev`. This takes about 60 seconds.
+Gitea is **pre-installed** in this lab — it starts automatically when the VM boots. No download, no waiting.
 
-The purpose of this activity is to:
-1. Download the Gitea binary (~100 MB)
-2. Start it as a background service on port `3000`
-3. Create an admin user and a repository for the CF app
-
-Run the following in the **Terminal (dev)** tab:
+**Activity — Terminal (dev):** Verify Gitea is up and open the web UI.
 
 ```bash
-# Download Gitea binary
-GITEA_VERSION=1.22.3
-sudo curl -fsSL \
-  https://dl.gitea.com/gitea/${GITEA_VERSION}/gitea-${GITEA_VERSION}-linux-amd64 \
-  -o /usr/local/bin/gitea
-sudo chmod +x /usr/local/bin/gitea
+# Check the service status
+systemctl status gitea --no-pager
 
-# Create gitea user and directories
-sudo useradd -m -s /bin/bash git 2>/dev/null || true
-sudo mkdir -p /var/lib/gitea/{custom,data,log} /etc/gitea
-sudo chown -R git:git /var/lib/gitea /etc/gitea
-sudo chmod 750 /etc/gitea
-
-# Write a minimal app.ini config
-sudo tee /etc/gitea/app.ini > /dev/null << 'CONF'
-[server]
-HTTP_PORT = 3000
-ROOT_URL  = http://localhost:3000/
-
-[database]
-DB_TYPE = sqlite3
-PATH    = /var/lib/gitea/data/gitea.db
-
-[security]
-INSTALL_LOCK   = true
-SECRET_KEY     = labsecretkey12345678
-
-[log]
-MODE  = console
-LEVEL = Warn
-CONF
-
-# Start Gitea as a background process
-sudo -u git /usr/local/bin/gitea web \
-  --config /etc/gitea/app.ini \
-  --work-path /var/lib/gitea &> /var/lib/gitea/log/gitea.log &
-
-echo "Waiting for Gitea to start..."
-sleep 8
-
-# Create admin user
-sudo -u git /usr/local/bin/gitea admin user create \
-  --config /etc/gitea/app.ini \
-  --username labadmin \
-  --password labpassword \
-  --email lab@localhost \
-  --admin \
-  --must-change-password=false
-
-echo "Gitea is ready at http://localhost:3000 (user: labadmin / pass: labpassword)"
+# Confirm it's listening on port 3000
+curl -sf http://localhost:3000 -o /dev/null && echo "Gitea is up"
 ```
 
-> ⏱️ The download takes ~30 seconds depending on network speed. Once you see "Gitea is ready" the **Gitea** tab in the lab will show the login page.
+Open the **Gitea** tab in the lab. You should see the Gitea login page immediately.
+
+> 🔑 Default credentials: **username** `labadmin` / **password** `labpassword`
 
 ::simple-task
 ---
@@ -212,7 +164,7 @@ echo "Gitea is ready at http://localhost:3000 (user: labadmin / pass: labpasswor
 :name: verify_gitea_running
 ---
 #active
-In the **Terminal (dev)** tab, run the setup script above. Once complete, confirm the **Gitea** tab loads the login page at `http://localhost:3000`.
+Open the **Gitea** tab — confirm the login page loads at `http://localhost:3000`. Log in with `labadmin` / `labpassword`.
 
 #completed
 Gitea is running and accessible. ✓

@@ -376,6 +376,15 @@ Use `LinkedHashMap` whenever you're building output that another system will con
 
 `TreeMap` automatically sorts keys in natural order (alphabetical for strings, ascending for numbers):
 
+::image-box
+---
+:src: __static__/java-treemap-cfml-v1.png
+:alt: Three-column diagram — left column shows three keys inserted in random order (zebra, apple, mango), centre column shows a TreeMap binary search tree with mango as root, apple as left child and zebra as right child, right column shows iteration output in alphabetical order (apple, mango, zebra) with a checkmark labelled A→Z
+:max-width: 860px
+---
+_TreeMap sorts keys automatically on insertion — no manual `sort()` call needed._
+::
+
 ```cfml
 <cfscript>
   sorted = createObject("java", "java.util.TreeMap").init();

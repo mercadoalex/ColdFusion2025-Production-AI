@@ -208,22 +208,20 @@ curl -s http://localhost:8500/result.cfm
 - Add inline comments (`# ...`) on the lines that need explanation
 - If a multi-step activity, a numbered purpose list helps orient the student before they type
 
-#### Writing files from bash activities
+#### Writing CFML files from bash activities
 
-**Never use `tee` heredocs for CFML files.** Heredoc terminators (`EOF`) are whitespace-sensitive — a single leading space, non-breaking space, or line-break injected by the course renderer will prevent the terminator from matching, causing the CFML content to spill into the student's terminal prompt.
-
-**Use `printf '...' | sudo tee`** instead. The entire file content is a single-quoted shell string with explicit `\n` escape sequences. It is immune to renderer whitespace injection and handles `sudo` correctly:
+Use `sudo tee` with a quoted heredoc — the same pattern used throughout all lessons:
 
 ```bash
-printf '<cfscript>\n  reply = svc.generate("Hello");\n  writeOutput(reply);\n</cfscript>\n' | sudo tee /opt/coldfusion2025/cfusion/wwwroot/example.cfm
+sudo tee /opt/coldfusion2025/cfusion/wwwroot/example.cfm << 'EOF'
+<cfscript>
+  reply = svc.generate("Hello");
+  writeOutput(reply);
+</cfscript>
+EOF
 ```
 
-**Rules for `printf` file writes:**
-- Content is a single `'...'`-quoted string — no variable expansion, no escape surprises
-- Every logical line ends with `\n`
-- Single quotes inside the content use the shell escape `'"'"'` (end quote, literal `'`, reopen quote)
-- The destination path follows `| sudo tee` — no `> redirect`, which would need `sudo bash -c`
-- For files longer than ~10 lines, use a `tee` heredoc with a unique non-`EOF` delimiter (e.g. `CFEOF`) and ensure **every statement inside fits on a single line** — no multi-line string concatenations, no multi-line `cfhttp(` attribute blocks
+**The one rule:** every CFML statement inside the heredoc must fit on a **single line**. Multi-line string concatenations and multi-line `cfhttp(` attribute blocks cause CFML parse errors because the shell writes the newline literally. Keep each statement self-contained on one line and heredocs work identically to every other lesson in the course.
 
 ---
 

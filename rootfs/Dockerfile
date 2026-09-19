@@ -250,9 +250,20 @@ RUN bash /tmp/customize-bashrc.sh && \
 RUN code-server --install-extension KamasamaK.vscode-cfml 2>/dev/null || true
 
 # =============================================================================
-# Metadata
+# LAYER 10 — Gitea (self-hosted Git + CI/CD, pre-baked so lesson starts instantly)
+# Enabled only on cf-dev (the same image tag is used for cf-prod, but cf-prod
+# students never need Gitea — the service starts on every VM, harmlessly).
 # =============================================================================
 USER root
+COPY rootfs/scripts/get-gitea.sh  /tmp/
+COPY rootfs/scripts/gitea.service /etc/systemd/system/gitea.service
+ARG GITEA_VERSION=1.22.3
+RUN bash /tmp/get-gitea.sh && \
+    systemctl enable gitea.service
+
+# =============================================================================
+# Metadata
+# =============================================================================
 LABEL org.opencontainers.image.title="cf-training" \
       org.opencontainers.image.description="ColdFusion 2025 + Lucee training rootfs for iximiuz Labs" \
       org.opencontainers.image.version="1.0.0" \
