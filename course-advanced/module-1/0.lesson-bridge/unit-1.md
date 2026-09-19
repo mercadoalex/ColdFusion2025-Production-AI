@@ -16,7 +16,7 @@ This Advanced course takes you across the full landscape of what a senior CF dev
 
 | Area | What you'll explore |
 |---|---|
-| **Operations & DevOps** | Deploy CF apps with Docker, automate pipelines, manage multi-server environments |
+| **Operations & DevOps** | Deploy CF apps with Docker, automate pipelines, manage multi-server environments, monitoring & observability with the ELK Stack |
 | **Platform integrations** | Java interop, XML processing, Solr search, cloud deployment |
 | **AI-powered development** | Build features using local LLMs with Ollama — no cloud, no API keys |
 | **Enterprise frameworks** | ColdBox MVC, WireBox dependency injection, TestBox, REST resource routing |
