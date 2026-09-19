@@ -76,6 +76,11 @@ playground:
           name: Lucee (dev)
           machine: cf-dev
           number: 8888
+        - id: http-gitea
+          kind: http-port
+          name: Gitea
+          machine: cf-dev
+          number: 3000
         - id: terminal-prod
           kind: terminal
           name: Terminal (prod)

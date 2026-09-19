@@ -30,9 +30,37 @@ challenges:
   cicd-pipelines-9fa2ce74: {}
 
 tasks:
+  verify_gitea_running:
+    machine: cf-dev
+    user: laborant
+    run: |
+      STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
+      if [ "${STATUS}" != "200" ]; then
+        echo "Gitea is not responding at http://localhost:3000 (HTTP ${STATUS})"
+        exit 1
+      fi
+      echo "Gitea is running ✓"
+
+  verify_repo_pushed:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_gitea_running
+    run: |
+      STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+        -u labadmin:labpassword \
+        http://localhost:3000/api/v1/repos/labadmin/cf-app)
+      if [ "${STATUS}" != "200" ]; then
+        echo "Repository labadmin/cf-app not found in Gitea (HTTP ${STATUS})"
+        exit 1
+      fi
+      echo "Repository cf-app exists in Gitea ✓"
+
   verify_dockerfile_exists:
     machine: cf-dev
     user: laborant
+    needs:
+      - verify_repo_pushed
     run: |
       if [ ! -f "/home/laborant/app/Dockerfile" ]; then
         echo "Dockerfile not found at /home/laborant/app/Dockerfile"
@@ -46,12 +74,12 @@ tasks:
     needs:
       - verify_dockerfile_exists
     run: |
-      FILE=$(find /home/laborant/app -path "*/.github/workflows/*.yml" -o -path "*/.github/workflows/*.yaml" 2>/dev/null | head -1)
+      FILE=$(find /home/laborant/app -path "*/.gitea/workflows/*.yml" -o -path "*/.gitea/workflows/*.yaml" 2>/dev/null | head -1)
       if [ -z "${FILE}" ]; then
-        echo "No GitHub Actions workflow file found under .github/workflows/"
+        echo "No Gitea Actions workflow file found under .gitea/workflows/"
         exit 1
       fi
-      echo "GitHub Actions workflow found at ${FILE} ✓"
+      echo "Gitea Actions workflow found at ${FILE} ✓"
 
   verify_lesson_complete:
     machine: cf-dev

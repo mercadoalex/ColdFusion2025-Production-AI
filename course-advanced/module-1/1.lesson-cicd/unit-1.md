@@ -98,38 +98,172 @@ A proper CI/CD pipeline gives you: a record of every change, automatic tests bef
 
 ## Your CI/CD toolchain
 
-This lesson uses tools already available in your environment:
+This lesson uses a **fully local** toolchain — everything runs inside your lab VMs, no external accounts needed:
 
-| Tool | Role |
-|---|---|
-| **Git + GitHub** | Source control and trigger for CI runs |
-| **GitHub Actions** | CI/CD workflow engine (free for public repos) |
-| **Docker** | Packages the app + CF runtime into a portable image |
-| **GHCR** | GitHub Container Registry — stores your Docker images |
-| `cf-dev` | Build and development machine |
-| `cf-prod` | Deployment target (production) |
+| Tool | Role | Where |
+|---|---|---|
+| **Git** | Version control | `cf-dev` |
+| **Gitea** | Self-hosted Git server + CI/CD engine | `cf-dev:3000` |
+| **Gitea Actions** | Workflow runner (GitHub Actions-compatible YAML) | `cf-dev` |
+| **Docker** | Packages the app + CF runtime into a portable image | `cf-dev` |
+| **Local registry** | Stores Docker images (`localhost:5000`) | `cf-dev` |
+| `cf-prod` | Deployment target (production) | `cf-prod` |
+
+::hint-box
+---
+:summary: Why Gitea instead of GitHub?
+---
+**Gitea** is a lightweight, self-hosted Git service — a single ~100 MB binary that provides a full Git server, pull requests, issue tracker, and a CI/CD engine (Gitea Actions) whose workflow YAML is fully compatible with GitHub Actions syntax.
+
+Running Gitea locally means:
+- **No internet dependency** — the full pipeline runs inside the lab network
+- **No accounts needed** — admin credentials are set during setup
+- **Real CI/CD** — workflows actually trigger and run, not just files that exist on disk
+- **Transferable skills** — the YAML you write here works unchanged on GitHub, Gitea, or Forgejo
+
+In production you would replace `localhost:3000` with your organisation's Gitea/GitHub/GitLab URL — the pipeline logic stays identical.
+::
 
 ::hint-box
 ---
 :summary: These tools are choices, not requirements — here are the alternatives
 ---
-This lesson uses a specific stack, but every layer is interchangeable. The concepts are identical regardless of which tool you pick.
-
 | Layer | This lesson uses | Common alternatives |
 |---|---|---|
 | **Version control** | Git | Subversion (SVN), Mercurial, Perforce |
-| **Code repository** | GitHub | Bitbucket, GitLab, Azure DevOps Repos, Gitea (self-hosted) |
-| **CI/CD engine** | GitHub Actions | Jenkins, CircleCI, GitLab CI, Bitbucket Pipelines, Azure Pipelines, TeamCity, Drone |
+| **Git server** | Gitea (self-hosted) | GitHub, GitLab, Bitbucket, Azure DevOps |
+| **CI/CD engine** | Gitea Actions | GitHub Actions, Jenkins, CircleCI, GitLab CI, Drone |
 | **Container runtime** | Docker | Podman, containerd, Buildah |
-| **Image registry** | GHCR (GitHub Container Registry) | Docker Hub, AWS ECR, Azure Container Registry, Google Artifact Registry, Harbor (self-hosted) |
-| **Production target** | `cf-prod` VM (lab) | AWS EC2 / ECS / EKS, Azure App Service / AKS, Google Cloud Run / GKE, DigitalOcean, bare-metal on-premise |
-
-The pipeline structure you learn here — trigger → build → test → push image → deploy — is the same regardless of which column you pick from. If your organisation uses Jenkins and Bitbucket today, you apply the same logic with different YAML syntax.
+| **Image registry** | Local registry (`localhost:5000`) | GHCR, Docker Hub, AWS ECR, Azure ACR |
+| **Production target** | `cf-prod` VM | AWS, Azure, GCP, DigitalOcean, bare-metal |
 ::
 
 ---
 
-## 1. Dockerise your ColdFusion application
+## 0. Set up Gitea — your local Git server
+
+**Activity — Terminal (dev):** Install and configure Gitea on `cf-dev`. This takes about 60 seconds.
+
+The purpose of this activity is to:
+1. Download the Gitea binary (~100 MB)
+2. Start it as a background service on port `3000`
+3. Create an admin user and a repository for the CF app
+
+Run the following in the **Terminal (dev)** tab:
+
+```bash
+# Download Gitea binary
+GITEA_VERSION=1.22.3
+sudo curl -fsSL \
+  https://dl.gitea.com/gitea/${GITEA_VERSION}/gitea-${GITEA_VERSION}-linux-amd64 \
+  -o /usr/local/bin/gitea
+sudo chmod +x /usr/local/bin/gitea
+
+# Create gitea user and directories
+sudo useradd -m -s /bin/bash git 2>/dev/null || true
+sudo mkdir -p /var/lib/gitea/{custom,data,log} /etc/gitea
+sudo chown -R git:git /var/lib/gitea /etc/gitea
+sudo chmod 750 /etc/gitea
+
+# Write a minimal app.ini config
+sudo tee /etc/gitea/app.ini > /dev/null << 'CONF'
+[server]
+HTTP_PORT = 3000
+ROOT_URL  = http://localhost:3000/
+
+[database]
+DB_TYPE = sqlite3
+PATH    = /var/lib/gitea/data/gitea.db
+
+[security]
+INSTALL_LOCK   = true
+SECRET_KEY     = labsecretkey12345678
+
+[log]
+MODE  = console
+LEVEL = Warn
+CONF
+
+# Start Gitea as a background process
+sudo -u git /usr/local/bin/gitea web \
+  --config /etc/gitea/app.ini \
+  --work-path /var/lib/gitea &> /var/lib/gitea/log/gitea.log &
+
+echo "Waiting for Gitea to start..."
+sleep 8
+
+# Create admin user
+sudo -u git /usr/local/bin/gitea admin user create \
+  --config /etc/gitea/app.ini \
+  --username labadmin \
+  --password labpassword \
+  --email lab@localhost \
+  --admin \
+  --must-change-password=false
+
+echo "Gitea is ready at http://localhost:3000 (user: labadmin / pass: labpassword)"
+```
+
+> ⏱️ The download takes ~30 seconds depending on network speed. Once you see "Gitea is ready" the **Gitea** tab in the lab will show the login page.
+
+::simple-task
+---
+:tasks: tasks
+:name: verify_gitea_running
+---
+#active
+In the **Terminal (dev)** tab, run the setup script above. Once complete, confirm the **Gitea** tab loads the login page at `http://localhost:3000`.
+
+#completed
+Gitea is running and accessible. ✓
+::
+
+---
+
+## 1. Create a repository and push your app
+
+**Activity — Terminal (dev):** Create a Gitea repository and push the CF app into it.
+
+```bash
+# Create the repository via Gitea API
+curl -s -X POST http://localhost:3000/api/v1/user/repos \
+  -u labadmin:labpassword \
+  -H "Content-Type: application/json" \
+  -d '{"name":"cf-app","description":"ColdFusion CI/CD lab","private":false,"auto_init":false}' \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print('Repo created:', d.get('full_name','error'))"
+
+# Set up the app directory and init git
+mkdir -p /home/laborant/app/app
+cd /home/laborant/app
+
+# Create a minimal index.cfm if it doesn't exist
+[ -f app/index.cfm ] || echo '<cfoutput>ColdFusion CI/CD Lab — OK</cfoutput>' > app/index.cfm
+
+# Initialise git and push to Gitea
+git init
+git config user.email "lab@localhost"
+git config user.name "Lab Student"
+git remote add origin http://labadmin:labpassword@localhost:3000/labadmin/cf-app.git
+git add .
+git commit -m "initial commit"
+git push -u origin main
+```
+
+::simple-task
+---
+:tasks: tasks
+:name: verify_repo_pushed
+---
+#active
+In the **Terminal (dev)** tab, create the Gitea repository and push the initial commit. Confirm the **Gitea** tab shows the `cf-app` repository with files.
+
+#completed
+Repository pushed to Gitea. ✓
+::
+
+---
+
+## 2. Dockerise your ColdFusion application
 
 The first step is packaging your app as a Docker image so it can be built and run consistently anywhere.
 
@@ -142,17 +276,12 @@ The first step is packaging your app as a Docker image so it can be built and ru
 _A minimal ColdFusion 2025 Dockerfile — the foundation of your CI/CD pipeline._
 ::
 
-**Activity:** In the **Terminal (dev)** tab, create your project directory and Dockerfile:
+**Activity — Terminal (dev):** Create the Dockerfile and push it to Gitea.
 
 ```bash
-mkdir -p /home/laborant/app
 cd /home/laborant/app
-```
 
-Create `/home/laborant/app/Dockerfile`:
-
-```bash
-tee /home/laborant/app/Dockerfile << 'EOF'
+tee Dockerfile << 'EOF'
 FROM adobecoldfusion/coldfusion2025:latest
 
 # Accept the EULA — required for non-interactive installs
@@ -169,6 +298,10 @@ EXPOSE 8500
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -sf http://localhost:8500/index.cfm || exit 1
 EOF
+
+git add Dockerfile
+git commit -m "add Dockerfile"
+git push
 ```
 
 ::simple-task
@@ -177,7 +310,7 @@ EOF
 :name: verify_dockerfile_exists
 ---
 #active
-Create `/home/laborant/app/Dockerfile` containing a ColdFusion `FROM` instruction and an `EXPOSE 8500` line.
+Create `/home/laborant/app/Dockerfile` with a ColdFusion `FROM` instruction and `EXPOSE 8500`, then push it to Gitea.
 
 #completed
 Dockerfile found at `/home/laborant/app/Dockerfile`. ✓
@@ -185,29 +318,17 @@ Dockerfile found at `/home/laborant/app/Dockerfile`. ✓
 
 ---
 
-## 2. Create a GitHub Actions workflow
+## 3. Create a Gitea Actions workflow
 
-GitHub Actions workflows live in `.github/workflows/` and are triggered by git events (push, pull request, tag). A workflow file is YAML that defines jobs and steps.
+Gitea Actions workflows live in `.gitea/workflows/` and use the same YAML syntax as GitHub Actions. The workflow triggers on every push to `main`, builds the Docker image, pushes it to a local registry, and deploys it to `cf-prod` via SSH.
 
-::image-box
----
-:src: __static__/github-actions-workflow-v1.png
-:alt: GitHub Actions workflow YAML file open in VS Code — showing the on push trigger, a build job with steps for docker login, docker build, docker push, and an SSH deploy step using appleboy/ssh-action
-:max-width: 860px
----
-_A complete GitHub Actions workflow for building and deploying a ColdFusion Docker image._
-::
-
-**Activity:** Create the workflow directory and file:
+**Activity — Terminal (dev):** Create the workflow file and push it.
 
 ```bash
-mkdir -p /home/laborant/app/.github/workflows
-```
+cd /home/laborant/app
+mkdir -p .gitea/workflows
 
-Create `/home/laborant/app/.github/workflows/deploy.yml`:
-
-```bash
-tee /home/laborant/app/.github/workflows/deploy.yml << 'EOF'
+tee .gitea/workflows/deploy.yml << 'EOF'
 name: Build and Deploy ColdFusion App
 
 on:
@@ -222,48 +343,49 @@ jobs:
     steps:
       # ── 1. Check out the code ─────────────────────────────────────────
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      # ── 2. Log in to GitHub Container Registry ────────────────────────
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      # ── 2. Build the Docker image ─────────────────────────────────────
+      - name: Build image
+        run: |
+          docker build -t localhost:5000/cf-app:${{ gitea.sha }} .
 
-      # ── 3. Build and push the Docker image ────────────────────────────
-      - name: Build and push image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+      # ── 3. Push to local registry ─────────────────────────────────────
+      - name: Push to local registry
+        run: |
+          docker push localhost:5000/cf-app:${{ gitea.sha }}
 
       # ── 4. Deploy to cf-prod via SSH ──────────────────────────────────
       - name: Deploy to cf-prod
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.PROD_HOST }}
-          username: laborant
-          key: ${{ secrets.PROD_SSH_KEY }}
-          script: |
-            docker pull ghcr.io/${{ github.repository }}:${{ github.sha }}
-            docker stop cf-app || true
-            docker run -d --name cf-app --rm \
-              -p 8500:8500 \
-              ghcr.io/${{ github.repository }}:${{ github.sha }}
-            curl -sf http://localhost:8500/index.cfm && echo "Deploy OK"
+        run: |
+          ssh -o StrictHostKeyChecking=no laborant@cf-prod \
+            "docker pull localhost:5000/cf-app:${{ gitea.sha }} && \
+             docker stop cf-app 2>/dev/null || true && \
+             docker run -d --name cf-app --rm \
+               -p 8500:8500 \
+               localhost:5000/cf-app:${{ gitea.sha }} && \
+             echo Deploy OK"
 EOF
+
+git add .gitea/
+git commit -m "add Gitea Actions workflow"
+git push
 ```
 
 ::hint-box
 ---
-:summary: What are GitHub Actions secrets?
+:summary: Gitea Actions vs GitHub Actions — what's different?
 ---
-Secrets like `PROD_HOST` and `PROD_SSH_KEY` are encrypted values stored in your GitHub repository settings under **Settings → Secrets and variables → Actions**. They are never visible in logs and are injected as environment variables during the workflow run.
+The YAML syntax is nearly identical. The key differences in this lab:
 
-For this lab exercise, the workflow file structure is what matters — you won't actually run it against GitHub. The task just verifies the workflow file exists and is valid YAML.
+| | GitHub Actions | Gitea Actions (this lab) |
+|---|---|---|
+| Context variable | `github.sha` | `gitea.sha` |
+| Registry | `ghcr.io` | `localhost:5000` (local) |
+| Secrets | GitHub repo settings | Gitea repo settings |
+| Runner | GitHub-hosted cloud VM | Self-hosted Act Runner on `cf-dev` |
+
+Everything else — `on:`, `jobs:`, `steps:`, `uses:`, `run:` — is identical syntax.
 ::
 
 ::simple-task
@@ -272,47 +394,10 @@ For this lab exercise, the workflow file structure is what matters — you won't
 :name: verify_github_actions_workflow
 ---
 #active
-Create a GitHub Actions workflow file under `.github/workflows/` (`.yml` or `.yaml` extension).
+Create `.gitea/workflows/deploy.yml` with an `on: push` trigger and push it to Gitea.
 
 #completed
-GitHub Actions workflow file found. ✓
-::
-
----
-
-## 3. Build and test locally
-
-Before pushing to GitHub, validate the Dockerfile builds cleanly on `cf-dev`:
-
-```bash
-cd /home/laborant/app
-
-# Build the image (this will pull the CF base image ~1.5 GB on first run)
-docker build -t cf-app:local .
-
-# Smoke test — run locally and curl
-docker run -d --name cf-test -p 8501:8500 cf-app:local
-sleep 30   # wait for CF to start
-curl -sf http://localhost:8501/index.cfm && echo "Local build OK"
-
-# Clean up
-docker stop cf-test && docker rm cf-test
-```
-
-::hint-box
----
-:summary: Docker not available in the lab?
----
-The lab VM has Docker installed but you may need to start the daemon first:
-
-```bash
-sudo systemctl start docker
-sudo systemctl enable docker
-# Add laborant to the docker group (takes effect on next login)
-sudo usermod -aG docker laborant
-```
-
-If you get a "permission denied" error on `docker build`, log out and back in so the group change takes effect, or prefix commands with `sudo`.
+Gitea Actions workflow file found. ✓
 ::
 
 ---
@@ -325,12 +410,12 @@ Here is the complete developer workflow once your pipeline is in place:
 1. Write code on cf-dev
 2. git commit -m "fix: resolve ticket query timeout"
 3. git push origin main
-4. GitHub Actions triggers automatically:
+4. Gitea Actions triggers automatically:
    a. Pulls fresh copy of the repo
    b. Builds Docker image from Dockerfile
-   c. Pushes image to GHCR with the commit SHA as tag
+   c. Pushes image to local registry (localhost:5000)
    d. SSHs into cf-prod and pulls + runs the new image
-5. Receive Slack/email notification: ✅ Deployed abc1234 to cf-prod
+5. Pipeline shows ✅ green in the Gitea tab → Actions
 ```
 
 | Benefit | Traditional FTP | CI/CD pipeline |
