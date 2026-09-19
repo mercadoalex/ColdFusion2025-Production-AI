@@ -29,12 +29,12 @@ tasks:
     machine: cf-dev
     user: laborant
     run: |
-      STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8500/CFIDE/administrator/)
-      if [ "${STATUS}" != "200" ] && [ "${STATUS}" != "302" ]; then
-        echo "ColdFusion is not responding on port 8500 (HTTP ${STATUS})"
+      STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8500/index.cfm)
+      if [ "${STATUS}" = "000" ] || [ -z "${STATUS}" ]; then
+        echo "ColdFusion is not responding on port 8500 (got: ${STATUS})"
         exit 1
       fi
-      echo "ColdFusion is running on cf-dev ✓"
+      echo "ColdFusion is running on cf-dev (HTTP ${STATUS}) ✓"
 
   verify_ssh_to_prod:
     machine: cf-dev
@@ -42,8 +42,11 @@ tasks:
     needs:
       - verify_cf_running
     run: |
-      RESULT=$(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 \
-        laborant@cf-prod "echo reachable" 2>/dev/null)
+      RESULT=$(ssh -o StrictHostKeyChecking=no \
+                   -o ConnectTimeout=10 \
+                   -o PasswordAuthentication=no \
+                   -o BatchMode=yes \
+                   root@cf-prod "echo reachable" 2>/dev/null)
       if [ "${RESULT}" != "reachable" ]; then
         echo "Cannot SSH from cf-dev to cf-prod — check network connectivity"
         exit 1

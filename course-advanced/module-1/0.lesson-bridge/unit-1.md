@@ -219,8 +219,8 @@ Two quick checks to confirm your lab is ready. No new tools, no setup — just c
 **Activity — Terminal (dev):** Confirm ColdFusion is running:
 
 ```bash
-curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8500/CFIDE/administrator/
-# Expected: 200 or 302
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8500/index.cfm
+# Expected: any code other than 000 (200, 302, or 500 all mean CF is running)
 ```
 
 ::simple-task
