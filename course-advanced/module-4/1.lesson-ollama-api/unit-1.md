@@ -55,6 +55,17 @@ Ollama is an open-source runtime that serves large language models (LLMs) throug
 Bigger models (Llama 3 70B, Mistral 7B+) produce better output but need 4–40 GB of RAM and are slow on CPU. The `ollama` lab VM has 4 GB RAM, which is tight for phi3:mini but works. In production, you'd choose the model based on quality vs resource trade-off — phi3:mini is a practical starting point that runs on standard hardware.
 ::
 
+::hint-box
+---
+:summary: The story behind Phi-3 Mini — small model, big ambition
+---
+Released in April 2024, Phi-3 Mini was designed to prove that a small model fitting on a phone could rival much larger models like GPT-3.5 and Mixtral 8x7B — not by being bigger, but by being trained on far better data.
+
+The key insight, inspired by how children learn language (simple words, high-quality input), was to focus on **data quality over quantity**. Instead of scraping the entire internet, Microsoft curated a carefully filtered dataset of textbooks and synthetic exercises. The result: 3.8B parameters punching well above their weight class.
+::
+
+
+
 ---
 
 ## 2. Explore the Ollama API
