@@ -162,7 +162,14 @@ Key `options`:
 | `num_predict` | -1 (unlimited) | Max tokens to generate |
 | `top_p` | 0.9 | Nucleus sampling threshold |
 
-**Activity:** Test a completion:
+**Activity — Terminal (ollama):** Send a real completion request and read the plain-text response.
+
+The purpose of this activity is to confirm that:
+1. The `/api/generate` endpoint accepts a prompt
+2. `phi3:mini` produces a non-empty, coherent answer
+3. You can extract just the `response` field from the JSON using Python
+
+Switch to the **Terminal (ollama)** tab and run:
 
 ```bash
 curl -s http://localhost:11434/api/generate \
@@ -171,16 +178,25 @@ curl -s http://localhost:11434/api/generate \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
 ```
 
+You should see three bullet points (or a numbered list) describing enterprise ColdFusion use cases printed directly to the terminal — no JSON wrapper, just the model's answer.
+
+::hint-box
+---
+:summary: Why pipe through Python instead of reading raw JSON?
+---
+The raw response from `/api/generate` contains many fields (`model`, `created_at`, `done`, `eval_count`, etc.) that are noisy when you just want to read the answer. The one-liner `python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"` extracts only the `response` string — the same pattern you'll use in ColdFusion when calling `deserializeJSON()` on the HTTP response body.
+::
+
 ::simple-task
 ---
 :tasks: tasks
 :name: verify_completion
 ---
 #active
-Run a completion request to Ollama from the **Terminal (ollama)** tab — confirm a non-empty response is returned.
+In the **Terminal (ollama)** tab, run the curl command above and confirm a non-empty response with ColdFusion use cases is printed to the terminal.
 
 #completed
-Completion works. ✓
+Completion verified — phi3:mini returned a response. ✓
 ::
 
 ---
