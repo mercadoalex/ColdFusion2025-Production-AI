@@ -272,8 +272,8 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/OllamaService.cfc << 'CFEOF'
       "prompt":  arguments.prompt,
       "stream":  false,
       "options": {
-        "temperature": arguments.temperature,
-        "num_predict": arguments.maxTokens
+        "temperature": javaCast("float", arguments.temperature),
+        "num_predict": javaCast("int",   arguments.maxTokens)
       }
     } />
 
@@ -293,7 +293,7 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/OllamaService.cfc << 'CFEOF'
       "model":    variables.model,
       "stream":   false,
       "messages": arguments.messages,
-      "options":  { "temperature": arguments.temperature }
+      "options":  { "temperature": javaCast("float", arguments.temperature) }
     } />
 
     <cfreturn makeRequest("/api/chat", payload).message.content />
@@ -347,6 +347,19 @@ curl -s http://localhost:8500/ai_service_test.cfm
 ```
 
 The response should contain the word `READY` (or a close equivalent — phi3:mini sometimes adds punctuation).
+
+::hint-box
+---
+:summary: javaCast("float", ...) — why is this needed for temperature?
+---
+ColdFusion's `serializeJSON()` looks at each value's **Java type** to decide what JSON type to emit. CFML's `numeric` type maps to Java `Double`, and `serializeJSON` uses `Double.toString()` internally — which drops the decimal point for whole numbers. So a temperature of `1` becomes `1` in JSON, not `1.0`.
+
+Ollama's API parser (written in Go) strictly validates field types. Its schema declares `temperature` as `float32`, and Go's JSON unmarshaler **rejects an integer literal for a float field** — hence the `500: option "temperature" must be of type float32` error.
+
+`javaCast("float", value)` creates a Java `Float` object. `serializeJSON` then emits it as `1.0`, `0.7`, `0.1` — a proper JSON float literal that Go accepts unconditionally.
+
+**Rule:** Whenever you send a numeric field that a remote API declares as a float, wrap it in `javaCast("float", ...)` before passing it to `serializeJSON`. This applies to any float field — `top_p`, `repeat_penalty`, `min_p`, etc.
+::
 
 ::hint-box
 ---
