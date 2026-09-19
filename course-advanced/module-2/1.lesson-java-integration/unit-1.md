@@ -331,6 +331,15 @@ These patterns show up in real ColdFusion codebases. Each one demonstrates a gap
 
 ColdFusion structs do not guarantee key order (they use a Java `HashMap` internally). `LinkedHashMap` preserves insertion order — useful for building ordered responses:
 
+::image-box
+---
+:src: __static__/java-linkedhashmap-cfml-v1.png
+:alt: Three-column diagram showing insertion order on the left (status, code, message, id), a centre comparison between HashMap (keys scrambled, red, order not guaranteed) and LinkedHashMap (keys in insertion order, green, order preserved), and iteration output on the right matching the original insertion order
+:max-width: 860px
+---
+_`HashMap` discards insertion order — `LinkedHashMap` guarantees it. Same API, predictable output._
+::
+
 ```cfml
 <cfscript>
   ordered = createObject("java", "java.util.LinkedHashMap").init();

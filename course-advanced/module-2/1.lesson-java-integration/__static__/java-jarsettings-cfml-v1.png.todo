@@ -1,4 +1,0 @@
-Diagram showing a project folder structure with an Application.cfc at the root pointing to a /lib directory containing gson.jar and commons-lang3.jar, with arrows from those JARs into ColdFusion's JVM classpath, and CFML code calling createObject("java","com.google.gson.Gson") on the right
-
-Size: 860px wide
-Used in: unit-1.md — section 4 (Loading custom JARs)
