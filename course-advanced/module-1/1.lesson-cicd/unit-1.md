@@ -109,6 +109,24 @@ This lesson uses tools already available in your environment:
 | `cf-dev` | Build and development machine |
 | `cf-prod` | Deployment target (production) |
 
+::hint-box
+---
+:summary: These tools are choices, not requirements — here are the alternatives
+---
+This lesson uses a specific stack, but every layer is interchangeable. The concepts are identical regardless of which tool you pick.
+
+| Layer | This lesson uses | Common alternatives |
+|---|---|---|
+| **Version control** | Git | Subversion (SVN), Mercurial, Perforce |
+| **Code repository** | GitHub | Bitbucket, GitLab, Azure DevOps Repos, Gitea (self-hosted) |
+| **CI/CD engine** | GitHub Actions | Jenkins, CircleCI, GitLab CI, Bitbucket Pipelines, Azure Pipelines, TeamCity, Drone |
+| **Container runtime** | Docker | Podman, containerd, Buildah |
+| **Image registry** | GHCR (GitHub Container Registry) | Docker Hub, AWS ECR, Azure Container Registry, Google Artifact Registry, Harbor (self-hosted) |
+| **Production target** | `cf-prod` VM (lab) | AWS EC2 / ECS / EKS, Azure App Service / AKS, Google Cloud Run / GKE, DigitalOcean, bare-metal on-premise |
+
+The pipeline structure you learn here — trigger → build → test → push image → deploy — is the same regardless of which column you pick from. If your organisation uses Jenkins and Bitbucket today, you apply the same logic with different YAML syntax.
+::
+
 ---
 
 ## 1. Dockerise your ColdFusion application
