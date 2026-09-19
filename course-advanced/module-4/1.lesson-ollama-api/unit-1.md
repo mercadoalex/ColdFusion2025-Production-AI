@@ -118,7 +118,7 @@ The key response fields:
 In the **Terminal (ollama)** tab, run `curl -s http://localhost:11434/api/tags` and confirm it returns HTTP 200.
 
 #completed
-Ollama API is up. ✓
+Ollama API is up and responding. ✓
 ::
 
 ::simple-task
@@ -127,10 +127,10 @@ Ollama API is up. ✓
 :name: verify_phi3_present
 ---
 #active
-Confirm `phi3:mini` appears in the model list returned by `/api/tags`.
+In the **Terminal (ollama)** tab, check the output of the previous command and confirm `phi3:mini` appears in the `models` list.
 
 #completed
-phi3:mini is available. ✓
+phi3:mini is loaded and available. ✓
 ::
 
 ---
