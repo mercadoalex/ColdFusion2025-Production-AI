@@ -304,12 +304,9 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/OllamaService.cfc << 'CFEOF'
 
     <cfset var httpResult = {} />
 
-    <cfhttp method="POST"
-            url="#variables.baseUrl##arguments.path#"
-            result="httpResult"
-            timeout="#variables.timeout#">
+    <cfhttp method="POST" url="#variables.baseUrl##arguments.path#" result="httpResult" timeout="#variables.timeout#">
       <cfhttpparam type="header" name="Content-Type" value="application/json" />
-      <cfhttpparam type="body"   value="#serializeJSON(arguments.payload)#" />
+      <cfhttpparam type="body" value="#serializeJSON(arguments.payload)#" />
     </cfhttp>
 
     <cfif NOT (httpResult.statusCode contains "200")>
@@ -433,9 +430,7 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-chat.cfm << 'EOF'
 
   data   = deserializeJSON(rawBody);
   prompt = structKeyExists(data, "prompt") ? trim(data.prompt) : "";
-  system = structKeyExists(data, "system")
-         ? data.system
-         : "You are a helpful IT support assistant for Hungry Minds training.";
+  system = structKeyExists(data, "system") ? data.system : "You are a helpful IT support assistant for Hungry Minds training.";
 
   if (!len(prompt)) {
     cfheader(statuscode="400", statustext="Bad Request");
