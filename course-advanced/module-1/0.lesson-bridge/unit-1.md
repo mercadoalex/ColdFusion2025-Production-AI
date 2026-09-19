@@ -82,7 +82,7 @@ The operations team spends a day recreating your machine by hand, from memory, p
 
 ::hint-box
 ---
-:summary: What is a container, really?
+:summary: What is a container?
 ---
 ::image-box
 ---
