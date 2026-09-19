@@ -80,7 +80,7 @@ curl -s http://localhost:11434/api/tags | python3 -m json.tool
 curl -s http://localhost:11434/api/version
 
 # Generate a single completion (non-streaming — waits for full response)
-curl -s http://localhost:11434/api/generate \
+curl -s --max-time 120 http://localhost:11434/api/generate \
   -H "Content-Type: application/json" \
   -d '{
     "model":  "phi3:mini",
@@ -168,8 +168,10 @@ The purpose of this activity is to confirm that:
 
 Switch to the **Terminal (ollama)** tab and run:
 
+> ⏱️ **phi3:mini runs on CPU — the first response after a cold start can take 30–90 seconds.** The `--max-time 120` flag tells curl to wait up to 2 minutes before giving up.
+
 ```bash
-curl -s http://localhost:11434/api/generate \
+curl -s --max-time 120 http://localhost:11434/api/generate \
   -H "Content-Type: application/json" \
   -d '{"model":"phi3:mini","prompt":"List three use cases for ColdFusion in enterprise","stream":false}' \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
@@ -242,7 +244,7 @@ The purpose of this activity is to confirm that:
 Run the following in the **Terminal (ollama)** tab:
 
 ```bash
-curl -s http://localhost:11434/api/chat \
+curl -s --max-time 120 http://localhost:11434/api/chat \
   -H "Content-Type: application/json" \
   -d '{
     "model":  "phi3:mini",
@@ -315,8 +317,8 @@ Switch to the **Terminal (dev)** tab and run both commands:
 # Step 1 — verify connectivity (should print 200)
 curl -s -o /dev/null -w "%{http_code}\n" http://ollama:11434/api/tags
 
-# Step 2 — send a prompt from cf-dev to the ollama VM
-curl -s http://ollama:11434/api/generate \
+# Step 2 — send a prompt from cf-dev to the ollama VM (allow up to 2 min for CPU inference)
+curl -s --max-time 120 http://ollama:11434/api/generate \
   -H "Content-Type: application/json" \
   -d '{"model":"phi3:mini","prompt":"Say hello in one word","stream":false}' \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
