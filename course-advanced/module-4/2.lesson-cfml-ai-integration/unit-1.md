@@ -138,6 +138,15 @@ curl -s http://localhost:8500/ai_test.cfm
 
 You should see a one-sentence description of ColdFusion followed by token and timing metadata. If it takes 30–60 seconds, that is normal — the model is warming up on the first call.
 
+::image-box
+---
+:src: __static__/ai_test_output-v1.png
+:alt: Terminal screenshot showing curl -s http://localhost:8500/ai_test.cfm returning an HTML paragraph with the model's one-sentence answer — "ColdFusion is a server-side scripting language developed by Adobe for creating dynamic web pages that interact with databases" — followed by a token count and duration in milliseconds.
+:max-width: 860px
+---
+_`ai_test.cfm` working — the model answered, tokens were counted, timing reported._
+::
+
 ::hint-box
 ---
 :summary: What does the full JSON response look like?
