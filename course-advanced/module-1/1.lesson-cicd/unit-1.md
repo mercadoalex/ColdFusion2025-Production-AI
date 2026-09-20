@@ -495,11 +495,25 @@ Tells Docker to regularly check if CF is healthy. The `--start-period=60s` gives
 
 ::hint-box
 ---
-:summary: ENV password=admin — is this safe?
+:summary: ⚠️ ENV password=admin — never do this in production
 ---
-Not in production. The `password=admin` ENV sets the CF Administrator password and is baked into the image. Anyone who can pull the image can see it.
+The `password=admin` line bakes the CF Administrator password directly into the image. **Anyone who can pull the image can read the password** — from the image history, from the registry, or from the running container's environment.
 
-For production, use a **Docker secret** or pass the password at runtime with `-e password=...` from an environment variable that is never stored in source code. In this lab, `admin` is fine — it's a local-only VM with no external access.
+**Never store secrets in a Dockerfile or in source code.**
+
+In production, pass secrets at runtime — not build time:
+
+```bash
+# ✅ Pass at runtime — not stored in the image
+docker run -e password=$CF_ADMIN_PASSWORD localhost:5000/cf-app:sha
+
+# ✅ Or use a Docker secret (Swarm / Compose)
+echo "s3cr3t" | docker secret create cf_password -
+```
+
+The environment variable `$CF_ADMIN_PASSWORD` comes from your CI/CD secret store (Gitea repo settings → Secrets), never from a file in the repository.
+
+In this lab `ENV password=admin` is fine — the VM has no external access. Treat it as a lab convenience, not a pattern to copy.
 ::
 
 ::simple-task
