@@ -368,7 +368,7 @@ With the service layer in place, you can now expose AI functionality as a proper
 ```bash
 mkdir -p /opt/coldfusion2025/cfusion/wwwroot/api
 
-sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-chat.cfm << 'EOF'
+sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-chat.cfm << 'CHATEOF'
 <cfscript>
   cfheader(name="Content-Type", value="application/json");
   cfheader(name="Access-Control-Allow-Origin", value="*");
@@ -388,25 +388,26 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-chat.cfm << 'EOF'
     writeOutput(serializeJSON({"error":"JSON body required"}));
     abort;
   }
-  data   = deserializeJSON(rawBody);
-  prompt = structKeyExists(data, "prompt") ? trim(data.prompt) : "";
-  system = structKeyExists(data, "system") ? data.system : "You are a helpful IT support assistant for Hungry Minds training.";
+  data = deserializeJSON(rawBody);
+  prompt = structKeyExists(data,"prompt") ? trim(data.prompt) : "";
+  system = structKeyExists(data,"system") ? data.system : "You are a helpful IT support assistant.";
   if (!len(prompt)) {
     cfheader(statuscode="400", statustext="Bad Request");
     writeOutput(serializeJSON({"error":"prompt field is required"}));
     abort;
   }
-  svc      = createObject("component", "OllamaService");
+  svc = createObject("component","OllamaService");
   messages = [{"role":"system","content":system},{"role":"user","content":prompt}];
   try {
     reply = svc.chat(messages);
-    writeOutput(serializeJSON({"response":reply,"model":"phi3:mini","prompt":prompt}));
+    out = {"response":reply,"model":"phi3:mini"};
+    writeOutput(serializeJSON(out));
   } catch (OllamaService.Error e) {
     cfheader(statuscode="503", statustext="Service Unavailable");
-    writeOutput(serializeJSON({"error":"AI service unavailable: " & e.message}));
+    writeOutput(serializeJSON({"error":"AI unavailable: " & e.message}));
   }
 </cfscript>
-EOF
+CHATEOF
 ```
 
 **Activity — Terminal (dev):** Test the endpoint thoroughly:
