@@ -297,11 +297,13 @@ With Gitea confirmed, create a repository and push your CF application into it.
 
 ```bash
 # ── 1. Create the repo via Gitea API ─────────────────────────────────
-curl -s -X POST http://localhost:3000/api/v1/user/repos \
+# Expected output: "Repo created: labadmin/cf-app"
+# If output is "Repo created: error" → repo already exists; skip to step 2
+RESP=$(curl -s -X POST http://localhost:3000/api/v1/user/repos \
   -u labadmin:labpassword \
   -H "Content-Type: application/json" \
-  -d '{"name":"cf-app","description":"ColdFusion CI/CD lab","private":false,"auto_init":false}' \
-  | python3 -c "import sys,json; d=json.load(sys.stdin); print('Repo created:', d.get('full_name','error'))"
+  -d '{"name":"cf-app","description":"ColdFusion CI/CD lab","private":false,"auto_init":false}')
+echo "${RESP}" | python3 -c "import sys,json; d=json.load(sys.stdin); print('Repo created:', d.get('full_name', d.get('message','error')))"
 
 # ── 2. Create the app directory and a minimal index.cfm ──────────────
 mkdir -p /home/laborant/app/app
@@ -312,13 +314,41 @@ cd /home/laborant/app
 git init -b main
 git config user.email "lab@localhost"
 git config user.name "Lab Student"
-git remote add origin http://labadmin:labpassword@localhost:3000/labadmin/cf-app.git
+git remote add origin http://labadmin:labpassword@localhost:3000/labadmin/cf-app.git 2>/dev/null || git remote set-url origin http://labadmin:labpassword@localhost:3000/labadmin/cf-app.git
 git add .
 git commit -m "initial commit"
 git push -u origin main
 ```
 
 After the push, switch to the **Gitea** tab and open `http://localhost:3000/labadmin/cf-app` — you should see the repository with your file.
+
+::hint-box
+---
+:summary: ⚠️ "Repo created: error" — what does that mean?
+---
+The Gitea API returns an error object (no `full_name` field) when the operation fails. The most common causes:
+
+**1. Repository already exists** — you ran the command before.
+The repo is fine; just continue to step 2. Verify it exists:
+```bash
+curl -s -u labadmin:labpassword http://localhost:3000/api/v1/repos/labadmin/cf-app \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('full_name','not found'))"
+# Expected: labadmin/cf-app
+```
+
+**2. Wrong credentials** — the `labadmin` user or password differs.
+Check with:
+```bash
+curl -s -u labadmin:labpassword http://localhost:3000/api/v1/user \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('login','auth failed'))"
+# Expected: labadmin
+```
+
+**3. Gitea is not running** — the API returns an HTML error page that `json.load` fails to parse silently.
+```bash
+curl -sf http://localhost:3000 -o /dev/null && echo "Gitea up" || echo "Gitea down — run: sudo systemctl start gitea"
+```
+::
 
 ::hint-box
 ---
