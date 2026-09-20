@@ -72,11 +72,9 @@ nodes = XmlSearch(doc, "//ticket");
 ```
 ::
 
-**Activity:** Open the **Terminal** tab in your playground, then run the commands below one at a time.
+**Activity:** Open the **Terminal** tab in your playground (top of the screen, labelled **Terminal**). You are logged in as `laborant` with `sudo` access. **Copy each block below, paste it into the Terminal, and press Enter. Wait for the shell prompt (`$`) to return before running the next one.**
 
-> 💡 **Which tab?** Look at the top of your playground — click the tab labelled **Terminal**. That is a live shell connected to your ColdFusion server. All `bash` commands in this lesson run there.
-
-Create `xml_demo.cfm`:
+Create `xml_demo.cfm` — paste this entire block at once and press Enter:
 
 ```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/xml_demo.cfm << 'EOF'
@@ -98,6 +96,8 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/xml_demo.cfm << 'EOF'
 </cfscript>
 EOF
 ```
+
+Verify it is reachable — paste and press Enter:
 
 ```bash
 curl -s http://localhost:8500/xml_demo.cfm
@@ -211,13 +211,17 @@ You can build XML from scratch using `XmlNew()` and `XmlElemNew()`, or by using 
 
 XSLT (eXtensible Stylesheet Language Transformations) converts an XML document into a different format — HTML, plain text, or another XML vocabulary — using a stylesheet.
 
-**Activity:** Create a data file and an XSLT stylesheet, then transform:
+**Activity:** Still in the **Terminal** tab — run each block below in order, waiting for the prompt after each one.
+
+**Step 1 — create the data directory:**
 
 ```bash
-# Create the data directory
-mkdir -p /opt/coldfusion2025/cfusion/wwwroot/data
+sudo mkdir -p /opt/coldfusion2025/cfusion/wwwroot/data
+```
 
-# Create the XML data file
+**Step 2 — create the XML data file:**
+
+```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/data/tickets.xml << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <tickets>
@@ -225,8 +229,11 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/data/tickets.xml << 'EOF'
   <ticket id="2" priority="low"><title>New monitor request</title></ticket>
 </tickets>
 EOF
+```
 
-# Create the XSLT stylesheet
+**Step 3 — create the XSLT stylesheet:**
+
+```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/data/tickets.xsl << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -250,7 +257,7 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/data/tickets.xsl << 'EOF'
 EOF
 ```
 
-Create `xslt_demo.cfm`:
+**Step 4 — create `xslt_demo.cfm`:**
 
 ```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/xslt_demo.cfm << 'EOF'
@@ -263,9 +270,20 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/xslt_demo.cfm << 'EOF'
 EOF
 ```
 
+**Step 5 — verify it works:**
+
 ```bash
 curl -s http://localhost:8500/xslt_demo.cfm | grep -o "<td>[^<]*</td>" | head -10
 ```
+
+**Expected output:**
+
+```
+<td>1</td><td>high</td><td>Email not working</td>
+<td>2</td><td>low</td><td>New monitor request</td>
+```
+
+If you see those lines the transformation is working correctly.
 
 ::simple-task
 ---
