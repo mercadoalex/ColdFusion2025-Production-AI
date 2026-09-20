@@ -50,7 +50,7 @@ Before writing the service layer, you need to be comfortable with `cfhttp`. It i
 
 ::image-box
 ---
-:src: __static__/cfhttp-anatomy-v1.png
+:src: __static__/cfhttp-anatomy-v2.png
 :alt: Annotated code block on a dark background showing a cfhttp call with five attributes — method POST, url http://ollama:11434/api/generate, result httpResult, timeout 120 — followed by two cfhttpparam calls for the Content-Type header and serialized JSON body. Each line has a callout annotation explaining its purpose.
 :max-width: 900px
 ---
