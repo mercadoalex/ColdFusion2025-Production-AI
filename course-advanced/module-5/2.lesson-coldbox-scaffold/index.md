@@ -28,6 +28,18 @@ challenges:
   coldbox-scaffold-3a91a6cf: {}
 
 tasks:
+  init_wait_for_cf:
+    init: true
+    machine: cf-dev
+    user: laborant
+    timeout_seconds: 120
+    run: |
+      until curl -s -o /dev/null -w "%{http_code}" http://localhost:8500/CFIDE/administrator/ | grep -q "200\|302"; do
+        echo "Waiting for ColdFusion on port 8500..."
+        sleep 5
+      done
+      echo "ColdFusion is up ✓"
+
   verify_coldbox_app:
     machine: cf-dev
     user: laborant
