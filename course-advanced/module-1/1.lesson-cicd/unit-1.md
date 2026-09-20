@@ -553,6 +553,40 @@ After the push, go to the **Gitea** tab → your repo → **Actions** tab. You s
 
 ::hint-box
 ---
+:summary: What is a job and what is a step? — reading the YAML
+---
+The workflow YAML has a clear hierarchy. Here's a map of every level:
+
+```
+workflow  (the whole file — "Build and Deploy ColdFusion App")
+└── on:   (trigger — "push to main")
+└── jobs: (one or more named jobs)
+    └── build-and-deploy:    ← JOB NAME
+        runs-on: ubuntu-latest  ← which runner executes this job
+        steps:               ← ordered list of steps inside the job
+            - name: Checkout         ← STEP 1
+              uses: actions/checkout@v3
+            - name: Build image      ← STEP 2
+              run: docker build ...
+            - name: Push to registry ← STEP 3
+              run: docker push ...
+            - name: Deploy to cf-prod ← STEP 4
+              run: ssh ...
+```
+
+**Job** — a named group of steps that all run on the **same runner machine** in sequence. Jobs in the same workflow run in parallel by default; if you want them in order, use `needs:`. This workflow has one job (`build-and-deploy`), so order is not an issue.
+
+**Step** — a single unit of work inside a job. Each step either:
+- runs a shell command (`run: docker build ...`), or
+- calls a reusable Action (`uses: actions/checkout@v3`).
+
+Steps within a job always run **in order**, top to bottom. If a step fails (non-zero exit code), all subsequent steps are skipped and the job is marked failed.
+
+**Why does this matter?** If your `Build image` step fails, the `Push to registry` and `Deploy` steps never run — broken code can never reach production. That ordering guarantee is the CI in CI/CD.
+::
+
+::hint-box
+---
 :summary: Gitea Actions vs GitHub Actions — what's different?
 ---
 The YAML syntax is nearly identical. The key differences in this lab:
