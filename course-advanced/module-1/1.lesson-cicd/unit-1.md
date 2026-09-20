@@ -685,6 +685,15 @@ git push
 
 After the push, go to the **Gitea** tab → your repo → **Actions** tab. You should see the workflow running within a few seconds.
 
+::image-box
+---
+:src: __static__/workflow_deploy_yaml_v1.png
+:alt: Screenshot of the Gitea Actions tab for the labadmin/cf-app repository. The left sidebar shows All Workflows and deploy.yml with a warning triangle icon. The main area shows one workflow run: add Gitea Actions workflow, deploy.yml number 1, commit 319705f9b2 pushed by labadmin, on branch main, 3 minutes ago, duration 0 seconds, with a yellow spinning status icon indicating the run is in progress.
+:max-width: 900px
+---
+_Gitea → Actions showing `deploy.yml` triggered — the yellow spinner means the run is in progress. It turns green when all steps pass._
+::
+
 ::hint-box
 ---
 :summary: What is a job and what is a step? — reading the YAML
