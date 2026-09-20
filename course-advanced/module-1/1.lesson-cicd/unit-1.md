@@ -677,6 +677,15 @@ Gitea Actions workflow file found. ✓
 
 Once the pipeline is in place, your daily workflow becomes this:
 
+::image-box
+---
+:src: __static__/developer-workflow-v1.png
+:alt: Vertical workflow diagram on a dark navy background with three zones. Developer zone (steps 1–3, blue): Write code on cf-dev — edit .cfm files, test locally on port 8500; Stage and commit — git add . and git commit -m fix resolve ticket query timeout; git push origin main — one command the rest is automatic. A blue arrow labelled push detected leads to the Gitea plus Act Runner zone (steps 4–5, orange): Gitea detects the push — triggers Act Runner deploy.yml workflow starts; Act Runner executes deploy.yml with four sub-steps — 5a Checkout fresh copy of the repo, 5b docker build image tagged with gitea.sha cf-app colon a3f82c9, 5c docker push image stored in local registry localhost 5000, 5d SSH to cf-prod old container stopped new container started on port 8500. A green arrow labelled deploy complete leads to the Production zone (steps 6–7, green): Pipeline green in Gitea Actions — every step logged commit SHA linked to the run; Your app is live on cf-prod — new code serving real users zero manual steps with badge cf-app colon a3f82c9. A vertical gradient timeline bar on the right runs from blue at git push to green at live in production. Bottom caption: From git push to live production — automated logged and reversible.
+:max-width: 960px
+---
+_Seven steps, three zones — from `git push` on `cf-dev` to live code on `cf-prod`, fully automated._
+::
+
 ```
 1. Write code on cf-dev
 2. git add .  &&  git commit -m "fix: resolve ticket query timeout"
