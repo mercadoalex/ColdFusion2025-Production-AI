@@ -109,15 +109,6 @@ The tools (Docker, CI/CD, monitoring) are the easy part. The culture (shared own
 
 ColdFusion has a reputation as a technology that resists DevOps adoption. That reputation has historical roots: CF apps were deployed by copying `.cfm` files over FTP, environments were configured by hand through the CF Admin UI, and "works on my machine" was an accepted explanation for production failures.
 
-::image-box
----
-:src: __static__/cf-before-after-devops-v2.png
-:alt: Side-by-side comparison showing the six-step manual FTP deployment on the left versus the six-step automated git push pipeline on the right, highlighting that FTP has no audit trail and no rollback while the pipeline has commit SHA tagging and one-command rollback.
-:max-width: 960px
----
-_The same six deployment steps — one done manually, one done automatically with full history and rollback._
-::
-
 That reputation is outdated. ColdFusion 2025 runs cleanly in Docker, supports CommandBox for dependency management and scripted server configuration, and integrates with any CI/CD platform that can run a shell command. Every DevOps practice covered in this lesson applies directly to a modern CF application.
 
 ::hint-box
