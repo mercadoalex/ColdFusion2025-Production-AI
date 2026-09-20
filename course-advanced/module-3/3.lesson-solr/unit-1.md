@@ -29,6 +29,28 @@ _ColdFusion talks to Solr in two ways: via cfindex/cfsearch (native integration)
 
 ::hint-box
 ---
+:summary: Other full-text search options — how does Solr compare?
+---
+Solr is not the only choice. Here is how the main options compare, so you can make an informed decision for your own projects:
+
+| Engine | Best for | Notes |
+|---|---|---|
+| **Apache Solr** | ColdFusion native integration, enterprise Java stacks | Built into CF — `cfindex`/`cfsearch` work out of the box. Based on Apache Lucene. Battle-tested since 2006. |
+| **Elasticsearch** | Modern microservices, log analytics, Kibana dashboards | Also based on Lucene. REST-first API, massive ecosystem. More DevOps overhead than Solr. Call from CF via `cfhttp`. |
+| **OpenSearch** | AWS environments, open-source Elasticsearch alternative | Amazon's fork of Elasticsearch 7.x. Same API — swap the URL. Fully managed on AWS. |
+| **PostgreSQL FTS** | Apps already on PostgreSQL, smaller datasets | Built-in `tsvector`/`tsquery`. No separate service. Good enough for thousands of records; Solr wins at millions. |
+| **MySQL FULLTEXT** | Apps already on MySQL, simple keyword search | `MATCH(col) AGAINST(query)` with `FULLTEXT` index. No ranking sophistication, no stemming config. |
+| **Meilisearch** | Developer-friendly, typo-tolerant, fast setup | REST API only — no CF native tags. Excellent for small-to-medium datasets. Call via `cfhttp`. |
+| **Typesense** | Similar to Meilisearch, open-source | Simpler than Solr/ES, very fast. REST API via `cfhttp`. |
+| **SQLite FTS5** | Embedded apps, prototypes, no separate service | Available via Java SQLite JDBC driver from CF. Zero infrastructure. Limited scalability. |
+
+**Why Solr for this course:**
+ColdFusion ships with Solr pre-configured — `cfindex` and `cfsearch` abstract the REST API entirely. For production workloads at enterprise scale, many teams migrate to **Elasticsearch** or **OpenSearch** and call the REST API directly from CF, giving them the full feature set without the CF tag limitations. The direct REST API pattern you learn in section 6 of this lesson transfers directly to either of those engines.
+
+::
+
+::hint-box
+---
 :summary: How does Solr's inverted index work?
 ---
 A traditional database stores rows — to search, it scans every row looking for a match. Solr stores an **inverted index**: a map from every word to the list of documents that contain it. When you search for "printer", Solr looks up "printer" in the index and gets back a list of matching document IDs instantly — no scanning.

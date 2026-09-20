@@ -32,21 +32,23 @@ tasks:
     init: true
     machine: cf-dev
     user: laborant
-    timeout_seconds: 120
+    timeout_seconds: 300
     run: |
-      until curl -s -o /dev/null -w "%{http_code}" http://localhost:8500/CFIDE/administrator/ | grep -q "200\|302"; do
+      until nc -z 127.0.0.1 8500 2>/dev/null; do
         echo "Waiting for ColdFusion on port 8500..."
         sleep 5
       done
+      sleep 10
       echo "ColdFusion is up ✓"
 
   init_wait_for_solr:
     init: true
     machine: cf-dev
     user: laborant
-    timeout_seconds: 120
+    timeout_seconds: 300
     run: |
-      until curl -s -o /dev/null -w "%{http_code}" http://localhost:8983/solr/ | grep -q "200"; do
+      sleep 30
+      until nc -z 127.0.0.1 8983 2>/dev/null; do
         echo "Waiting for Solr on port 8983..."
         sleep 5
       done
