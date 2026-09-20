@@ -111,13 +111,15 @@ curl -s http://localhost:8500/xml_demo.cfm
 
 Each ticket is printed as `id: title [priority]` followed by an HTML `<br>` tag — one line per ticket, no spaces between them because the browser would render the line breaks visually.
 
+Once you see the expected output above, hit **Check** on the task below — it will run `curl` against `xml_demo.cfm` and confirm it returns HTTP 200.
+
 ::simple-task
 ---
 :tasks: tasks
 :name: verify_xml_parse_page
 ---
 #active
-Create `xml_demo.cfm` that parses an XML string and returns HTTP 200.
+Hit **Check** — verifies that `xml_demo.cfm` is reachable and returns HTTP 200.
 
 #completed
 xml_demo.cfm is accessible. ✓
@@ -168,7 +170,7 @@ _Common XPath expressions — these cover 90% of real-world XML parsing needs._
 :name: verify_xpath_usage
 ---
 #active
-Add `XmlSearch()` or `XmlParse()` or `cfxml` to `xml_demo.cfm` — the file must use at least one XML parsing function.
+Hit **Check** — verifies that `xml_demo.cfm` contains at least one XML function (`XmlSearch`, `XmlParse`, or `cfxml`). If task 1 is green this will pass automatically.
 
 #completed
 XML parsing/XPath usage found. ✓
@@ -309,7 +311,7 @@ curl -s http://localhost:8500/xslt_demo.cfm | grep -o "<td>[^<]*</td>" | head -1
 <td>2</td><td>low</td><td>New monitor request</td>
 ```
 
-If you see those two lines, the XML was parsed, the stylesheet was applied, and the HTML table was generated correctly. Hit **Check** below to record your progress.
+If you see those two lines, the XML was parsed, the stylesheet was applied, and the HTML table was generated correctly. Hit **Check** on the task below — it will run `curl` against `xslt_demo.cfm` and confirm it returns HTTP 200.
 
 ::simple-task
 ---
@@ -317,7 +319,7 @@ If you see those two lines, the XML was parsed, the stylesheet was applied, and 
 :name: verify_xslt_page
 ---
 #active
-Create `xslt_demo.cfm` that uses `XmlTransform()` and returns HTTP 200.
+Hit **Check** — verifies that `xslt_demo.cfm` is reachable and returns HTTP 200.
 
 #completed
 xslt_demo.cfm is accessible. ✓
@@ -339,7 +341,7 @@ xslt_demo.cfm is accessible. ✓
 
 ---
 
-When all tasks above are green, this lesson is complete.
+When tasks 1–3 above are all green, this final check passes automatically — no action needed.
 
 ::simple-task
 ---
@@ -347,7 +349,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-xml_demo.cfm and xslt_demo.cfm are both working — hit **Check** to complete the lesson.
+Waiting for all previous tasks to pass — this will turn green automatically once `xml_demo.cfm` and `xslt_demo.cfm` are both verified.
 
 #completed
 XML processing lesson complete. On to the next one! ✓
