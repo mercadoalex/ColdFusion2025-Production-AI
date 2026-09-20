@@ -927,8 +927,8 @@ This pattern — read → validate → clamp → cast — prevents both malforme
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"Artificial intelligence is whatever hasn't been done yet."*
+> — Larry Tesler
 
 Apply what you have covered in this lesson with the challenge below.
 
