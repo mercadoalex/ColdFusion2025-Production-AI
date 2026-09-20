@@ -356,7 +356,7 @@ challenges won't appear but can still be pulled and are accessible to the author
 | `course-advanced/challenges/solr-search` | `solr-search-7ec1ea17` |
 | `course-advanced/challenges/complementary` | `complementary-364af0ee` |
 | `course-advanced/challenges/ollama-api` | `ollama-api-b6f93461` |
-| `course-advanced/challenges/cfml-ai-integration` | `cfml-ai-integration-001a9503` |
+| `course-advanced/challenges/cfml-ai-integration` | `cfml-ai-integration-c3d196db` |
 | `course-advanced/challenges/ai-helpdesk` | `ai-helpdesk-f87111e5` |
 | `course-advanced/challenges/coldbox-intro` | `coldbox-intro-c174c787` |
 | `course-advanced/challenges/coldbox-scaffold` | `coldbox-scaffold-3a91a6cf` |
