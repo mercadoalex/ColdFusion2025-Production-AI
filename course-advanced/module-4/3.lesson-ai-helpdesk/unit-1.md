@@ -20,7 +20,7 @@ Both features reuse `OllamaService.cfc` from the previous lesson — no new AI i
 
 ::image-box
 ---
-:src: __static__/ai-helpdesk-flow-v1.png
+:src: __static__/ai-helpdesk-flow-v2.png
 :alt: Two-column flow diagram. Left column shows GET /api/ai-triage.cfm?ticket_id=N — Browser calls ai-triage.cfm which reads from training_db (hd_tickets), builds a prompt, calls OllamaService.cfc which POSTs to Ollama phi3:mini via cfhttp, and returns a JSON response with suggested_priority and resolution fields. Right column shows GET /api/ai-summary.cfm — Browser calls ai-summary.cfm which queries all open tickets from training_db, formats them as a numbered list, calls OllamaService.cfc which POSTs to Ollama, and returns a JSON response with count and summary fields. Caption: Both endpoints share OllamaService.cfc.
 :max-width: 960px
 ---
