@@ -211,15 +211,27 @@ You can build XML from scratch using `XmlNew()` and `XmlElemNew()`, or by using 
 
 XSLT (eXtensible Stylesheet Language Transformations) converts an XML document into a different format — HTML, plain text, or another XML vocabulary — using a stylesheet.
 
-**Activity:** Still in the **Terminal** tab — run each block below in order, waiting for the prompt after each one.
+**Activity:** You need to create three files on the server and then verify the result. Every command below runs in the **Terminal** tab (top of the playground screen). You are logged in as `laborant` — `sudo` is available and required.
 
-**Step 1 — create the data directory:**
+> ⚠️ **Important:** copy each block **in full**, paste it into the Terminal, and press **Enter**. Wait until you see the shell prompt (`laborant@cf-dev:~$`) again before moving to the next step. Do not run two blocks at once.
+
+---
+
+**Step 1 of 5 — create the `/data` directory on the server**
+
+This is where your XML and XSL files will live. ColdFusion's `expandPath()` maps `/data` to this folder.
 
 ```bash
 sudo mkdir -p /opt/coldfusion2025/cfusion/wwwroot/data
 ```
 
-**Step 2 — create the XML data file:**
+You will see no output — that is normal. The prompt returns immediately when the directory is ready.
+
+---
+
+**Step 2 of 5 — create the XML data file (`tickets.xml`)**
+
+This is the raw data that XSLT will transform. Copy the entire block — from `sudo tee` all the way to the final `EOF` — and paste it as one unit.
 
 ```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/data/tickets.xml << 'EOF'
@@ -231,7 +243,13 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/data/tickets.xml << 'EOF'
 EOF
 ```
 
-**Step 3 — create the XSLT stylesheet:**
+You should see the XML content echoed back to the Terminal — that confirms `tee` wrote the file.
+
+---
+
+**Step 3 of 5 — create the XSLT stylesheet (`tickets.xsl`)**
+
+This stylesheet tells ColdFusion how to turn the XML into an HTML table. Again, copy the whole block from `sudo tee` to the final `EOF`.
 
 ```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/data/tickets.xsl << 'EOF'
@@ -257,7 +275,13 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/data/tickets.xsl << 'EOF'
 EOF
 ```
 
-**Step 4 — create `xslt_demo.cfm`:**
+You should see the XSL content echoed back — same as step 2.
+
+---
+
+**Step 4 of 5 — create the ColdFusion page (`xslt_demo.cfm`)**
+
+This is the CFML file that loads both files and runs the transformation.
 
 ```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/xslt_demo.cfm << 'EOF'
@@ -270,20 +294,22 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/xslt_demo.cfm << 'EOF'
 EOF
 ```
 
-**Step 5 — verify it works:**
+---
+
+**Step 5 of 5 — verify the transformation runs correctly**
 
 ```bash
 curl -s http://localhost:8500/xslt_demo.cfm | grep -o "<td>[^<]*</td>" | head -10
 ```
 
-**Expected output:**
+**Expected output — you must see exactly these lines:**
 
 ```
 <td>1</td><td>high</td><td>Email not working</td>
 <td>2</td><td>low</td><td>New monitor request</td>
 ```
 
-If you see those lines the transformation is working correctly.
+If you see those two lines, the XML was parsed, the stylesheet was applied, and the HTML table was generated correctly. Hit **Check** below to record your progress.
 
 ::simple-task
 ---
