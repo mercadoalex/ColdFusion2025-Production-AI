@@ -8,7 +8,7 @@ name: apache-solr-advanced-search-unit-1
 
 ## Why full-text search matters
 
-SQL `LIKE '%keyword%'` is not full-text search. It's a table scan with no relevance ranking, no stemming, no typo tolerance. For any feature where users type natural language queries — help desk ticket search, knowledge base lookup, product catalogues — you need a dedicated search engine. ColdFusion ships with built-in Apache Solr integration.
+SQL `LIKE '%keyword%'` is not full-text search. It is a table scan with no relevance ranking, no stemming, and no typo tolerance. For any feature where users type natural language queries — help desk ticket search, knowledge base lookup, product catalogues — you need a dedicated search engine. ColdFusion ships with built-in Apache Solr integration.
 
 ::image-box
 ---
@@ -19,13 +19,24 @@ SQL `LIKE '%keyword%'` is not full-text search. It's a table scan with no releva
 _ColdFusion talks to Solr in two ways: via cfindex/cfsearch (native integration) and via the Solr REST API directly._
 ::
 
-| Solr vs SQL LIKE | Solr | SQL LIKE |
+| Feature | Solr | SQL LIKE |
 |---|---|---|
-| Relevance ranking | ✅ tf-idf score | ❌ order depends on table |
+| Relevance ranking | ✅ tf-idf score | ❌ depends on table order |
 | Stemming | ✅ "running" matches "run" | ❌ exact string only |
 | Typo tolerance | ✅ fuzzy matching | ❌ exact match only |
 | Speed on large datasets | ✅ inverted index | ❌ full table scan |
 | Faceting / filtering | ✅ built-in | ❌ complex SQL needed |
+
+::hint-box
+---
+:summary: How does Solr's inverted index work?
+---
+A traditional database stores rows — to search, it scans every row looking for a match. Solr stores an **inverted index**: a map from every word to the list of documents that contain it. When you search for "printer", Solr looks up "printer" in the index and gets back a list of matching document IDs instantly — no scanning.
+
+This is the same structure used by Google, Elasticsearch, and every major search engine. The trade-off: indexing takes time and disk space, but queries are extremely fast regardless of dataset size.
+
+**tf-idf** (term frequency — inverse document frequency) is Solr's default relevance score. A word that appears many times in a document (high tf) but rarely across all documents (high idf) gets a high score — it is a strong signal that the document is relevant to that term.
+::
 
 ---
 
@@ -33,17 +44,29 @@ _ColdFusion talks to Solr in two ways: via cfindex/cfsearch (native integration)
 
 Your lab environment has Apache Solr pre-installed and running on port **8983**.
 
-**Activity:** In the **Terminal (dev)** tab:
+**Activity — Terminal (dev):** Confirm Solr is up and list any existing collections:
 
 ```bash
-# Check the Solr admin UI
 curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8983/solr/
-# Expected: 200
+```
 
-# List existing collections
+**Expected output:** `200`
+
+```bash
 curl -s "http://localhost:8983/solr/admin/collections?action=LIST&wt=json" \
   | python3 -m json.tool
 ```
+
+**Expected output** — a JSON object with a `collections` array (may be empty on first boot):
+
+```json
+{
+  "responseHeader": { "status": 0, "QTime": 3 },
+  "collections": []
+}
+```
+
+The task below turns green automatically once Solr returns HTTP 200.
 
 ::simple-task
 ---
@@ -51,7 +74,7 @@ curl -s "http://localhost:8983/solr/admin/collections?action=LIST&wt=json" \
 :name: verify_solr_running
 ---
 #active
-Confirm Solr is running at `http://localhost:8983/solr/` and returns HTTP 200.
+Runs automatically — verifies Solr is responding on port 8983.
 
 #completed
 Solr is running on port 8983. ✓
@@ -61,16 +84,42 @@ Solr is running on port 8983. ✓
 
 ## 2. Create a Solr collection
 
-A **collection** is Solr's equivalent of a database table — it holds indexed documents for one domain (e.g., tickets, articles, users).
+A **collection** is Solr's equivalent of a database table — it holds indexed documents for one domain (tickets, articles, products, etc.).
+
+**Activity — Terminal (dev):** Create the `training` collection:
 
 ```bash
-# Create a collection named "training" with a default schema
 curl -s "http://localhost:8983/solr/admin/collections?action=CREATE&name=training&numShards=1&replicationFactor=1&wt=json" \
   | python3 -m json.tool
-
-# Verify it was created
-curl -s "http://localhost:8983/solr/admin/collections?action=LIST&wt=json"
 ```
+
+**Expected output:**
+
+```json
+{
+  "responseHeader": { "status": 0, "QTime": 842 },
+  "success": { ... }
+}
+```
+
+`"status": 0` means success. Any other status code means the collection already exists or Solr had an error — check the message field.
+
+Verify the collection was created:
+
+```bash
+curl -s "http://localhost:8983/solr/admin/collections?action=LIST&wt=json" \
+  | python3 -m json.tool
+```
+
+**Expected output:**
+
+```json
+{
+  "collections": ["training"]
+}
+```
+
+The task below turns green automatically once a collection named `training` exists.
 
 ::simple-task
 ---
@@ -78,7 +127,7 @@ curl -s "http://localhost:8983/solr/admin/collections?action=LIST&wt=json"
 :name: verify_collection_exists
 ---
 #active
-Create a Solr collection named `training` (or `students`).
+Runs automatically — verifies a Solr collection named `training` exists.
 
 #completed
 Solr collection exists. ✓
@@ -86,9 +135,50 @@ Solr collection exists. ✓
 
 ---
 
-## 3. Index ColdFusion records with cfindex
+## 3. Register the collection in CF Admin
 
-`<cfindex>` pushes records from a CF query into a Solr collection. It maps query columns to Solr document fields.
+Before `cfindex` and `cfsearch` can use a Solr collection, ColdFusion must know about it. Use `cfcollection` to register it.
+
+**Activity — Terminal (dev):** Create `register_collection.cfm`:
+
+```bash
+sudo tee /opt/coldfusion2025/cfusion/wwwroot/register_collection.cfm << 'EOF'
+<cfcollection
+  action     = "map"
+  collection = "training"
+  engine     = "solr"
+  path       = "http://localhost:8983/solr/training">
+
+<cfoutput>Collection "training" registered with ColdFusion ✓</cfoutput>
+EOF
+```
+
+Run it:
+
+```bash
+curl -s http://localhost:8500/register_collection.cfm
+```
+
+**Expected output:**
+
+```
+Collection "training" registered with ColdFusion ✓
+```
+
+::hint-box
+---
+:summary: What does cfcollection action="map" actually do?
+---
+ColdFusion maintains its own internal registry of search collections in the CF Admin. `cfcollection action="map"` tells CF where to find an existing Solr collection — its URL and engine type. Without this step, `cfindex` and `cfsearch` will throw an error saying the collection does not exist, even though it is perfectly healthy in Solr.
+
+You only need to run this once per CF server. After that, the mapping persists across CF restarts.
+::
+
+---
+
+## 4. Index records with cfindex
+
+`cfindex` pushes records from a CF query into a Solr collection. It maps query columns to Solr document fields.
 
 ::image-box
 ---
@@ -99,24 +189,25 @@ Solr collection exists. ✓
 _cfindex maps CF query columns to Solr document fields: key → _uniquekey, title → _title, body → _body._
 ::
 
-**Activity:** Create `index_tickets.cfm`:
+**Activity — Terminal (dev):** Create `index_tickets.cfm`:
 
 ```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/index_tickets.cfm << 'EOF'
 <cfscript>
-  // Fetch tickets from the database
+  // Fetch open tickets from the database
   tickets = queryExecute(
     "SELECT id, title, description FROM hd_tickets WHERE status != 'closed'",
-    {}, { datasource: "training_db" }
+    {},
+    { datasource: "training_db" }
   );
 
   if (tickets.recordCount == 0) {
-    writeOutput("No tickets to index");
+    writeOutput("No tickets to index — seed the database first.");
     abort;
   }
 </cfscript>
 
-<!--- Index all tickets into the "training" Solr collection --->
+<!--- Push all tickets into the "training" Solr collection --->
 <cfindex
   collection = "training"
   action     = "refresh"
@@ -127,20 +218,49 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/index_tickets.cfm << 'EOF'
   body       = "description"
   urlpath    = "http://localhost:8500/tickets.cfm?id=">
 
-<cfoutput>Indexed #tickets.recordCount# tickets ✓</cfoutput>
+<cfoutput>Indexed #tickets.recordCount# tickets into Solr ✓</cfoutput>
+EOF
 ```
+
+Run it:
 
 ```bash
 curl -s http://localhost:8500/index_tickets.cfm
 ```
 
+**Expected output:**
+
+```
+Indexed 3 tickets into Solr ✓
+```
+
+The number will match however many open tickets are in `hd_tickets`. If you see `No tickets to index`, run `seed-db.cfm` first:
+
+```bash
+curl -s http://localhost:8500/seed-db.cfm
+```
+
+::hint-box
+---
+:summary: cfindex action types — refresh vs update vs delete
+---
+| Action | What it does |
+|---|---|
+| `refresh` | Re-indexes the entire query — replaces all existing documents for this collection |
+| `update` | Adds or updates individual documents (use for incremental indexing) |
+| `delete` | Removes documents matching the `key` value |
+| `purge` | Deletes **all** documents from the collection |
+
+For a full re-index (e.g. nightly batch job), use `refresh`. For real-time updates when a ticket is edited, use `update` with just that ticket's `id`.
+::
+
 ---
 
-## 4. Search with cfsearch
+## 5. Search with cfsearch
 
-`<cfsearch>` queries a Solr collection and returns a CF query object with the results, relevance scores, and URLs.
+`cfsearch` queries a Solr collection and returns a CF query object with the results, relevance scores, and URLs.
 
-**Activity:** Create `search.cfm`:
+**Activity — Terminal (dev):** Create `search.cfm`:
 
 ```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/search.cfm << 'EOF'
@@ -154,22 +274,36 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/search.cfm << 'EOF'
     maxrows    = 20
     startrow   = 1>
 </cfif>
+
 <!DOCTYPE html>
-<html>
-<head><title>Ticket Search</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ticket Search</title>
+  <style>
+    body { font-family: sans-serif; max-width: 760px; margin: 2rem auto; }
+    .result { margin-bottom: 1.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem; }
+    .score  { color: #6b7280; font-size: .85rem; }
+  </style>
+</head>
 <body>
   <h2>Search Tickets</h2>
   <form method="get">
-    <input type="text" name="q" value="<cfoutput>#htmlEditFormat(url.q)#</cfoutput>" size="40">
+    <input type="text" name="q"
+           value="<cfoutput>#htmlEditFormat(url.q)#</cfoutput>"
+           size="40" placeholder="e.g. printer, VPN, password">
     <button type="submit">Search</button>
   </form>
 
   <cfif isDefined("results")>
-    <p><strong><cfoutput>#results.recordCount#</cfoutput> result(s) for "<cfoutput>#htmlEditFormat(url.q)#</cfoutput>"</strong></p>
+    <p><strong>
+      <cfoutput>#results.recordCount# result(s) for "#htmlEditFormat(url.q)#"</cfoutput>
+    </strong></p>
+
     <cfoutput query="results">
-      <div style="margin-bottom:1em">
+      <div class="result">
         <a href="#results.url#">#results.title#</a>
-        <span style="color:gray"> — score: #numberFormat(results.score,"0.00")#</span>
+        <span class="score"> — relevance score: #numberFormat(results.score,"0.00")#</span>
         <p>#results.summary#</p>
       </div>
     </cfoutput>
@@ -179,13 +313,23 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/search.cfm << 'EOF'
 EOF
 ```
 
-Test it:
+Test the full search flow:
 
 ```bash
-# Index first, then search
+# Step 1 — make sure tickets are indexed
 curl -s http://localhost:8500/index_tickets.cfm
+
+# Step 2 — search for "printer"
 curl -s "http://localhost:8500/search.cfm?q=printer" | grep -o "<a href[^>]*>[^<]*"
 ```
+
+**Expected output** — one or more anchor tags from the results:
+
+```
+<a href="http://localhost:8500/tickets.cfm?id=1">Printer not working
+```
+
+The task below turns green automatically once `search.cfm` returns HTTP 200.
 
 ::simple-task
 ---
@@ -193,7 +337,7 @@ curl -s "http://localhost:8500/search.cfm?q=printer" | grep -o "<a href[^>]*>[^<
 :name: verify_search_page
 ---
 #active
-Create `search.cfm` that uses `<cfsearch>` and returns HTTP 200.
+Runs automatically — verifies `search.cfm` exists and returns HTTP 200.
 
 #completed
 search.cfm is accessible. ✓
@@ -201,37 +345,61 @@ search.cfm is accessible. ✓
 
 ---
 
-## 5. Direct Solr REST API from CFML
+## 6. Direct Solr REST API from CFML
 
-For advanced queries (faceting, boosting, complex filters), bypass `cfsearch` and call the Solr REST API directly:
+For advanced queries — faceting, field boosting, highlighting, geographic filters — bypass `cfsearch` and call the Solr REST API directly with `cfhttp`:
 
-```cfml
+**Activity — Terminal (dev):** Create `search_api.cfm`:
+
+```bash
+sudo tee /opt/coldfusion2025/cfusion/wwwroot/search_api.cfm << 'EOF'
 <cfscript>
   q = encodeForURL(url.q ?: "*:*");
 
   cfhttp(
-    url    = "http://localhost:8983/solr/training/select?q=#q#&wt=json&rows=20&fl=id,title,score",
+    url    = "http://localhost:8983/solr/training/select?q=#q#&wt=json&rows=10&fl=id,title,score",
     method = "GET",
     result = "resp"
   );
 
   data = deserializeJSON(resp.fileContent);
-  docs = data.response.docs;
 
-  for (doc in docs) {
-    writeOutput(doc.id & ": " & doc.title & " (score: " & doc.score & ")<br>");
+  writeOutput("<p>Found: " & data.response.numFound & " documents</p>");
+  for (doc in data.response.docs) {
+    writeOutput(doc.id & ": " & (doc.title[1] ?: "untitled")
+              & " (score: " & numberFormat(doc.score, "0.00") & ")<br>");
   }
 </cfscript>
+EOF
+```
+
+Test it:
+
+```bash
+curl -s "http://localhost:8500/search_api.cfm?q=printer"
+```
+
+**Expected output:**
+
+```
+Found: 1 documents
+1: Printer not working (score: 0.53)
 ```
 
 ::hint-box
 ---
-:summary: cfindex vs direct Solr REST — which to use?
+:summary: cfindex/cfsearch vs direct Solr REST API — when to use each
 ---
-- **Use cfindex/cfsearch** for straightforward full-text search on CF query results. Simple to configure, handles the Solr connection details for you.
-- **Use the Solr REST API directly** when you need facets, field boosting, geographic queries, highlighting, or any advanced Solr feature not exposed through the CF tags.
+| Scenario | Use |
+|---|---|
+| Simple full-text search on CF query data | `cfindex` + `cfsearch` |
+| Faceted navigation (filter by category, date, etc.) | Solr REST API |
+| Field boosting (title matches rank higher than body) | Solr REST API with `qf` parameter |
+| Search result highlighting (bold the matched term) | Solr REST API with `hl=true` |
+| Geographic/spatial search | Solr REST API with spatial fields |
+| Incremental real-time indexing | `cfindex action="update"` |
 
-Both approaches can coexist in the same application.
+Both approaches can coexist — use `cfindex` to populate the collection, use the REST API for complex queries.
 ::
 
 ---
@@ -240,11 +408,14 @@ Both approaches can coexist in the same application.
 
 | Concept | Detail |
 |---|---|
-| Create collection | `curl .../solr/admin/collections?action=CREATE&name=...` |
-| Index records | `<cfindex collection="name" action="refresh" type="custom" query="q" key="id" title="col" body="col">` |
-| Search | `<cfsearch collection="name" name="results" criteria="query" maxrows="20">` |
-| Direct query | `GET /solr/training/select?q=keyword&wt=json` |
+| Create collection | `curl .../solr/admin/collections?action=CREATE&name=training&numShards=1` |
+| Register with CF | `<cfcollection action="map" collection="training" engine="solr" path="http://localhost:8983/solr/training">` |
+| Full re-index | `<cfindex action="refresh" type="custom" query="q" key="id" title="col" body="col">` |
+| Incremental update | `<cfindex action="update" ...>` |
+| Search | `<cfsearch collection="training" name="results" criteria="keyword" maxrows="20">` |
 | Result fields | `results.title`, `results.url`, `results.score`, `results.summary` |
+| Direct REST query | `GET /solr/training/select?q=keyword&wt=json&rows=10` |
+| Relevance score | tf-idf — higher score = more relevant |
 
 ---
 

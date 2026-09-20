@@ -40,6 +40,18 @@ tasks:
       done
       echo "ColdFusion is up ✓"
 
+  init_wait_for_solr:
+    init: true
+    machine: cf-dev
+    user: laborant
+    timeout_seconds: 120
+    run: |
+      until curl -s -o /dev/null -w "%{http_code}" http://localhost:8983/solr/ | grep -q "200"; do
+        echo "Waiting for Solr on port 8983..."
+        sleep 5
+      done
+      echo "Solr is up ✓"
+
   verify_solr_running:
     machine: cf-dev
     user: laborant
