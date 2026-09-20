@@ -247,6 +247,24 @@ EOF
 
 You should see the XML content echoed back to the Terminal — that confirms `tee` wrote the file.
 
+Then verify the file is actually on disk:
+
+```bash
+cat /opt/coldfusion2025/cfusion/wwwroot/data/tickets.xml
+```
+
+**Expected output:**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket id="1" priority="high"><title>Email not working</title></ticket>
+  <ticket id="2" priority="low"><title>New monitor request</title></ticket>
+</tickets>
+```
+
+If you see that, the file is in place and ready for the transformation step.
+
 ---
 
 **Step 3 of 5 — create the XSLT stylesheet (`tickets.xsl`)**
