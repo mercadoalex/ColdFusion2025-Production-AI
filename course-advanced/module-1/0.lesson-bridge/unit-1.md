@@ -228,8 +228,11 @@ Two quick checks to confirm your lab is ready. No new tools, no setup — just c
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8500/index.cfm
-# Expected: any code other than 000 (200, 302, or 500 all mean CF is running)
 ```
+
+**Expected output:** `200`, `302`, or `500` — any code other than `000` means CF is up and responding.
+
+The task below runs automatically and turns green once CF is confirmed up.
 
 ::simple-task
 ---
@@ -237,18 +240,23 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8500/index.cfm
 :name: verify_cf_running
 ---
 #active
-In the **Terminal (dev)** tab, run the curl command above and confirm ColdFusion is responding on port 8500.
+Runs automatically — verifies ColdFusion is responding on port 8500.
 
 #completed
 ColdFusion is running on cf-dev. ✓
 ::
 
-**Activity — Terminal (dev):** Confirm `cf-prod` is reachable via SSH:
+**Activity — Terminal (dev):** Confirm `cf-prod` is reachable on the private network:
 
 ```bash
-ssh -o StrictHostKeyChecking=no laborant@cf-prod "echo cf-prod is reachable"
-# Expected: cf-prod is reachable
+ping -c 1 cf-prod
 ```
+
+**Expected output:** `1 packets transmitted, 1 received` — confirms the two VMs can see each other.
+
+> ℹ️ SSH key setup comes in the next lesson. This check only confirms network connectivity — not authentication.
+
+The task below runs automatically and turns green once `cf-prod` responds to a ping from `cf-dev`.
 
 ::simple-task
 ---
@@ -256,15 +264,15 @@ ssh -o StrictHostKeyChecking=no laborant@cf-prod "echo cf-prod is reachable"
 :name: verify_ssh_to_prod
 ---
 #active
-In the **Terminal (dev)** tab, SSH into `cf-prod` and confirm the connection succeeds.
+Runs automatically — verifies cf-prod is reachable from cf-dev over the private network.
 
 #completed
-cf-prod is reachable from cf-dev via SSH. ✓
+cf-prod is reachable from cf-dev. ✓
 ::
 
 ---
 
-When both checks are green you're ready for the next lesson — where you'll install Gitea, write a Dockerfile, and build your first real CI/CD pipeline.
+When both tasks above are green you're ready for the next lesson — where you'll install Gitea, write a Dockerfile, and build your first real CI/CD pipeline.
 
 ::simple-task
 ---
@@ -272,7 +280,7 @@ When both checks are green you're ready for the next lesson — where you'll ins
 :name: verify_lesson_complete
 ---
 #active
-Both environment checks are green — hit **Check** to complete this lesson.
+Runs automatically — turns green once both environment checks above pass.
 
 #completed
 Bridge lesson complete. Time to build the pipeline! ✓

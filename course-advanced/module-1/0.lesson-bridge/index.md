@@ -54,14 +54,11 @@ tasks:
     needs:
       - verify_cf_running
     run: |
-      RESULT=$(ssh -o StrictHostKeyChecking=no \
-                   -o ConnectTimeout=10 \
-                   laborant@cf-prod "echo reachable" 2>/dev/null)
-      if [ "${RESULT}" != "reachable" ]; then
-        echo "Cannot SSH from cf-dev to cf-prod — check network connectivity"
+      if ! ping -c 1 -W 5 cf-prod &>/dev/null; then
+        echo "cf-prod is not reachable on the private network"
         exit 1
       fi
-      echo "cf-prod is reachable from cf-dev via SSH ✓"
+      echo "cf-prod is reachable from cf-dev ✓"
 
   verify_lesson_complete:
     machine: cf-dev
