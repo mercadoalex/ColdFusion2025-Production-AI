@@ -371,6 +371,28 @@ The Dockerfile is the heart of the pipeline. It tells Docker exactly how to buil
 _Three image layers build once, run anywhere — and every image tag corresponds to an exact git commit SHA._
 ::
 
+::hint-box
+---
+:summary: What is a Dockerfile and why does it exist?
+---
+A **Dockerfile** is a plain-text recipe that tells Docker exactly how to build a container image. It is a sequence of instructions, each one adding a layer to the image:
+
+```dockerfile
+FROM   → start from a base image (the OS + runtime already installed)
+ENV    → set environment variables baked into the image
+COPY   → copy files from your machine into the image
+EXPOSE → document which port the container listens on
+RUN    → execute a shell command during the build (install packages, etc.)
+HEALTHCHECK → tell Docker how to test whether the container is healthy
+```
+
+When you run `docker build`, Docker reads the Dockerfile top to bottom and produces a single artefact — the **image** — that contains everything needed to run your application: the operating system layer, the CF runtime, your code, and all configuration.
+
+**The key insight:** the image is self-contained and portable. The same image runs identically on your laptop, on `cf-prod`, or on any cloud VM that has Docker installed. There is no "it works on my machine" — because the machine is part of the image.
+
+A Dockerfile lives in your git repository alongside your code. When the Dockerfile changes, a new image is built. The history of your environment is in git, not in someone's memory.
+::
+
 **Activity — Terminal (dev):** Create the Dockerfile and push it to Gitea.
 
 ```bash
