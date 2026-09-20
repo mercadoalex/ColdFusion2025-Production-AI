@@ -16,7 +16,7 @@ That workflow is not a pipeline — it's a prayer. This lesson replaces it.
 
 ::image-box
 ---
-:src: __static__/cf-before-after-devops-v1.png
+:src: __static__/cf-before-after-devops-v2.png
 :alt: Side-by-side comparison. Left column labelled Before DevOps — Manual FTP era shows six red steps: SSH into server, stop ColdFusion, FTP new cfm files, start ColdFusion, something is broken, restart CF again — with notes about no audit trail and no rollback. Right column labelled After DevOps shows six green steps: git commit, git push origin main, pipeline builds Docker image and runs tests, pipeline pushes image to registry, pipeline SSH deploys to cf-prod, rollback equals docker run image colon previous sha — ten seconds no guessing.
 :max-width: 960px
 ---
@@ -111,7 +111,7 @@ ColdFusion has a reputation as a technology that resists DevOps adoption. That r
 
 ::image-box
 ---
-:src: __static__/cf-before-after-devops-v1.png
+:src: __static__/cf-before-after-devops-v2.png
 :alt: Side-by-side comparison showing the six-step manual FTP deployment on the left versus the six-step automated git push pipeline on the right, highlighting that FTP has no audit trail and no rollback while the pipeline has commit SHA tagging and one-command rollback.
 :max-width: 960px
 ---
