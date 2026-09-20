@@ -235,7 +235,7 @@ Now build the service component that wraps both endpoints and centralises all th
 
 ::image-box
 ---
-:src: __static__/ollama-service-layer-v1.png
+:src: __static__/ollama-service-layer-v2.png
 :alt: Architecture diagram showing four callers on the left — ai-chat.cfm (REST endpoint), ticket-summary.cfm (admin page), HelpDesk.cfc (service component), scheduled-job.cfm (batch processor) — all pointing to a central OllamaService.cfc box. The CFC exposes generate(prompt, temp) and chat(messages[], temp) as public methods and a private makeRequest(path, payload) method. An arrow labeled cfhttp POST goes from the CFC to an Ollama box showing phi3:mini on port 11434 with /api/generate, /api/chat, and /api/tags endpoints. A config box shows the four variables: baseUrl, model, maxTokens, timeout.
 :max-width: 900px
 ---
