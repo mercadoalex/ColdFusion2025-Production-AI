@@ -730,6 +730,56 @@ Steps within a job always run **in order**, top to bottom. If a step fails (non-
 
 ::hint-box
 ---
+:summary: ⚠️ "No matching online runner with label: ubuntu-latest" — how to fix it
+---
+The Act Runner is either not installed or not registered against Gitea. The runner is the agent that actually executes the workflow steps — without it, jobs sit waiting forever.
+
+**Fix for the current lab session** — install and register the runner manually:
+
+```bash
+# ── 1. Download the Act Runner binary ────────────────────────────────
+sudo curl -fsSL \
+  https://dl.gitea.com/act_runner/0.2.10/act_runner-0.2.10-linux-amd64 \
+  -o /usr/local/bin/act_runner
+sudo chmod +x /usr/local/bin/act_runner
+
+# ── 2. Get a registration token from Gitea ───────────────────────────
+TOKEN=$(curl -s -X POST http://localhost:3000/api/v1/admin/runners/registration-token \
+  -u labadmin:labpassword \
+  -H "Content-Type: application/json" \
+  | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))")
+echo "Token: ${TOKEN}"
+
+# ── 3. Register the runner with the ubuntu-latest label ──────────────
+sudo mkdir -p /var/lib/act_runner
+sudo act_runner register \
+  --no-interactive \
+  --instance http://localhost:3000 \
+  --token "${TOKEN}" \
+  --name "cf-dev-runner" \
+  --labels "ubuntu-latest,ubuntu-22.04,self-hosted" \
+  --working-dir /var/lib/act_runner
+
+# ── 4. Start the runner ───────────────────────────────────────────────
+sudo act_runner daemon --config /dev/null &
+echo "Runner started — re-push to trigger the workflow"
+```
+
+**Verify the runner is visible in Gitea:**
+Go to **Gitea → Site Administration → Runners** (or `-u labadmin:labpassword http://localhost:3000/admin/runners`) — you should see `cf-dev-runner` with status **Online**.
+
+**Why does this happen?** The `runs-on: ubuntu-latest` label in the workflow YAML must match a label registered on an active runner. Without a runner bearing that label, Gitea queues the job but nobody picks it up.
+
+**Re-trigger the workflow** after the runner is online by making any small change and pushing:
+```bash
+cd /home/laborant/app
+git commit --allow-empty -m "chore: re-trigger pipeline"
+git push
+```
+::
+
+::hint-box
+---
 :summary: Gitea Actions vs GitHub Actions — what's different?
 ---
 The YAML syntax is nearly identical. The key differences in this lab:

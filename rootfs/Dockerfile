@@ -262,6 +262,15 @@ RUN bash /tmp/get-gitea.sh && \
     systemctl enable gitea.service
 
 # =============================================================================
+# LAYER 11 — Gitea Act Runner
+# Registers with label "ubuntu-latest" so deploy.yml works without changes.
+# Registration happens at VM first boot After=gitea-create-admin.service.
+# =============================================================================
+COPY rootfs/scripts/get-act-runner.sh /tmp/
+ARG ACT_RUNNER_VERSION=0.2.10
+RUN bash /tmp/get-act-runner.sh
+
+# =============================================================================
 # Metadata
 # =============================================================================
 LABEL org.opencontainers.image.title="cf-training" \
