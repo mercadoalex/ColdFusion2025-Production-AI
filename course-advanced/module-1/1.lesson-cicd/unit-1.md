@@ -252,7 +252,16 @@ systemctl status gitea --no-pager
 curl -sf http://localhost:3000 -o /dev/null && echo "Gitea is up"
 ```
 
-Open the **Gitea** tab in the lab. You should see the Gitea login page immediately.
+Open the **Gitea** tab in the lab. You should see the Gitea homepage immediately.
+
+::image-box
+---
+:src: __static__/gitea_ui_v1.png
+:alt: Screenshot of the Gitea homepage as seen in the lab browser tab. The Gitea logo — a green teacup with a git branch icon — appears at the top, followed by the headline "Gitea: Git with a cup of tea" and subtitle "A painless, self-hosted Git service". Below are four feature cards: Easy to install, Cross-platform, Lightweight, and Open Source. The lab tab bar at the top shows Lucee (dev), Gitea, ColdFusion (prod), Ollama API, Terminal (dev), Terminal (prod), and Terminal (oll) tabs.
+:max-width: 860px
+---
+_The Gitea tab in your lab — this is what you should see at `http://localhost:3000` after logging in._
+::
 
 > 🔑 Default credentials: **username** `labadmin` / **password** `labpassword`
 
