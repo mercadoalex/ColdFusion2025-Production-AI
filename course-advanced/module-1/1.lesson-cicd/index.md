@@ -10,8 +10,8 @@ description: |
 name: cicd-pipelines-coldfusion
 slug: cicd-pipelines-coldfusion
 
-createdAt: "2026-09-03"
-updatedAt: "2026-09-03"
+createdAt: 2026-09-03
+updatedAt: 2026-09-03
 
 categories:
 - programming

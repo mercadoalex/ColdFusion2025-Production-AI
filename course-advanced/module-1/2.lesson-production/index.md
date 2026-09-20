@@ -10,8 +10,8 @@ description: |
 name: multi-vm-deployment-cf-prod
 slug: multi-vm-deployment-cf-prod
 
-createdAt: "2026-09-03"
-updatedAt: "2026-09-03"
+createdAt: 2026-09-03
+updatedAt: 2026-09-03
 
 categories:
 - programming

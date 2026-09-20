@@ -10,8 +10,8 @@ description: |
 name: integration-other-technologies
 slug: integration-other-technologies
 
-createdAt: "2026-09-03"
-updatedAt: "2026-09-03"
+createdAt: 2026-09-03
+updatedAt: 2026-09-03
 
 categories:
 - programming

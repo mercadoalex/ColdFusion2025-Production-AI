@@ -10,8 +10,8 @@ description: |
 name: coldbox-testing-testbox
 slug: coldbox-testing-testbox
 
-createdAt: "2026-09-03"
-updatedAt: "2026-09-03"
+createdAt: 2026-09-03
+updatedAt: 2026-09-03
 
 categories:
 - programming

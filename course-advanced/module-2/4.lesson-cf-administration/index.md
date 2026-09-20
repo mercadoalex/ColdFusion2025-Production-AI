@@ -10,8 +10,8 @@ description: |
 name: cf-admin-api-cfconfig-automation
 slug: cf-admin-api-cfconfig-automation
 
-createdAt: "2026-09-03"
-updatedAt: "2026-09-03"
+createdAt: 2026-09-03
+updatedAt: 2026-09-03
 
 categories:
 - programming

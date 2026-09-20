@@ -10,8 +10,8 @@ description: |
 name: intro-ollama-local-llms
 slug: intro-ollama-local-llms
 
-createdAt: "2026-09-03"
-updatedAt: "2026-09-03"
+createdAt: 2026-09-03
+updatedAt: 2026-09-03
 
 categories:
 - programming

@@ -10,8 +10,8 @@ description: |
 name: xml-processing-xpath-xslt
 slug: xml-processing-xpath-xslt
 
-createdAt: "2026-09-03"
-updatedAt: "2026-09-03"
+createdAt: 2026-09-03
+updatedAt: 2026-09-03
 
 categories:
 - programming

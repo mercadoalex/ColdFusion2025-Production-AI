@@ -16,8 +16,8 @@ tagz:
 - ai
 - ollama
 
-createdAt: "2026-09-03"
-updatedAt: "2026-09-03"
+createdAt: 2026-09-03
+updatedAt: 2026-09-03
 
 cover: __static__/cover.png
 
