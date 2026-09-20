@@ -322,6 +322,15 @@ git push -u origin main
 
 After the push, switch to the **Gitea** tab and open `http://localhost:3000/labadmin/cf-app` — you should see the repository with your file.
 
+::image-box
+---
+:src: __static__/gitea-labadmin-dashboard-v1.png
+:alt: Screenshot of the Gitea labadmin dashboard after a successful push. The lab tab bar shows the Gitea tab active. The labadmin user profile is shown with a contribution heatmap. The activity feed shows three events: labadmin created repository labadmin/cf-app 3 minutes ago, labadmin pushed to main at labadmin/cf-app 1 minute ago with commit d21f12e09a labelled initial commit, and labadmin created branch main in labadmin/cf-app 1 minute ago.
+:max-width: 900px
+---
+_Your Gitea dashboard after the push — repository created, branch `main` exists, and the initial commit is visible._
+::
+
 ::hint-box
 ---
 :summary: ⚠️ "Repo created: error" — what does that mean?
