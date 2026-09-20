@@ -140,16 +140,17 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-triage.cfm << 'TRIAGEEOF'
     writeOutput(serializeJSON({"error":"ticket_id is required"}));
     abort;
   }
-  q = queryExecute("SELECT t.title, t.description, t.priority, d.name AS department FROM hd_tickets t JOIN hd_users u ON u.id = t.user_id JOIN hd_departments d ON d.id = u.department_id WHERE t.id = :id AND t.status != 'closed'",{id:{value:ticketId,cfsqltype:"cf_sql_integer"}},{datasource:"training_db"});
+  sql = "SELECT t.title, t.description, t.priority, d.name AS department FROM hd_tickets t JOIN hd_users u ON u.id = t.user_id JOIN hd_departments d ON d.id = u.department_id WHERE t.id = :id AND t.status != 'closed'";
+  q = queryExecute(sql,{id:{value:ticketId,cfsqltype:"cf_sql_integer"}},{datasource:"training_db"});
   if (q.recordCount == 0) {
     cfheader(statuscode="404", statustext="Not Found");
     writeOutput(serializeJSON({"error":"Ticket not found or already closed"}));
     abort;
   }
-  systemPrompt = "You are an IT support triage assistant. Analyse the support ticket and respond in valid JSON only. Return exactly two fields: suggested_priority (one of: low, medium, high, critical) and resolution (a 2-3 step actionable guide, plain text, no markdown). Do not include any text outside the JSON object.";
-  userPrompt = "Ticket title: " & q.title & " | Department: " & q.department & " | Description: " & q.description;
+  sp = "You are an IT triage assistant. Respond in valid JSON only with two fields: suggested_priority (low/medium/high/critical) and resolution (2-3 steps, plain text). No text outside the JSON.";
+  up = "Title: " & q.title & " | Dept: " & q.department & " | Description: " & q.description;
   svc = createObject("component","OllamaService");
-  messages = [{"role":"system","content":systemPrompt},{"role":"user","content":userPrompt}];
+  messages = [{"role":"system","content":sp},{"role":"user","content":up}];
   try {
     aiRaw = svc.chat(messages, 0.2);
   } catch (OllamaService.Error e) {
@@ -159,8 +160,9 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-triage.cfm << 'TRIAGEEOF'
   }
   aiRaw = trim(reReplace(aiRaw,"```json\s*|\s*```","","ALL"));
   triage = isJSON(aiRaw) ? deserializeJSON(aiRaw) : {"suggested_priority":q.priority,"resolution":aiRaw};
-  out = {"ticket_id":ticketId,"title":q.title,"current_priority":q.priority,"suggested_priority":triage.suggested_priority ?: q.priority,"resolution":triage.resolution ?: "See AI response"};
-  writeOutput(serializeJSON(out));
+  sp2 = triage.suggested_priority ?: q.priority;
+  res = triage.resolution ?: "See AI response";
+  writeOutput(serializeJSON({"ticket_id":ticketId,"title":q.title,"current_priority":q.priority,"suggested_priority":sp2,"resolution":res}));
 </cfscript>
 TRIAGEEOF
 ```
@@ -252,7 +254,8 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-summary.cfm << 'SUMMARYEOF'
 <cfscript>
   cfheader(name="Content-Type", value="application/json");
   cfheader(name="Access-Control-Allow-Origin", value="*");
-  q = queryExecute("SELECT t.id, t.title, t.priority, d.name AS department FROM hd_tickets t JOIN hd_users u ON u.id = t.user_id JOIN hd_departments d ON d.id = u.department_id WHERE t.status = 'open' ORDER BY CASE t.priority WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END",{},{datasource:"training_db"});
+  sql = "SELECT t.id, t.title, t.priority, d.name AS department FROM hd_tickets t JOIN hd_users u ON u.id = t.user_id JOIN hd_departments d ON d.id = u.department_id WHERE t.status = 'open' ORDER BY CASE t.priority WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END";
+  q = queryExecute(sql,{},{datasource:"training_db"});
   if (q.recordCount == 0) {
     writeOutput(serializeJSON({"summary":"No open tickets at this time.","count":0}));
     abort;
@@ -261,9 +264,9 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-summary.cfm << 'SUMMARYEOF'
   for (i = 1; i LTE q.recordCount; i++) {
     ticketList &= i & ". [" & q.priority[i] & "] " & q.title[i] & " (Dept: " & q.department[i] & ") ";
   }
-  systemPrompt = "You are an IT manager assistant. Write a concise 3-4 sentence executive summary of the open support tickets listed. Highlight the most urgent items and any patterns you notice. Plain text only, no bullet points, no markdown.";
+  sp = "You are an IT manager assistant. Write a concise 3-4 sentence executive summary of the open tickets listed. Highlight urgent items and patterns. Plain text only, no bullet points, no markdown.";
   svc = createObject("component","OllamaService");
-  messages = [{"role":"system","content":systemPrompt},{"role":"user","content":"Open tickets: " & ticketList}];
+  messages = [{"role":"system","content":sp},{"role":"user","content":"Open tickets: " & ticketList}];
   try {
     summary = svc.chat(messages, 0.4);
   } catch (OllamaService.Error e) {
