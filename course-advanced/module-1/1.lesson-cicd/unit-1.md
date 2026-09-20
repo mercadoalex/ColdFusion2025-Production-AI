@@ -588,6 +588,47 @@ Dockerfile found at `/home/laborant/app/Dockerfile`. ✓
 
 Gitea Actions workflows live in `.gitea/workflows/` and use the same YAML syntax as GitHub Actions. The workflow triggers on every push to `main`, builds the Docker image, pushes it to a local registry, and deploys it to `cf-prod` via SSH.
 
+::hint-box
+---
+:summary: What is YAML and why is it everywhere in cloud-native tooling?
+---
+**YAML** (YAML Ain't Markup Language) is a human-readable data serialisation format. It uses **indentation** to express structure instead of brackets or tags — making it much easier to read than JSON or XML for configuration files.
+
+```yaml
+# YAML — structure through indentation
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+```
+
+The same data in JSON would be:
+```json
+{"name":"Build and Deploy","on":{"push":{"branches":["main"]}},"jobs":{"build":{"runs-on":"ubuntu-latest","steps":[{"name":"Checkout","uses":"actions/checkout@v3"}]}}}
+```
+
+YAML wins for configuration because:
+
+| Feature | YAML | JSON | XML |
+|---|---|---|---|
+| Human readable | ✅ Excellent | ⚠️ Dense for nesting | ❌ Verbose |
+| Comments | ✅ `# comment` | ❌ Not supported | ✅ `<!-- -->` |
+| Multi-line strings | ✅ `\|` block syntax | ⚠️ `\n` escaping | ⚠️ CDATA |
+| Tooling support | ✅ Universal | ✅ Universal | ⚠️ Declining |
+
+**Why cloud-native tools chose YAML:**
+Every major cloud-native tool uses YAML — Kubernetes manifests, GitHub/Gitea Actions, Docker Compose, Ansible playbooks, Helm charts, ArgoCD, Terraform (partially). The reason is the same in each case: operators write these files by hand, and YAML's indentation syntax reads like structured prose.
+
+**The one rule you must never break:** indentation is **spaces only** — never tabs. A single tab character in a YAML file causes a parse error. Most editors (VS Code, vim) can be configured to insert spaces on Tab key press.
+::
+
 **Activity — Terminal (dev):** Create the workflow file and push it.
 
 ```bash
