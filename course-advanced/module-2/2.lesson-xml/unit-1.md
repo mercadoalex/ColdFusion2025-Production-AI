@@ -72,7 +72,11 @@ nodes = XmlSearch(doc, "//ticket");
 ```
 ::
 
-**Activity:** Create `xml_demo.cfm`:
+**Activity:** Open the **Terminal** tab in your playground, then run the commands below one at a time.
+
+> 💡 **Which tab?** Look at the top of your playground — click the tab labelled **Terminal**. That is a live shell connected to your ColdFusion server. All `bash` commands in this lesson run there.
+
+Create `xml_demo.cfm`:
 
 ```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/xml_demo.cfm << 'EOF'
