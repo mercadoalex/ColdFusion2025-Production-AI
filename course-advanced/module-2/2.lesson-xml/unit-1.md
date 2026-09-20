@@ -318,18 +318,20 @@ EOF
 
 **Step 5 of 5 — verify the transformation runs correctly**
 
+The task box below is the verification. It runs `curl` against `xslt_demo.cfm` and checks for HTTP 200. Once all four files from steps 1–4 are in place it will turn green automatically — no extra command needed.
+
+If you want to see the raw HTML output yourself first, run this in **Terminal (dev)**:
+
 ```bash
 curl -s http://localhost:8500/xslt_demo.cfm | grep -o "<td>[^<]*</td>" | head -10
 ```
 
-**Expected output — you must see exactly these lines:**
+**Expected output:**
 
 ```
 <td>1</td><td>high</td><td>Email not working</td>
 <td>2</td><td>low</td><td>New monitor request</td>
 ```
-
-If you see those two lines, the XML was parsed, the stylesheet was applied, and the HTML table was generated correctly. The task below will turn green automatically.
 
 ::simple-task
 ---
@@ -337,7 +339,7 @@ If you see those two lines, the XML was parsed, the stylesheet was applied, and 
 :name: verify_xslt_page
 ---
 #active
-Runs automatically — verifies that `xslt_demo.cfm` is reachable and returns HTTP 200.
+Runs automatically — checks that `xslt_demo.cfm` is reachable and returns HTTP 200. Complete steps 1–4 above and this turns green on its own.
 
 #completed
 xslt_demo.cfm is accessible. ✓
