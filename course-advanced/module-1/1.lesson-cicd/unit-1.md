@@ -427,7 +427,7 @@ git push
 # ── 0. Confirm Docker is installed and running ────────────────────────
 # Expected: Docker version 24.x.x or higher
 # If "command not found" → Docker not installed; see hint box below
-# If "Docker daemon not running" → daemon is stopped; run: sudo systemctl start docker
+# If "Docker daemon not running" → daemon is stopped; see hint box below
 docker --version
 docker info --format "Server Version: {{.ServerVersion}}" 2>/dev/null || echo "Docker daemon not running"
 
@@ -444,22 +444,37 @@ docker images | grep cf-app
 
 ::hint-box
 ---
-:summary: docker --version works but docker info fails — what does that mean?
+:summary: Docker not found or daemon not running — how to install it
 ---
-`docker --version` only checks the client binary is installed. `docker info` contacts the Docker **daemon** (the background service that actually runs containers). If `docker info` returns an error, the daemon is not running.
+`docker --version` only checks the client binary. `docker info` contacts the **daemon** (the background service). If either fails, here is how to resolve it.
 
-Start it:
+**If `docker --version` returns `command not found`** — Docker is not installed. Install it with the official convenience script:
+
 ```bash
-sudo systemctl start docker
+# Install Docker Engine (official script — safe for lab VMs)
+curl -fsSL https://get.docker.com | sudo sh
+
+# Add laborant to the docker group so you can run docker without sudo
+sudo usermod -aG docker laborant
+
+# Apply the group change without logging out
+newgrp docker
+
+# Verify
+docker --version
+docker info --format "Server Version: {{.ServerVersion}}"
+```
+
+**If `docker --version` works but `docker info` returns an error** — the daemon is not running. Docker Engine on Ubuntu uses `docker.service` (not always enabled by default):
+
+```bash
+sudo systemctl enable --now docker
 sudo systemctl status docker --no-pager
 ```
 
-Then retry `docker info`. Once it shows a `Server Version`, you're ready to build.
+If `docker.service` is not found at all, Docker was not installed via the standard package — re-run the install script above.
 
-If `docker --version` itself fails with `command not found`, Docker is not installed. In this lab Docker is pre-installed on `cf-dev` — if you're seeing this, confirm you are on the correct VM:
-```bash
-hostname   # should print cf-dev
-```
+**After installation**, retry the build command. The first `docker build` will pull the CF 2025 base image (~1 GB) — this takes 1–2 minutes on first run.
 ::
 
 ::hint-box
