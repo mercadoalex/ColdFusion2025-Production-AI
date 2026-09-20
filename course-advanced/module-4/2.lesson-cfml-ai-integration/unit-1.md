@@ -14,7 +14,7 @@ The move from `curl` to CFML is smaller than it looks. ColdFusion's `cfhttp` tag
 
 ::image-box
 ---
-:src: __static__/cfml-ollama-architecture-v1.png
+:src: __static__/cfml-ollama-architecture-v2.png
 :alt: Two-row diagram showing the request path — CFML Page calls OllamaService.cfc which calls cfhttp which POSTs to Ollama API — and the return path — Ollama returns a JSON body, cfhttp puts it in fileContent, OllamaService deserialises and returns a string, CFML page calls writeOutput. Endpoint annotations show generate() mapping to /api/generate and chat() to /api/chat.
 :max-width: 900px
 ---
@@ -193,7 +193,7 @@ Before building the service component, understand when to use each Ollama endpoi
 
 ::image-box
 ---
-:src: __static__/generate-vs-chat-v1.png
+:src: __static__/generate-vs-chat-v2.png
 :alt: Side-by-side comparison of generate() and chat(). Left panel (green): generate(prompt, temp, maxTokens) calls /api/generate — best for single-turn stateless prompts like summarisation, classification, and one-shot extraction. Right panel (blue): chat(messages[], temp) calls /api/chat — best for system prompts, multi-turn conversations, and persona control.
 :max-width: 900px
 ---
