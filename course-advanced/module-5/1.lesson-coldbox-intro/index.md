@@ -40,12 +40,28 @@ tasks:
       done
       echo "ColdFusion is up ✓"
 
+  init_wait_for_lucee:
+    init: true
+    machine: cf-dev
+    user: laborant
+    timeout_seconds: 120
+    run: |
+      until curl -s -o /dev/null -w "%{http_code}" http://localhost:8888/ | grep -q "200\|302"; do
+        echo "Waiting for Lucee/CommandBox on port 8888..."
+        sleep 5
+      done
+      echo "Lucee is up ✓"
+
   verify_coldbox_installed:
     machine: cf-dev
     user: laborant
     run: |
       if [ ! -d "/home/laborant/app/coldbox" ]; then
-        echo "ColdBox not installed — run: box install coldbox"
+        echo "ColdBox not installed — run: cd /home/laborant/app && box install coldbox"
+        exit 1
+      fi
+      if [ ! -f "/home/laborant/app/coldbox/system/Bootstrap.cfc" ]; then
+        echo "ColdBox directory exists but appears incomplete"
         exit 1
       fi
       echo "ColdBox installed ✓"
