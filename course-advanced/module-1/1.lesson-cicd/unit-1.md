@@ -367,7 +367,7 @@ Repository pushed to Gitea. ✓
 
 ---
 
-## 7. Dockerise your ColdFusion application
+## 7. Containerise your ColdFusion application
 
 The Dockerfile is the heart of the pipeline. It tells Docker exactly how to build the environment your application needs — the CF runtime, your code, and the configuration — packaged as a single portable image.
 
