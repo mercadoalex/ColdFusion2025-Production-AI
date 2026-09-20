@@ -246,17 +246,21 @@ Runs automatically — verifies ColdFusion is responding on port 8500.
 ColdFusion is running on cf-dev. ✓
 ::
 
-**Activity — Terminal (dev):** Confirm `cf-prod` is reachable on the private network:
+**Activity — Terminal (dev):** Confirm `cf-prod` is reachable via SSH:
 
 ```bash
-ping -c 1 cf-prod
+ssh laborant@cf-prod "echo cf-prod is reachable"
 ```
 
-**Expected output:** `1 packets transmitted, 1 received` — confirms the two VMs can see each other.
+**Expected output:**
 
-> ℹ️ SSH key setup comes in the next lesson. This check only confirms network connectivity — not authentication.
+```
+cf-prod is reachable
+```
 
-The task below runs automatically and turns green once `cf-prod` responds to a ping from `cf-dev`.
+> ℹ️ SSH keys are pre-configured in this environment — no `ssh-keygen` setup needed here. The production lesson covers how keys work and how to rotate them.
+
+The task below runs automatically and turns green once the SSH connection succeeds.
 
 ::simple-task
 ---
@@ -264,10 +268,10 @@ The task below runs automatically and turns green once `cf-prod` responds to a p
 :name: verify_ssh_to_prod
 ---
 #active
-Runs automatically — verifies cf-prod is reachable from cf-dev over the private network.
+Runs automatically — verifies SSH from cf-dev to cf-prod succeeds.
 
 #completed
-cf-prod is reachable from cf-dev. ✓
+cf-prod is reachable from cf-dev via SSH. ✓
 ::
 
 ---

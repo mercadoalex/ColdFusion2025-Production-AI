@@ -147,6 +147,23 @@ else
   echo "[BOX] Lucee will download on first box server start inside the VM (~60s)."
 fi
 
+# ─── Pre-bake ColdBox into the ForgeBox package cache ────────────────────────
+# Same pattern as Lucee engine cache: if the zip is present in /tmp/cf-downloads/
+# CommandBox finds it in the cache and skips the ForgeBox download entirely.
+# Cache path: /opt/commandbox/packages/forgebox/coldbox/<version>/
+# The file must be named coldbox-<version>.zip to match ForgeBox slug resolution.
+COLDBOX_ZIP=$(ls /tmp/cf-downloads/coldbox-*.zip 2>/dev/null | sort -V | tail -1)
+if [ -n "${COLDBOX_ZIP}" ]; then
+  COLDBOX_VERSION=$(basename "${COLDBOX_ZIP}" | sed 's/coldbox-//;s/\.zip//')
+  CB_PKG_CACHE="${CB_HOME}/packages/forgebox/coldbox/${COLDBOX_VERSION}"
+  echo "[BOX] Pre-baking ColdBox ${COLDBOX_VERSION} package cache..."
+  mkdir -p "${CB_PKG_CACHE}"
+  cp "${COLDBOX_ZIP}" "${CB_PKG_CACHE}/coldbox-${COLDBOX_VERSION}.zip"
+  echo "[BOX] ColdBox cached at ${CB_PKG_CACHE}/coldbox-${COLDBOX_VERSION}.zip"
+else
+  echo "[BOX] NOTE: No coldbox-*.zip found in downloads/ — students will download at runtime."
+fi
+
 # ─── PATH entry for all users ────────────────────────────────────────────────
 cat > /etc/profile.d/commandbox.sh <<'PROFILE'
 # CommandBox CLI + ColdFusion bundled JRE — added by cf-training rootfs

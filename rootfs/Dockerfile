@@ -250,7 +250,28 @@ RUN bash /tmp/customize-bashrc.sh && \
 RUN code-server --install-extension KamasamaK.vscode-cfml 2>/dev/null || true
 
 # =============================================================================
-# LAYER 10 — Gitea (self-hosted Git + CI/CD, pre-baked so lesson starts instantly)
+# LAYER 10 — Pre-baked SSH key pair (cf-dev → cf-prod passwordless auth)
+# Both cf-dev and cf-prod run the same image. We bake an ed25519 key pair into
+# the laborant home directory so that SSH from cf-dev to cf-prod works from
+# the very first boot — no manual ssh-keygen step needed for the bridge lesson.
+# The production lesson still teaches the concepts; the infra just works.
+# =============================================================================
+USER root
+RUN mkdir -p /home/${LAB_USER}/.ssh && \
+    ssh-keygen -t ed25519 -N "" -f /home/${LAB_USER}/.ssh/id_ed25519 -C "laborant@cf-dev" && \
+    cp /home/${LAB_USER}/.ssh/id_ed25519.pub /home/${LAB_USER}/.ssh/authorized_keys && \
+    chmod 700 /home/${LAB_USER}/.ssh && \
+    chmod 600 /home/${LAB_USER}/.ssh/id_ed25519 \
+              /home/${LAB_USER}/.ssh/authorized_keys && \
+    chmod 644 /home/${LAB_USER}/.ssh/id_ed25519.pub && \
+    chown -R ${LAB_USER}:${LAB_USER} /home/${LAB_USER}/.ssh && \
+    printf "Host cf-prod\n  StrictHostKeyChecking no\n  User laborant\nHost cf-dev\n  StrictHostKeyChecking no\n  User laborant\n" \
+      > /home/${LAB_USER}/.ssh/config && \
+    chmod 600 /home/${LAB_USER}/.ssh/config && \
+    chown ${LAB_USER}:${LAB_USER} /home/${LAB_USER}/.ssh/config
+
+# =============================================================================
+# LAYER 12 — Gitea (self-hosted Git + CI/CD, pre-baked so lesson starts instantly)
 # Enabled only on cf-dev (the same image tag is used for cf-prod, but cf-prod
 # students never need Gitea — the service starts on every VM, harmlessly).
 # =============================================================================
@@ -262,7 +283,7 @@ RUN bash /tmp/get-gitea.sh && \
     systemctl enable gitea.service
 
 # =============================================================================
-# LAYER 11 — Gitea Act Runner
+# LAYER 13 — Gitea Act Runner
 # Registers with label "ubuntu-latest" so deploy.yml works without changes.
 # Registration happens at VM first boot After=gitea-create-admin.service.
 # =============================================================================
