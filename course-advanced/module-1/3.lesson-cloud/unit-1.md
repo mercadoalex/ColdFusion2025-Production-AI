@@ -12,7 +12,7 @@ Traditional ColdFusion deployments run on a single, manually configured server. 
 
 ::image-box
 ---
-:src: __static__/docker-compose-cf-architecture-v1.png
+:src: __static__/docker-compose-architecture-v1.png
 :alt: Docker Compose architecture diagram showing three containers — cf-app (ColdFusion 2025, port 8500), db (MySQL 8, port 3306), and nginx (reverse proxy, port 80) — connected on a shared docker bridge network labelled app-network, with the developer laptop on the left connecting to nginx
 :max-width: 900px
 ---
