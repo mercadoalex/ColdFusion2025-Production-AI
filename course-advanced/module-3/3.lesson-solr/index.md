@@ -28,32 +28,6 @@ challenges:
   solr-search-7ec1ea17: {}
 
 tasks:
-  init_wait_for_cf:
-    init: true
-    machine: cf-dev
-    user: laborant
-    timeout_seconds: 300
-    run: |
-      until nc -z 127.0.0.1 8500 2>/dev/null; do
-        echo "Waiting for ColdFusion on port 8500..."
-        sleep 5
-      done
-      sleep 10
-      echo "ColdFusion is up ✓"
-
-  init_wait_for_solr:
-    init: true
-    machine: cf-dev
-    user: laborant
-    timeout_seconds: 300
-    run: |
-      sleep 30
-      until nc -z 127.0.0.1 8983 2>/dev/null; do
-        echo "Waiting for Solr on port 8983..."
-        sleep 5
-      done
-      echo "Solr is up ✓"
-
   verify_solr_running:
     machine: cf-dev
     user: laborant

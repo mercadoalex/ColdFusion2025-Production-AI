@@ -30,19 +30,6 @@ challenges:
   solid-principles-6a4f2c91: {}
 
 tasks:
-  init_wait_for_cf:
-    init: true
-    machine: cf-dev
-    user: laborant
-    timeout_seconds: 300
-    run: |
-      until nc -z 127.0.0.1 8500 2>/dev/null; do
-        echo "Waiting for ColdFusion on port 8500..."
-        sleep 5
-      done
-      sleep 10
-      echo "ColdFusion is up ✓"
-
   verify_srp_cfc:
     machine: cf-dev
     user: laborant

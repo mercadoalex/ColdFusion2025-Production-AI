@@ -28,31 +28,6 @@ challenges:
   coldbox-intro-c174c787: {}
 
 tasks:
-  init_wait_for_cf:
-    init: true
-    machine: cf-dev
-    user: laborant
-    timeout_seconds: 300
-    run: |
-      until nc -z 127.0.0.1 8500 2>/dev/null; do
-        echo "Waiting for ColdFusion on port 8500..."
-        sleep 5
-      done
-      sleep 10
-      echo "ColdFusion is up ✓"
-
-  init_wait_for_lucee:
-    init: true
-    machine: cf-dev
-    user: laborant
-    timeout_seconds: 300
-    run: |
-      until curl -s -o /dev/null -w "%{http_code}" http://localhost:8888/ | grep -q "200\|302"; do
-        echo "Waiting for Lucee/CommandBox on port 8888..."
-        sleep 5
-      done
-      echo "Lucee is up ✓"
-
   verify_coldbox_installed:
     machine: cf-dev
     user: laborant

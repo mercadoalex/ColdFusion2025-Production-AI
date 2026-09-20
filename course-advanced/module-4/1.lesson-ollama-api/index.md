@@ -30,31 +30,6 @@ challenges:
   ollama-api-b6f93461: {}
 
 tasks:
-  init_wait_for_cf:
-    init: true
-    machine: cf-dev
-    user: laborant
-    timeout_seconds: 300
-    run: |
-      until nc -z 127.0.0.1 8500 2>/dev/null; do
-        echo "Waiting for ColdFusion on port 8500..."
-        sleep 5
-      done
-      sleep 10
-      echo "ColdFusion is up ✓"
-
-  init_wait_for_ollama:
-    init: true
-    machine: ollama
-    user: laborant
-    timeout_seconds: 300
-    run: |
-      until curl -s -o /dev/null -w "%{http_code}" http://localhost:11434/api/tags | grep -q "200"; do
-        echo "Waiting for Ollama on port 11434..."
-        sleep 5
-      done
-      echo "Ollama is up ✓"
-
   verify_ollama_running:
     machine: ollama
     user: laborant

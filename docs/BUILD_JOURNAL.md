@@ -978,3 +978,89 @@ Oh no! It looks like you've gone over your budget allowance of 350 Bobcoins. You
 
 ---
 
+
+---
+
+## Advanced Course Task Validation — Open Problem (do not invent solutions)
+
+**Date:** 2026-09-20
+
+---
+
+### What we know for certain (from source files)
+
+**The foundations course tasks work.** Every lesson in `docs/reference-working/course-foundations/` has tasks that turn green. Structure of a working lesson task block:
+
+```yaml
+tasks:
+  verify_something:
+    machine: dev-machine
+    user: laborant
+    run: |
+      ...shell script...
+
+  verify_lesson_complete:
+    machine: dev-machine
+    user: laborant
+    needs:
+      - verify_something
+    run: |
+      echo "Lesson complete — well done!"
+```
+
+No `init:` key. No `timeout_seconds:` key. Just `machine`, `user`, `run`, and optionally `needs`.
+
+**The advanced course tasks are structurally identical** — same YAML shape, same `needs:` chaining, same `run:` block format. The only differences are:
+- `machine: dev-machine` (foundations) vs `machine: cf-dev` (advanced) — both match their respective `playground.yaml` machine names, so this is correct
+- `playground: name: cf-alex-edcdf975` (foundations) vs `playground: name: cf-training-advanced-7442b9e0` (advanced) — both reference real registered playgrounds
+
+**The `init: true` key was invented** — it does not appear anywhere in the foundations course or in any iximiuz Labs documentation we have. It was added in commit `0222c2e` and is the direct cause of the "Warming up playground… Init tasks completed: 0/N" hang. It must be removed.
+
+---
+
+### What we do NOT know
+
+- Whether the advanced course tasks turn green after removing `init:` blocks — this has never been tested on a live playground
+- Whether the multi-VM playground (cf-dev + cf-prod + ollama) has any different task behaviour compared to the single-VM foundations playground
+- Whether `timeout_seconds:` is a valid key at all on this platform — it also does not appear in any working example
+
+---
+
+### What needs to happen next
+
+1. **Remove all `init_wait_for_*` task blocks from all advanced lessons** (revert commit `0222c2e` effect)
+2. **Push to platform**
+3. **Open one lesson and observe** — do the tasks turn green when the student completes the activity?
+4. **Document what actually happens** here before making any further changes
+
+Do not add any new keys, patterns, or logic that are not present in the confirmed-working foundations course files.
+
+---
+
+### Confirmed-working task schema (copy this pattern exactly)
+
+```yaml
+tasks:
+  verify_something:
+    machine: cf-dev          # must match playground.yaml machine name exactly
+    user: laborant
+    run: |
+      # shell script — exit 0 = pass, exit 1 = fail
+      STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8500/file.cfm)
+      if [ "${STATUS}" != "200" ]; then
+        echo "file.cfm not accessible"
+        exit 1
+      fi
+      echo "file.cfm is accessible ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_something
+    run: |
+      echo "Lesson complete ✓"
+```
+
+Keys used: `machine`, `user`, `run`, `needs`. Nothing else.
+
