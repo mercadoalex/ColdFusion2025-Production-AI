@@ -182,7 +182,7 @@ This lesson uses a **fully local** toolchain — everything runs inside your lab
 
 ::image-box
 ---
-:src: __static__/gitea-pipeline-flow-v1.png
+:src: __static__/gitea-pipeline-flow-v2.png
 :alt: End-to-end diagram of the local CI/CD toolchain. Top row shows Developer on cf-dev VM connecting via push to Gitea at localhost 3000 which triggers the Act Runner also on cf-dev. Below, four pipeline steps in boxes connected by arrows: Checkout using actions/checkout v3, docker build tagging with gitea.sha, docker push to localhost 5000, and SSH deploy to cf-prod. The docker push connects down to a Local Registry box at localhost 5000. The Local Registry has a pull arrow to the cf-prod VM box which shows docker run on port 8500. Legend: blue for pipeline trigger, green for deploy, purple dashed for image transfer. Caption: All components run on cf-dev — no internet required.
 :max-width: 960px
 ---
@@ -364,7 +364,7 @@ The Dockerfile is the heart of the pipeline. It tells Docker exactly how to buil
 
 ::image-box
 ---
-:src: __static__/docker-build-deploy-v1.png
+:src: __static__/docker-build-deploy-v2.png
 :alt: Three-column diagram. Left column cf-dev VM shows source files (app/index.cfm plus Dockerfile) flowing down through docker build into three stacked image layers — app code layer in blue, CF runtime layer in green, and OS base layer in purple — tagged cf-app colon a3f82c9. Middle column Local Registry at localhost 5000 shows three image tags: cf-app colon a3f82c9 as latest, cf-app colon b7c14d2 as yesterday, cf-app colon e91fa55 as 3 days ago, with a rollback annotation: rollback equals docker run image colon b7c14d2 — ten seconds no guessing. Right column cf-prod VM shows the running container on port 8500 with a HEALTHCHECK, user traffic routing to healthy container, and a note that every deploy equals a commit SHA.
 :max-width: 960px
 ---
@@ -403,6 +403,9 @@ git push
 
 ```bash
 # ── 0. Confirm Docker is installed and running ────────────────────────
+# Expected: Docker version 24.x.x or higher
+# If "command not found" → Docker not installed; see hint box below
+# If "Docker daemon not running" → daemon is stopped; run: sudo systemctl start docker
 docker --version
 docker info --format "Server Version: {{.ServerVersion}}" 2>/dev/null || echo "Docker daemon not running"
 
