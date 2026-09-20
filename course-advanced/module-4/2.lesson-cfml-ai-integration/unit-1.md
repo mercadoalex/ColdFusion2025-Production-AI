@@ -656,6 +656,17 @@ CFML AI integration lesson complete. On to the next one! ✓
 
 ---
 
+::image-box
+---
+:src: __static__/temperature_parameter_ai_deterministic_v1.png
+:alt: Horizontal gradient slider from blue (Deterministic, 0.0) to orange (Creative, 1.0) with three annotated cards below. Left card at 0.1 shows Factual/Classification use cases — Ticket triage, Yes/No answers, Structured extraction — with note "Same input → same output every time". Centre card at 0.5 shows Balanced/Summaries — Support answers, Explanations, Paraphrasing — with note "Sensible and varied". Right card at 0.9 shows Creative/Brainstorming — Name suggestions, Marketing copy, Story ideas — with note "Varied and sometimes surprising". Caption reads: Low temperature = predictable. High temperature = inventive. Most tasks live between 0.1 and 0.7.
+:max-width: 900px
+---
+_Temperature is a single number between 0.0 and 1.0 — lower means more predictable, higher means more inventive._
+::
+
+---
+
 ## Key concepts reference
 
 | Concept | CFML approach |
