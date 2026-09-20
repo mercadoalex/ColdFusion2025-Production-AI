@@ -14,6 +14,15 @@ SOLID is a set of five design principles for object-oriented code, coined by Rob
 - **Easier to extend** — new behaviour is added without editing existing code
 - **Easier to hand off** — another developer can read and understand a class without reading its entire dependency tree
 
+::image-box
+---
+:src: __static__/solid_v1.png
+:alt: Five-panel diagram summarising the SOLID principles — S Single Responsibility (one reason to change), O Open/Closed (open for extension, closed for modification), L Liskov Substitution (subtypes substitutable for base types), I Interface Segregation (no client depends on unused methods), D Dependency Inversion (depend on abstractions not concretions) — each with a ColdFusion CFC example
+:max-width: 900px
+---
+_The five SOLID principles — each one a rule for writing CFCs that survive change._
+::
+
 ::hint-box
 ---
 :summary: Where did SOLID come from — and why does it still matter in 2025?
