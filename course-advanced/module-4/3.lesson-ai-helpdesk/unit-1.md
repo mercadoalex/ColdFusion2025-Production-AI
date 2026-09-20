@@ -79,10 +79,10 @@ curl -s "http://localhost:8500/api/tickets.cfm" | python3 -c "import sys,json; d
 If the tickets API returns an empty array, the database needs seeding. Run:
 
 ```bash
-curl -s "http://localhost:8500/db-seed.cfm"
+curl -s "http://localhost:8500/seed-db.cfm"
 ```
 
-This creates sample tickets across departments with varying priorities. If `db-seed.cfm` doesn't exist, check the Help Desk setup from Module 3.
+This creates sample tickets, users, and departments across the `training_db` database. After seeding, re-run the tickets check — you should see at least 5–10 tickets returned.
 ::
 
 ::simple-task
