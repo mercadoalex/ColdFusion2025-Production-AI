@@ -169,15 +169,19 @@ TRIAGEEOF
 
 **Activity — Terminal (dev):** Test the endpoint:
 
+> ⏱️ **The first call takes 30–90 seconds** — phi3:mini is loading into RAM. Subsequent calls respond in 5–15 seconds.
+
 ```bash
 # Basic test — should return JSON with suggested_priority and resolution
 curl -s "http://localhost:8500/api/ai-triage.cfm?ticket_id=1" | python3 -m json.tool
+```
 
-# Test the 400 path
+```bash
+# Test the 400 validation path (no ticket_id)
 curl -s -o /dev/null -w "%{http_code}\n" "http://localhost:8500/api/ai-triage.cfm"
 # Expected: 400
 
-# Test the 404 path
+# Test the 404 path (non-existent ticket)
 curl -s -o /dev/null -w "%{http_code}\n" "http://localhost:8500/api/ai-triage.cfm?ticket_id=9999"
 # Expected: 404
 ```
