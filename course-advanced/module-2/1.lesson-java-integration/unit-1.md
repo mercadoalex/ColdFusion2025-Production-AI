@@ -763,7 +763,7 @@ When all three tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-All three Java tasks are green — hit **Check** to complete this lesson.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 Java integration lesson complete. On to the next one! ✓

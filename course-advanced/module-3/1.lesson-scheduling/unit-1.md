@@ -239,7 +239,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-All three scheduling tasks are green — hit **Check** to complete the lesson.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 Scheduling lesson complete. On to the next one! ✓

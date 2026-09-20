@@ -252,7 +252,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-pdf_demo.cfm and export.cfm are both in place — hit **Check** to complete the lesson.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 Complementary features lesson complete. On to the next one! ✓

@@ -254,7 +254,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-Docker Compose file is ready — hit **Check** to complete the lesson.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 Cloud deployment lesson complete. On to the next one! ✓

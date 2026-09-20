@@ -158,7 +158,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-ColdBox is installed — hit **Check** to complete the lesson.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 ColdBox intro lesson complete. On to the next one! ✓

@@ -297,7 +297,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-SSH key, deploy script, and deploy marker are all in place — hit **Check** to complete the lesson.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 Production deployment lesson complete. On to the next one! ✓

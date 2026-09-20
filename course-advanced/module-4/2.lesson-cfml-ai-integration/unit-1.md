@@ -930,7 +930,7 @@ Apply what you have covered in this lesson with the challenge below.
 :name: verify_lesson_complete
 ---
 #active
-All 5 tasks are green — OllamaService.cfc created, ai-chat.cfm responding, AI POST response received, error handling confirmed. Hit **Check** to complete.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 CFML AI integration lesson complete. On to the next one! ✓

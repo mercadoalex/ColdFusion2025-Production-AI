@@ -256,7 +256,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-Solr is running, collection exists, and search.cfm is accessible — hit **Check** to complete.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 Solr lesson complete. On to the next one! ✓

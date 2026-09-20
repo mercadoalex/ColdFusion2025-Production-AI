@@ -251,7 +251,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-TestBox installed, spec written, and all tests passing — hit **Check** to complete.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 TestBox testing lesson complete. ✓ You've finished the advanced course!

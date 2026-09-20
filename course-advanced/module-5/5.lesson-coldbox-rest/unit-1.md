@@ -243,7 +243,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-API handler and JSON response working — hit **Check** to complete.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 ColdBox REST API lesson complete. On to the next one! ✓

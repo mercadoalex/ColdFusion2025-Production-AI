@@ -250,7 +250,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-Handler, route, and view are all in place — hit **Check** to complete.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 Handlers & routing lesson complete. On to the next one! ✓

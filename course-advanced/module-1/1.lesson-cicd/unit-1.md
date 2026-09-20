@@ -971,7 +971,7 @@ Apply what you have covered in this lesson with the challenge below. You'll wire
 :name: verify_lesson_complete
 ---
 #active
-Dockerfile exists, repository pushed, and workflow file created — hit **Check** to complete the lesson.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 DevOps lesson complete. On to the next one! ✓

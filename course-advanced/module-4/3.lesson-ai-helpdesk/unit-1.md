@@ -431,7 +431,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-Triage endpoint and summary endpoint both working — hit **Check** to complete.
+Runs automatically — turns green once all previous tasks pass.
 
 #completed
 AI Help Desk lesson complete. On to the next one! ✓
