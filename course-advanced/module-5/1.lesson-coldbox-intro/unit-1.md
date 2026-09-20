@@ -166,7 +166,12 @@ ColdBox intro lesson complete. On to the next one! ✓
 
 ---
 
-## Now Prove It
+## Put It Into Practice
+
+> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
+> — John Dewey
+
+Apply what you have covered in this lesson with the challenge below.
 
 ::card
 ---

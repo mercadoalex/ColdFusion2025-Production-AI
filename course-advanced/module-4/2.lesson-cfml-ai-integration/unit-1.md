@@ -304,6 +304,44 @@ reply = svc.chat(messages);
 For the help desk lesson you will store conversation history in a database. For this lesson, every call is single-turn.
 ::
 
+**Activity — Terminal (dev):** Try both endpoints side-by-side so the difference is concrete, not just theoretical.
+
+This activity runs two quick calls — one to `/api/generate` for a plain single-turn answer, one to `/api/chat` with a system prompt — so you see the output difference before you build the service layer.
+
+```bash
+# ── /api/generate — plain prompt, no system role ─────────────────────
+curl -s -X POST http://ollama:11434/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{"model":"phi3:mini","prompt":"What is a REST API?","stream":false}' \
+  | python3 -c "import sys,json; print('generate():', json.load(sys.stdin)['response'][:120])"
+
+# ── /api/chat — same question, with a strict system prompt ───────────
+curl -s -X POST http://ollama:11434/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"model":"phi3:mini","stream":false,"messages":[{"role":"system","content":"Reply in exactly five words."},{"role":"user","content":"What is a REST API?"}]}' \
+  | python3 -c "import sys,json; print('chat():', json.load(sys.stdin)['message']['content'])"
+```
+
+Notice: `generate()` returns a `response` key; `chat()` returns `message.content`. That difference drives the two separate methods in `OllamaService.cfc`.
+
+::hint-box
+---
+:summary: The generate() response is verbose — how do I keep it short?
+---
+By default, `phi3:mini` answers as fully as it can. You can constrain length two ways:
+
+1. **num_predict** (hard token cap) — stop after N tokens regardless of whether the sentence is complete:
+   ```json
+   "options": { "num_predict": 80 }
+   ```
+2. **Prompt engineering** (soft constraint) — ask the model to be brief:
+   ```
+   "In one sentence, what is a REST API?"
+   ```
+
+For classification tasks, use `num_predict: 5` to force a short answer. For summaries, prompt-engineering is more reliable because it lets the model finish its thought naturally.
+::
+
 ---
 
 ## 4. OllamaService.cfc — the reusable service layer
@@ -449,7 +487,12 @@ With the service layer in place, expose AI functionality as a proper REST endpoi
 _GET for health, POST for AI — validation gates protect every failure path, and errors return proper HTTP status codes._
 ::
 
-**Activity — Terminal (dev):** Create the `/api` directory and endpoint:
+**Activity — Terminal (dev):** Create the `/api` directory and the REST endpoint file.
+
+This activity does three things:
+1. Creates the `/api/` directory so the path `http://localhost:8500/api/ai-chat.cfm` resolves
+2. Writes the full endpoint with GET health check + POST AI call + error handling
+3. Runs four test requests to exercise every branch (health, AI response, custom system prompt, 400 validation)
 
 ```bash
 mkdir -p /opt/coldfusion2025/cfusion/wwwroot/api
@@ -818,16 +861,29 @@ Or expose it as an optional argument:
 And include it in options only when it is non-negative — a seed of `-1` tells Ollama to use a random seed (default behaviour).
 ::
 
-::simple-task
+::hint-box
 ---
-:tasks: tasks
-:name: verify_lesson_complete
+:summary: How do I let API callers control temperature from the request body?
 ---
-#active
-All 5 tasks are green — OllamaService.cfc created, ai-chat.cfm responding, AI POST response received, error handling confirmed. Hit **Check** to complete.
+The current `ai-chat.cfm` uses the default temperature inside `OllamaService.cfc`. To let callers tune creativity, read an optional `temperature` field from the JSON body:
 
-#completed
-CFML AI integration lesson complete. On to the next one! ✓
+```cfml
+temp = structKeyExists(data, "temperature") ? javaCast("float", data.temperature) : javaCast("float", 0.7);
+reply = svc.chat(messages, temp);
+```
+
+Add a validation guard so callers can't pass nonsensical values:
+
+```cfml
+if (structKeyExists(data, "temperature")) {
+  temp = max(0.0, min(1.0, val(data.temperature)));
+  temp = javaCast("float", temp);
+} else {
+  temp = javaCast("float", 0.7);
+}
+```
+
+This pattern — read → validate → clamp → cast — prevents both malformed requests and values outside the `[0.0, 1.0]` range that confuse the model.
 ::
 
 ---
@@ -849,13 +905,33 @@ CFML AI integration lesson complete. On to the next one! ✓
 | Raw POST body | `toString(getHttpRequestData().content)` before `isJSON()` |
 | Float fields in JSON | `javaCast("float", value)` before `serializeJSON` — Ollama Go parser requires it |
 | Stop execution early | `abort` — not `return` — to short-circuit a `.cfm` page |
+| Temperature from REST body | `max(0.0, min(1.0, val(data.temperature)))` then `javaCast("float", ...)` |
 
 ---
 
-## Now Prove It
+## Put It Into Practice
+
+> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
+> — John Dewey
+
+Apply what you have covered in this lesson with the challenge below.
 
 ::card
 ---
 :challenge: challenges.cfml-ai-integration-c3d196db
 ---
+::
+
+---
+
+::simple-task
+---
+:tasks: tasks
+:name: verify_lesson_complete
+---
+#active
+All 5 tasks are green — OllamaService.cfc created, ai-chat.cfm responding, AI POST response received, error handling confirmed. Hit **Check** to complete.
+
+#completed
+CFML AI integration lesson complete. On to the next one! ✓
 ::

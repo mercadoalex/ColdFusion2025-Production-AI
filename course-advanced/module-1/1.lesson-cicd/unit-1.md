@@ -952,9 +952,12 @@ Start with a smoke test, then graduate to full TestBox runs as your test suite g
 
 ---
 
-## Now Prove It
+## Put It Into Practice
 
-Apply what you've learned in the challenge below. You'll wire together a Dockerfile and a Gitea Actions workflow for a ColdFusion microservice.
+> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
+> — John Dewey
+
+Apply what you have covered in this lesson with the challenge below. You'll wire together a Dockerfile and a Gitea Actions workflow for a ColdFusion microservice.
 
 ::card
 ---
