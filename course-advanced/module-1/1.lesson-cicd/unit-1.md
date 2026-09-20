@@ -408,19 +408,43 @@ git commit -m "add Dockerfile"
 git push
 ```
 
-**Activity — Terminal (dev):** Build the image locally to confirm the Dockerfile is valid before the pipeline runs it:
+**Activity — Terminal (dev):** Verify Docker is installed, then build the image locally to confirm the Dockerfile is valid before the pipeline runs it:
 
 ```bash
+# ── 0. Confirm Docker is installed and running ────────────────────────
+docker --version
+docker info --format "Server Version: {{.ServerVersion}}" 2>/dev/null || echo "Docker daemon not running"
+
 cd /home/laborant/app
 
-# Build the image — this pulls CF 2025 from Docker Hub on first run (~1–2 min)
+# ── 1. Build the image — pulls CF 2025 on first run (~1–2 min) ────────
 docker build -t localhost:5000/cf-app:local .
 
-# Confirm the image was created
+# ── 2. Confirm the image was created ─────────────────────────────────
 docker images | grep cf-app
 ```
 
 > ⏱️ The first `docker build` pulls the `adobecoldfusion/coldfusion2025:latest` base image — about 1–2 minutes on first run. Subsequent builds use the cached layer and take seconds.
+
+::hint-box
+---
+:summary: docker --version works but docker info fails — what does that mean?
+---
+`docker --version` only checks the client binary is installed. `docker info` contacts the Docker **daemon** (the background service that actually runs containers). If `docker info` returns an error, the daemon is not running.
+
+Start it:
+```bash
+sudo systemctl start docker
+sudo systemctl status docker --no-pager
+```
+
+Then retry `docker info`. Once it shows a `Server Version`, you're ready to build.
+
+If `docker --version` itself fails with `command not found`, Docker is not installed. In this lab Docker is pre-installed on `cf-dev` — if you're seeing this, confirm you are on the correct VM:
+```bash
+hostname   # should print cf-dev
+```
+::
 
 ::hint-box
 ---
