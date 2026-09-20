@@ -124,6 +124,42 @@ docker-compose.yml found and references ColdFusion. ✓
 
 In cloud deployments, configuration is injected via environment variables — never hardcoded. ColdFusion reads environment variables through Java's `System.getenv()`.
 
+::hint-box
+---
+:summary: The Twelve-Factor App — the methodology behind this pattern
+---
+The **Twelve-Factor App** is a methodology for building software-as-a-service applications, published by Adam Wiggins (Heroku) in 2012. It describes twelve practices that make an application portable, scalable, and maintainable in modern cloud environments. The full methodology is at [12factor.net](https://12factor.net).
+
+**The twelve factors:**
+
+| # | Factor | What it means in practice |
+|---|---|---|
+| I | **Codebase** | One codebase tracked in git, many deploys |
+| II | **Dependencies** | Declare all dependencies explicitly (`box.json`, `pom.xml`) — never rely on system-wide packages |
+| III | **Config** | Store config in environment variables — never in code |
+| IV | **Backing services** | Treat databases, queues, and caches as attached resources, swappable via config |
+| V | **Build/Release/Run** | Strictly separate build stage from release from runtime |
+| VI | **Processes** | Execute the app as stateless processes — no local sticky sessions |
+| VII | **Port binding** | Export services via port binding — `8500`, `80`, `11434` |
+| VIII | **Concurrency** | Scale out via the process model, not by making processes bigger |
+| IX | **Disposability** | Fast startup, graceful shutdown — containers should be replaceable in seconds |
+| X | **Dev/Prod parity** | Keep development, staging, and production as similar as possible |
+| XI | **Logs** | Treat logs as event streams — write to stdout, let the platform aggregate |
+| XII | **Admin processes** | Run admin tasks (migrations, seeds) as one-off processes in the same environment |
+
+**Which factors the `docker-compose.yml` + `Application.cfc` pattern above covers:**
+
+- **III (Config)** — `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` come from environment variables, not hardcoded strings
+- **IV (Backing services)** — the `db` service is an attached resource; swapping MySQL for RDS means changing one env var
+- **VII (Port binding)** — ColdFusion binds to port 8500, Nginx to 80, MySQL to 3306 — each service owns its port
+- **X (Dev/Prod parity)** — the same `docker-compose.yml` runs locally and in production; no "works on my machine" drift
+- **XI (Logs)** — Docker captures stdout from all containers; a log aggregator (CloudWatch, Datadog) reads the stream
+
+**The factor most ColdFusion apps violate:** Factor III. Datasource credentials hardcoded in `Application.cfc`, SMTP passwords in `cfmail` calls, API keys in `.cfm` files. The `System.getenv()` pattern above is the fix.
+
+**Connection to SOLID:** Factor III (inject config from outside) and the Dependency Inversion Principle (inject dependencies from outside) are the same idea at two different levels — don't hardcode what can change, inject it.
+::
+
 ::image-box
 ---
 :src: __static__/application-cfc-env-vars-v1.png
