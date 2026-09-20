@@ -27,7 +27,7 @@ playground:
   name: cf-training-advanced-7442b9e0
 
 challenges:
-  cfml-ai-integration-001a9503: {}
+  cfml-ai-integration-c3d196db: {}
 
 tasks:
   verify_ai_test_cfm:

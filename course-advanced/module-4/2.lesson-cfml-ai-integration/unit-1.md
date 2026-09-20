@@ -693,6 +693,6 @@ When all tasks above are green, this lesson is complete.
 
 ::card
 ---
-:challenge: challenges.cfml-ai-integration-001a9503
+:challenge: challenges.cfml-ai-integration-c3d196db
 ---
 ::

@@ -3,8 +3,8 @@ kind: challenge
 
 title: 'Build an AI Text Summariser in ColdFusion'
 
-name: cfml-ai-integration-001a9503
-slug: cfml-ai-integration-001a9503
+name: cfml-ai-integration-c3d196db
+slug: cfml-ai-integration-c3d196db
 
 description: |
   Create a reusable OllamaService.cfc and a REST endpoint that accepts
