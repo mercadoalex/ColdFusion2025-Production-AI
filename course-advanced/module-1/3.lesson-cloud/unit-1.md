@@ -126,7 +126,7 @@ In cloud deployments, configuration is injected via environment variables — ne
 
 ::image-box
 ---
-:src: __static__/cf-env-variables-v1.png
+:src: __static__/application-cfc-env-vars-v1.png
 :alt: Application.cfc open in VS Code showing this.datasource configured from environment variables using createObject("java","java.lang.System").getenv() calls for DB_HOST, DB_NAME, DB_USER, and DB_PASS — with a fallback to localhost for local development
 :max-width: 860px
 ---
