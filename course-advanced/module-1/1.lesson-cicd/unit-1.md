@@ -704,6 +704,35 @@ Once the pipeline is in place, your daily workflow becomes this:
 
 ::hint-box
 ---
+:summary: What types of tests belong in a CI/CD pipeline — and where?
+---
+A mature CI/CD pipeline runs several categories of tests at different stages. You don't need all of them on day one — start with the fast ones and add layers as the project grows.
+
+| Test type | What it checks | When to run | CF tool |
+|---|---|---|---|
+| **Unit tests** | Individual functions and CFCs in isolation | Every push — fast, no server needed | TestBox `Spec` / `BDD` |
+| **Integration tests** | CFCs + database + datasources working together | Every push — needs a running CF + DB | TestBox with a test datasource |
+| **API / endpoint tests** | REST endpoints return correct status codes and JSON | After `docker build`, before push | `curl` assertions or TestBox HTTP runner |
+| **Smoke test** | The app starts and the home page returns 200 | After deploy to `cf-prod` | `curl -sf http://cf-prod:8500/index.cfm` |
+| **Performance test** | Response time stays under a threshold | On schedule or before releases | Apache Bench (`ab`), k6 |
+| **Security scan** | Known CVEs in base image or dependencies | On schedule | `docker scout`, Trivy |
+
+**Recommended order in the pipeline:**
+
+```
+git push
+  → Unit tests          (fast — fail here first, before building anything)
+  → docker build
+  → Integration tests   (run against the built image)
+  → docker push
+  → Smoke test          (run after deploy — confirm CF actually started)
+```
+
+**Rule of thumb:** tests that run in under 30 seconds belong in every push pipeline. Tests that take minutes (performance, security scans) belong in a nightly scheduled run so they don't slow down every developer commit.
+::
+
+::hint-box
+---
 :summary: How do I add automated tests to the pipeline?
 ---
 Between the "Build image" and "Push to registry" steps, add a test step that runs inside the container:
