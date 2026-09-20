@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" font-family="-apple-system,'Segoe UI',system-ui,sans-serif">
+  <rect width="960" height="520" fill="#ffffff"/>
+
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#374151"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="480" y="34" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2328">Two AI endpoints — triage per ticket, summary across all open tickets</text>
+
+  <!-- ═══ LEFT COLUMN: ai-triage.cfm ═══ -->
+  <!-- Header -->
+  <rect x="30" y="55" width="420" height="36" rx="8" fill="#1d4ed8"/>
+  <text x="240" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">GET /api/ai-triage.cfm?ticket_id=N</text>
+
+  <!-- Step 1: Browser -->
+  <rect x="30" y="105" width="120" height="50" rx="7" fill="#eff6ff" stroke="#3b82d4" stroke-width="1.5"/>
+  <text x="90" y="128" text-anchor="middle" font-size="12" font-weight="600" fill="#1d4ed8">Browser</text>
+  <text x="90" y="146" text-anchor="middle" font-size="10" fill="#57606a">?ticket_id=1</text>
+
+  <line x1="152" y1="130" x2="188" y2="130" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 2: ai-triage.cfm -->
+  <rect x="190" y="105" width="130" height="50" rx="7" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="255" y="128" text-anchor="middle" font-size="12" font-weight="600" fill="#c2410c">ai-triage.cfm</text>
+  <text x="255" y="146" text-anchor="middle" font-size="10" fill="#57606a">reads ticket from DB</text>
+
+  <line x1="322" y1="130" x2="358" y2="130" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 3: training_db -->
+  <rect x="360" y="105" width="82" height="50" rx="7" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="401" y="128" text-anchor="middle" font-size="11" font-weight="600" fill="#15803d">training_db</text>
+  <text x="401" y="146" text-anchor="middle" font-size="10" fill="#57606a">hd_tickets</text>
+
+  <!-- Down arrow from ai-triage.cfm -->
+  <line x1="255" y1="157" x2="255" y2="193" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="265" y="180" font-size="10" fill="#57606a">builds prompt</text>
+
+  <!-- Step 4: OllamaService -->
+  <rect x="160" y="195" width="190" height="50" rx="7" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="255" y="218" text-anchor="middle" font-size="12" font-weight="600" fill="#15803d">OllamaService.cfc</text>
+  <text x="255" y="236" text-anchor="middle" font-size="10" fill="#57606a">svc.chat(messages)</text>
+
+  <line x1="255" y1="247" x2="255" y2="283" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="265" y="270" font-size="10" fill="#57606a">cfhttp POST</text>
+
+  <!-- Step 5: Ollama -->
+  <rect x="175" y="285" width="160" height="50" rx="7" fill="#faf5ff" stroke="#7c5cd8" stroke-width="1.5"/>
+  <text x="255" y="308" text-anchor="middle" font-size="12" font-weight="600" fill="#6d28d9">Ollama / phi3:mini</text>
+  <text x="255" y="326" text-anchor="middle" font-size="10" fill="#57606a">:11434/api/chat</text>
+
+  <!-- Return arrow -->
+  <line x1="175" y1="340" x2="100" y2="380" stroke="#6d28d9" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Response box -->
+  <rect x="30" y="382" width="390" height="62" rx="7" fill="#fafafa" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="45" y="404" font-size="11" font-weight="600" fill="#1f2328">JSON response:</text>
+  <text x="45" y="420" font-size="10" font-family="monospace" fill="#374151">{ "suggested_priority": "high",</text>
+  <text x="45" y="436" font-size="10" font-family="monospace" fill="#374151">  "resolution": "Step 1. Check logs..." }</text>
+
+  <!-- ═══ RIGHT COLUMN: ai-summary.cfm ═══ -->
+  <!-- Header -->
+  <rect x="510" y="55" width="420" height="36" rx="8" fill="#15803d"/>
+  <text x="720" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">GET /api/ai-summary.cfm</text>
+
+  <!-- Step 1 -->
+  <rect x="510" y="105" width="120" height="50" rx="7" fill="#eff6ff" stroke="#3b82d4" stroke-width="1.5"/>
+  <text x="570" y="128" text-anchor="middle" font-size="12" font-weight="600" fill="#1d4ed8">Browser</text>
+  <text x="570" y="146" text-anchor="middle" font-size="10" fill="#57606a">or cron job</text>
+
+  <line x1="632" y1="130" x2="668" y2="130" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 2 -->
+  <rect x="670" y="105" width="130" height="50" rx="7" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="735" y="128" text-anchor="middle" font-size="12" font-weight="600" fill="#c2410c">ai-summary.cfm</text>
+  <text x="735" y="146" text-anchor="middle" font-size="10" fill="#57606a">queries all open tickets</text>
+
+  <line x1="802" y1="130" x2="838" y2="130" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 3 -->
+  <rect x="840" y="105" width="82" height="50" rx="7" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="881" y="128" text-anchor="middle" font-size="11" font-weight="600" fill="#15803d">training_db</text>
+  <text x="881" y="146" text-anchor="middle" font-size="10" fill="#57606a">hd_tickets</text>
+
+  <!-- Down -->
+  <line x1="735" y1="157" x2="735" y2="193" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="745" y="180" font-size="10" fill="#57606a">formats list</text>
+
+  <!-- Step 4 -->
+  <rect x="640" y="195" width="190" height="50" rx="7" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="735" y="218" text-anchor="middle" font-size="12" font-weight="600" fill="#15803d">OllamaService.cfc</text>
+  <text x="735" y="236" text-anchor="middle" font-size="10" fill="#57606a">svc.chat(messages, 0.4)</text>
+
+  <line x1="735" y1="247" x2="735" y2="283" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="745" y="270" font-size="10" fill="#57606a">cfhttp POST</text>
+
+  <!-- Step 5 -->
+  <rect x="655" y="285" width="160" height="50" rx="7" fill="#faf5ff" stroke="#7c5cd8" stroke-width="1.5"/>
+  <text x="735" y="308" text-anchor="middle" font-size="12" font-weight="600" fill="#6d28d9">Ollama / phi3:mini</text>
+  <text x="735" y="326" text-anchor="middle" font-size="10" fill="#57606a">:11434/api/chat</text>
+
+  <!-- Return -->
+  <line x1="655" y1="340" x2="580" y2="380" stroke="#6d28d9" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Response box -->
+  <rect x="510" y="382" width="420" height="62" rx="7" fill="#fafafa" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="525" y="404" font-size="11" font-weight="600" fill="#1f2328">JSON response:</text>
+  <text x="525" y="420" font-size="10" font-family="monospace" fill="#374151">{ "count": 7,</text>
+  <text x="525" y="436" font-size="10" font-family="monospace" fill="#374151">  "summary": "There are 7 open tickets, 2 critical..." }</text>
+
+  <!-- Divider -->
+  <line x1="480" y1="55" x2="480" y2="460" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Labels -->
+  <text x="240" y="472" text-anchor="middle" font-size="11" fill="#57606a" font-style="italic">Per-ticket: priority suggestion + resolution steps</text>
+  <text x="720" y="472" text-anchor="middle" font-size="11" fill="#57606a" font-style="italic">Bulk: plain-English summary of all open tickets</text>
+
+  <!-- Caption -->
+  <text x="480" y="500" text-anchor="middle" font-size="12" fill="#57606a" font-style="italic">Both endpoints share OllamaService.cfc — the same service layer built in the previous lesson.</text>
+</svg>
