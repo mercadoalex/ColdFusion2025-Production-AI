@@ -177,7 +177,23 @@ curl -s --max-time 120 http://localhost:11434/api/generate \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
 ```
 
-You should see three bullet points (or a numbered list) describing enterprise ColdFusion use cases printed directly to the terminal — no JSON wrapper, just the model's answer.
+**Expected output** — you will see something like this (the exact wording varies, but it should be three coherent enterprise use cases):
+
+```
+1. E-commerce Platform: ColdFusion can be utilized to create a robust
+e-commerce platform where users can browse products, add them to their
+cart, and make secure payments...
+
+2. Customer Relationship Management (CRM) System: ColdFusion can be used
+to develop a CRM system that allows businesses to manage their customer
+interactions, track sales, and analyze customer data...
+
+3. Content Management System (CMS): ColdFusion can be used to build a CMS
+that allows businesses to manage and publish content without the need for
+technical expertise...
+```
+
+If you see three numbered items printed in plain text — no JSON, no error — the model is working correctly.
 
 ::hint-box
 ---
@@ -374,7 +390,7 @@ When all tasks above are green, this lesson is complete.
 :name: verify_lesson_complete
 ---
 #active
-All four Ollama tasks are green — hit **Check** to complete the lesson.
+Runs automatically — turns green once all four Ollama tasks above are verified.
 
 #completed
 Ollama API lesson complete. On to the next one! ✓
