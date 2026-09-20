@@ -72,7 +72,7 @@ nodes = XmlSearch(doc, "//ticket");
 ```
 ::
 
-**Activity:** Open the **Terminal** tab in your playground (top of the screen, labelled **Terminal**). You are logged in as `laborant` with `sudo` access. **Copy each block below, paste it into the Terminal, and press Enter. Wait for the shell prompt (`$`) to return before running the next one.**
+**Activity — Terminal (dev):** You are logged in as `laborant` with `sudo` access. **Copy each block below, paste it into the Terminal (dev) tab, and press Enter. Wait for the shell prompt (`$`) to return before running the next one.**
 
 Create `xml_demo.cfm` — paste this entire block at once and press Enter:
 
@@ -211,9 +211,9 @@ You can build XML from scratch using `XmlNew()` and `XmlElemNew()`, or by using 
 
 XSLT (eXtensible Stylesheet Language Transformations) converts an XML document into a different format — HTML, plain text, or another XML vocabulary — using a stylesheet.
 
-**Activity:** You need to create three files on the server and then verify the result. Every command below runs in the **Terminal** tab (top of the playground screen). You are logged in as `laborant` — `sudo` is available and required.
+**Activity — Terminal (dev):** You need to create three files on the server and then verify the result. Every command below runs in the **Terminal (dev)** tab. You are logged in as `laborant` — `sudo` is available and required.
 
-> ⚠️ **Important:** copy each block **in full**, paste it into the Terminal, and press **Enter**. Wait until you see the shell prompt (`laborant@cf-dev:~$`) again before moving to the next step. Do not run two blocks at once.
+> ⚠️ **Important:** copy each block **in full**, paste it into the **Terminal (dev)** tab, and press **Enter**. Wait until you see the shell prompt (`laborant@cf-dev:~$`) again before moving to the next step. Do not run two blocks at once.
 
 ---
 
