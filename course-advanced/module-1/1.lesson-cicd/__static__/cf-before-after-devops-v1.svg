@@ -1,0 +1,70 @@
+<svg viewBox="0 0 960 440" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,system-ui,sans-serif">
+  <rect width="960" height="440" fill="#0f172a" rx="12"/>
+  <text x="480" y="34" text-anchor="middle" fill="#94a3b8" font-size="13" font-weight="600" letter-spacing="1">COLDFUSION DEPLOYMENT — BEFORE AND AFTER DEVOPS</text>
+
+  <!-- BEFORE column -->
+  <rect x="30" y="50" width="420" height="36" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="240" y="74" text-anchor="middle" fill="#fca5a5" font-size="14" font-weight="700">❌  Before DevOps — Manual FTP era</text>
+
+  <!-- Steps BEFORE -->
+  <rect x="30" y="96" width="420" height="308" rx="6" fill="#1c0a0a" stroke="#7f1d1d" stroke-width="1"/>
+
+  <!-- Step boxes BEFORE -->
+  <rect x="50" y="114" width="380" height="38" rx="4" fill="#292524" stroke="#57534e"/>
+  <text x="240" y="130" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">1. SSH into the server (or open FTP client)</text>
+  <text x="240" y="145" text-anchor="middle" fill="#64748b" font-size="10">No record of who logged in or why</text>
+
+  <rect x="50" y="160" width="380" height="38" rx="4" fill="#292524" stroke="#57534e"/>
+  <text x="240" y="176" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">2. Stop ColdFusion service</text>
+  <text x="240" y="191" text-anchor="middle" fill="#64748b" font-size="10">Site is down for all users during this step</text>
+
+  <rect x="50" y="206" width="380" height="38" rx="4" fill="#292524" stroke="#57534e"/>
+  <text x="240" y="222" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">3. FTP the new .cfm files to the server</text>
+  <text x="240" y="237" text-anchor="middle" fill="#64748b" font-size="10">Half-old, half-new state possible if upload fails mid-transfer</text>
+
+  <rect x="50" y="252" width="380" height="38" rx="4" fill="#292524" stroke="#57534e"/>
+  <text x="240" y="268" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">4. Start ColdFusion service</text>
+  <text x="240" y="283" text-anchor="middle" fill="#64748b" font-size="10">Cross fingers. Check the home page. Hope.</text>
+
+  <rect x="50" y="298" width="380" height="38" rx="4" fill="#450a0a" stroke="#ef4444"/>
+  <text x="240" y="314" text-anchor="middle" fill="#fca5a5" font-size="11" font-weight="600">5. Something is broken</text>
+  <text x="240" y="329" text-anchor="middle" fill="#64748b" font-size="10">FTP the old files back — if you still have them</text>
+
+  <rect x="50" y="344" width="380" height="38" rx="4" fill="#450a0a" stroke="#ef4444"/>
+  <text x="240" y="360" text-anchor="middle" fill="#fca5a5" font-size="11" font-weight="600">6. Restart CF again — downtime doubles</text>
+  <text x="240" y="375" text-anchor="middle" fill="#64748b" font-size="10">No audit trail. No rollback log. Just vibes.</text>
+
+  <!-- AFTER column -->
+  <rect x="510" y="50" width="420" height="36" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="720" y="74" text-anchor="middle" fill="#86efac" font-size="14" font-weight="700">✅  After DevOps — CI/CD pipeline</text>
+
+  <rect x="510" y="96" width="420" height="308" rx="6" fill="#0d1f17" stroke="#166534" stroke-width="1"/>
+
+  <rect x="530" y="114" width="380" height="38" rx="4" fill="#1e293b" stroke="#334155"/>
+  <text x="720" y="130" text-anchor="middle" fill="#86efac" font-size="11" font-weight="600">1. git commit -m "fix: ticket query timeout"</text>
+  <text x="720" y="145" text-anchor="middle" fill="#64748b" font-size="10">Full history — who changed what, and why</text>
+
+  <rect x="530" y="160" width="380" height="38" rx="4" fill="#1e293b" stroke="#334155"/>
+  <text x="720" y="176" text-anchor="middle" fill="#86efac" font-size="11" font-weight="600">2. git push origin main</text>
+  <text x="720" y="191" text-anchor="middle" fill="#64748b" font-size="10">Pipeline triggers automatically — you do nothing else</text>
+
+  <rect x="530" y="206" width="380" height="38" rx="4" fill="#1e293b" stroke="#334155"/>
+  <text x="720" y="222" text-anchor="middle" fill="#86efac" font-size="11" font-weight="600">3. Pipeline: build Docker image, run tests</text>
+  <text x="720" y="237" text-anchor="middle" fill="#64748b" font-size="10">Broken code is rejected before it reaches production</text>
+
+  <rect x="530" y="252" width="380" height="38" rx="4" fill="#1e293b" stroke="#334155"/>
+  <text x="720" y="268" text-anchor="middle" fill="#86efac" font-size="11" font-weight="600">4. Pipeline: push image to registry</text>
+  <text x="720" y="283" text-anchor="middle" fill="#64748b" font-size="10">Tagged with commit SHA — traceable, versioned, stored</text>
+
+  <rect x="530" y="298" width="380" height="38" rx="4" fill="#1e293b" stroke="#334155"/>
+  <text x="720" y="314" text-anchor="middle" fill="#86efac" font-size="11" font-weight="600">5. Pipeline: SSH deploy to cf-prod</text>
+  <text x="720" y="329" text-anchor="middle" fill="#64748b" font-size="10">Zero-downtime container swap — old container keeps running until new is healthy</text>
+
+  <rect x="530" y="344" width="380" height="38" rx="4" fill="#14532d" stroke="#22c55e"/>
+  <text x="720" y="360" text-anchor="middle" fill="#86efac" font-size="11" font-weight="600">6. Rollback = docker run image:previous-sha</text>
+  <text x="720" y="375" text-anchor="middle" fill="#64748b" font-size="10">One command. Takes 10 seconds. No guessing.</text>
+
+  <!-- VS divider -->
+  <line x1="480" y1="70" x2="480" y2="404" stroke="#334155" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="480" y="250" text-anchor="middle" fill="#475569" font-size="16" font-weight="900">VS</text>
+</svg>
