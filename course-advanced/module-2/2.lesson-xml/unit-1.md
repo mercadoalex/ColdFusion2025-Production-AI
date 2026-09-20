@@ -103,6 +103,14 @@ EOF
 curl -s http://localhost:8500/xml_demo.cfm
 ```
 
+**Expected output:**
+
+```
+1: Printer not working [high]<br>2: VPN issues [medium]<br>3: Password reset [low]<br>
+```
+
+Each ticket is printed as `id: title [priority]` followed by an HTML `<br>` tag — one line per ticket, no spaces between them because the browser would render the line breaks visually.
+
 ::simple-task
 ---
 :tasks: tasks
