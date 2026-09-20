@@ -400,8 +400,8 @@ Ollama API lesson complete. On to the next one! ✓
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"The question is not whether machines can think. The question is whether men can."*
+> — B.F. Skinner
 
 Apply what you have covered in this lesson with the challenge below.
 

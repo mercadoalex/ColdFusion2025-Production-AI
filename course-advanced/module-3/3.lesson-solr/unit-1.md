@@ -266,8 +266,8 @@ Solr lesson complete. On to the next one! ✓
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"If you have data, you have opportunity. If you can search it, you have power."*
+> — attributed to various data engineers
 
 Apply what you have covered in this lesson with the challenge below.
 

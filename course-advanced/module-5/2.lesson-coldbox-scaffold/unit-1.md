@@ -237,8 +237,8 @@ ColdBox scaffold lesson complete. On to the next one! ✓
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"Give me six hours to chop down a tree and I will spend the first four sharpening the axe."*
+> — Abraham Lincoln
 
 Apply what you have covered in this lesson with the challenge below.
 

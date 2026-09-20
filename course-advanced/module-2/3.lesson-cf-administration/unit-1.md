@@ -256,8 +256,8 @@ CF Administration lesson complete. On to the next one! ✓
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"Automate everything you do more than twice. The third time, write a script."*
+> — attributed to various sysadmins
 
 Apply what you have covered in this lesson with the challenge below.
 

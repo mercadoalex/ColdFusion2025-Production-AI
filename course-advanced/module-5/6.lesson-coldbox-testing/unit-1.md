@@ -261,8 +261,8 @@ TestBox testing lesson complete. ✓ You've finished the advanced course!
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"Testing leads to failure, and failure leads to understanding."*
+> — Burt Rutan
 
 Apply what you have covered in this lesson with the challenge below.
 

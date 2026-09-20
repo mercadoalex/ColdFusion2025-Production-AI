@@ -266,8 +266,8 @@ Integration lesson complete. On to the next one! ✓
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"The value of a network grows as the square of the number of its users."*
+> — Robert Metcalfe (Metcalfe's Law)
 
 Apply what you have covered in this lesson with the challenge below.
 

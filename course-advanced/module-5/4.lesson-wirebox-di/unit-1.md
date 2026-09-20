@@ -246,8 +246,8 @@ WireBox DI lesson complete. On to the next one! ✓
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"Don't call us, we'll call you."*
+> — Hollywood Principle — the foundation of Dependency Injection
 
 Apply what you have covered in this lesson with the challenge below.
 

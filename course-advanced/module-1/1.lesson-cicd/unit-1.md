@@ -954,8 +954,8 @@ Start with a smoke test, then graduate to full TestBox runs as your test suite g
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"First, solve the problem. Then, write the code."*
+> — John Johnson
 
 Apply what you have covered in this lesson with the challenge below. You'll wire together a Dockerfile and a Gitea Actions workflow for a ColdFusion microservice.
 

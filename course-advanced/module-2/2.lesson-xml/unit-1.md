@@ -379,8 +379,8 @@ XML processing lesson complete. On to the next one! ✓
 
 ## Put It Into Practice
 
-> *"Learning is not the product of teaching. Learning is the product of the activity of learners."*
-> — John Dewey
+> *"XML is like violence — if it doesn't solve your problem, you're not using enough of it."*
+> — attributed to various developers
 
 Apply what you have covered in this lesson with the challenge below.
 
