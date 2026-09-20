@@ -86,11 +86,28 @@ tasks:
       fi
       echo "AI response received ✓"
 
-  verify_lesson_complete:
+  verify_error_handling:
     machine: cf-dev
     user: laborant
     needs:
       - verify_ai_response
+    run: |
+      if [ ! -f /opt/coldfusion2025/cfusion/wwwroot/ai_error_test.cfm ]; then
+        echo "ai_error_test.cfm not found"
+        exit 1
+      fi
+      BODY=$(curl -s http://localhost:8500/ai_error_test.cfm)
+      if ! echo "${BODY}" | grep -q "Error handling works correctly"; then
+        echo "ai_error_test.cfm did not output expected error handling message"
+        exit 1
+      fi
+      echo "Error handling verified ✓"
+
+  verify_lesson_complete:
+    machine: cf-dev
+    user: laborant
+    needs:
+      - verify_error_handling
     run: |
       echo "CFML AI integration lesson complete ✓"
 ---

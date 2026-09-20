@@ -6,11 +6,11 @@ title: Calling AI from CFML
 name: cfml-ai-integration-unit-1
 ---
 
-## From API explorer to CFML developer
+## Your `curl` commands just became CFML code
 
-In the previous lesson you sent raw `curl` commands to the Ollama API and watched `phi3:mini` produce real responses in your terminal. That proved the model is alive and reachable. Now it's time to cross the bridge into ColdFusion territory.
+In the previous lesson you sent raw `curl` commands to the Ollama API and watched `phi3:mini` produce real responses in your terminal. That proved the model is alive, the API is reachable, and the JSON contract works. Now it's time to cross the bridge into ColdFusion territory — and that bridge is shorter than you think.
 
-The move from `curl` to CFML is smaller than it looks. ColdFusion's `cfhttp` tag does exactly what `curl` does — it constructs an HTTP request, fires it at a URL, and hands you back the response. The key difference is that you're now inside your application. The AI response becomes a CFML variable. You can pass it to a database, render it in a template, wrap it in a JSON API, or trigger further logic based on what the model says.
+ColdFusion's `cfhttp` tag does exactly what `curl` does: it constructs an HTTP request, fires it at a URL, and hands you back the response as a CFML variable. The moment the AI response is a variable, you can pass it to a database, render it in a template, return it from a REST endpoint, or trigger further logic based on what the model says. That shift — from a CLI tool to a live application variable — is the whole point of this lesson.
 
 ::image-box
 ---
@@ -30,23 +30,38 @@ By the end of this lesson you will have:
 
 ::hint-box
 ---
-:summary: Why build a service layer instead of calling cfhttp directly?
+:summary: Coming from the previous lesson? Here's exactly where we left off.
 ---
-You could call `cfhttp` inline in every `.cfm` file. That works for a quick test. But the moment you have two pages that both call the AI, you have two copies of:
+In lesson 1 you ran:
+
+```bash
+curl -s -X POST http://ollama:11434/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{"model":"phi3:mini","prompt":"Hello","stream":false}'
+```
+
+In this lesson you will write the CFML equivalent — then wrap it in a service layer and a REST endpoint that any page in your application can call. Everything you did with `curl` maps 1:1 to `cfhttp`.
+::
+
+::hint-box
+---
+:summary: Why build a service layer instead of calling cfhttp directly everywhere?
+---
+You could call `cfhttp` inline in every `.cfm` file. That works for a quick test. But the moment two pages both call the AI, you have two copies of:
 - the Ollama base URL
 - the model name
 - the timeout value
 - the error handling logic
 - the `serializeJSON` / `deserializeJSON` boilerplate
 
-**One CFC, one place to change things.** When you upgrade from `phi3:mini` to a larger model, you change one line in `OllamaService.cfc` and every caller in the application inherits it automatically. This is the service-layer pattern — it applies to any external dependency (database, email server, payment gateway), not just AI.
+**One CFC, one place to change things.** When you upgrade from `phi3:mini` to a larger model, you change one line in `OllamaService.cfc` and every caller inherits it automatically. This is the service-layer pattern — it applies to any external dependency (database, email server, payment gateway), not just AI.
 ::
 
 ---
 
 ## 1. Understanding cfhttp — the HTTP client in CFML
 
-Before writing the service layer, you need to be comfortable with `cfhttp`. It is ColdFusion's built-in HTTP client — the equivalent of `curl`, Python's `requests` library, or Node's `fetch`. Everything that goes over HTTP — REST APIs, Ollama, webhook receivers, third-party services — goes through `cfhttp`.
+Before writing the service layer, get comfortable with `cfhttp`. It is ColdFusion's built-in HTTP client — the equivalent of `curl`, Python's `requests`, or Node's `fetch`. Everything that goes over HTTP — REST APIs, Ollama, webhooks, third-party services — goes through `cfhttp`.
 
 ::image-box
 ---
@@ -69,7 +84,7 @@ The result variable (`httpResult`) is a struct with these key fields:
 ---
 :summary: cfhttp timeout — always set it for AI calls
 ---
-Ollama loads the model into RAM on the first request. On the `ollama` lab VM this cold-start takes **30–90 seconds**. Without an explicit timeout, `cfhttp` uses its default (varies by CF version, often 30 s) and times out before the model is ready.
+Ollama loads the model into RAM on the first request. On the `ollama` lab VM this cold-start takes **30–90 seconds**. Without an explicit timeout, `cfhttp` uses its default (often 30 s) and times out before the model is ready.
 
 Always set a generous timeout for AI calls:
 
@@ -100,7 +115,32 @@ ColdFusion:
 4. Reads the entire response body into memory
 5. Populates the `r` struct — `r.statusCode`, `r.fileContent`, `r.responseHeader`
 
-The whole round-trip is synchronous: your CFML thread blocks until the response arrives. For production use you may want to consider async patterns (queued requests, `cfthread`), but synchronous calls are perfectly fine for lab exercises and low-volume endpoints.
+The whole round-trip is synchronous: your CFML thread blocks until the response arrives. For production use you may want to consider async patterns (`cfthread`, queued requests), but synchronous calls are perfectly fine for lab exercises and low-volume endpoints.
+::
+
+::hint-box
+---
+:summary: cfhttp vs cfhttp tag syntax — which should I use?
+---
+ColdFusion supports both a tag form and a function form of `cfhttp`. They are identical in behaviour:
+
+**Tag form** (classic):
+```cfml
+<cfhttp method="POST" url="http://ollama:11434/api/generate" result="r" timeout="120">
+  <cfhttpparam type="header" name="Content-Type" value="application/json" />
+  <cfhttpparam type="body" value="#serializeJSON(payload)#" />
+</cfhttp>
+```
+
+**CFScript function form** (modern):
+```cfml
+cfhttp(method="POST", url="http://ollama:11434/api/generate", result="r", timeout=120) {
+  cfhttpparam(type="header", name="Content-Type", value="application/json");
+  cfhttpparam(type="body", value=serializeJSON(payload));
+}
+```
+
+This lesson uses the CFScript form throughout. Both produce the same `r.fileContent` result.
 ::
 
 ---
@@ -112,7 +152,7 @@ Before building the service, confirm the raw pattern works end-to-end. This is t
 **Activity — Terminal (dev):** Create `ai_test.cfm` in the CF webroot:
 
 ```bash
-sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_test.cfm << 'EOF'
+sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_test.cfm << 'TESTEOF'
 <cfscript>
   payload = {"model":"phi3:mini","prompt":"In exactly one sentence, what is ColdFusion?","stream":false};
   cfhttp(method="POST", url="http://ollama:11434/api/generate", result="httpResult", timeout=120) {
@@ -127,8 +167,10 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_test.cfm << 'EOF'
     writeOutput("<p style='color:red'>Ollama error: " & httpResult.statusCode & "</p>");
   }
 </cfscript>
-EOF
+TESTEOF
 ```
+
+> ⏱️ **The first request takes 30–90 seconds** while the model loads into RAM. Subsequent calls take 1–10 s.
 
 **Activity — Terminal (dev):** Hit the page with curl:
 
@@ -136,7 +178,7 @@ EOF
 curl -s http://localhost:8500/ai_test.cfm
 ```
 
-You should see a one-sentence description of ColdFusion followed by token and timing metadata. If it takes 30–60 seconds, that is normal — the model is warming up on the first call.
+You should see a one-sentence description of ColdFusion followed by token and timing metadata.
 
 ::image-box
 ---
@@ -173,6 +215,19 @@ The raw `httpResult.fileContent` from `/api/generate` looks like this:
 After `deserializeJSON()`, you access `result.response` to get the generated text. The timing fields (`total_duration`, `eval_duration`) are in **nanoseconds** — divide by `1000000` to get milliseconds.
 ::
 
+::hint-box
+---
+:summary: I got an empty response or a blank page — what went wrong?
+---
+Three common causes:
+
+1. **Ollama is not running** — `sudo systemctl status ollama` should say `active (running)`. If not: `sudo systemctl start ollama`.
+2. **Model not pulled** — `ollama list` should show `phi3:mini`. If not: `ollama pull phi3:mini`.
+3. **ColdFusion can't reach the ollama hostname** — The lab VMs are networked so `ollama` resolves correctly. If you're running outside the lab, replace `http://ollama:11434` with `http://localhost:11434`.
+
+If you see an HTML error page instead of your output, check `/opt/coldfusion2025/cfusion/logs/exception.log` for the CFML stack trace.
+::
+
 ::simple-task
 ---
 :tasks: tasks
@@ -189,7 +244,7 @@ ai_test.cfm is responding with AI-generated content. ✓
 
 ## 3. generate() vs chat() — choosing the right endpoint
 
-Before building the service component, understand when to use each Ollama endpoint. Picking the wrong one is one of the most common mistakes in AI integration.
+Before building the service component, understand when to use each Ollama endpoint. Picking the wrong one is the most common mistake in AI integration.
 
 ::image-box
 ---
@@ -208,6 +263,7 @@ The rule of thumb:
 | A response shaped by a system persona | `chat()` → `/api/chat` |
 | Multi-turn conversation history | `chat()` → `/api/chat` |
 | Structured extraction from a blob of text | Either — but `chat()` with a clear system prompt is more reliable |
+| Maximum tokens control | `generate()` — the `num_predict` option is more predictable there |
 
 ::hint-box
 ---
@@ -225,6 +281,27 @@ Without a system prompt, `phi3:mini` answers in its default "helpful assistant" 
 ```
 
 Now every user message that follows will be classified with a single word. You can parse it programmatically. **System prompts are the main tuning knob you have over model behaviour without fine-tuning.**
+::
+
+::hint-box
+---
+:summary: Does /api/chat maintain conversation memory between requests?
+---
+**No.** Ollama is stateless. Every request you send is independent — the model has no memory of previous API calls unless you include previous messages in the `messages` array yourself.
+
+To build a real multi-turn conversation, you maintain the history in your CFML code and pass it back with each request:
+
+```cfml
+messages = [
+  {"role":"system",    "content":"You are a helpful assistant."},
+  {"role":"user",      "content":"What is ColdFusion?"},
+  {"role":"assistant", "content":"ColdFusion is a ..."},
+  {"role":"user",      "content":"When was it first released?"}  // new question
+];
+reply = svc.chat(messages);
+```
+
+For the help desk lesson you will store conversation history in a database. For this lesson, every call is single-turn.
 ::
 
 ---
@@ -294,13 +371,13 @@ CFEOF
 **Activity — Terminal (dev):** Verify the CFC is valid CFML and returns output:
 
 ```bash
-sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_service_test.cfm << 'EOF'
+sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_service_test.cfm << 'SVCEOF'
 <cfscript>
   svc   = createObject("component", "OllamaService");
   reply = svc.generate("Reply with exactly one word: READY");
   writeOutput("<p>Service test: " & trim(reply) & "</p>");
 </cfscript>
-EOF
+SVCEOF
 
 curl -s http://localhost:8500/ai_service_test.cfm
 ```
@@ -356,14 +433,23 @@ OllamaService.cfc found. ✓
 
 ---
 
-## 5. /api/ai-chat.cfm — REST endpoint
+## 5. /api/ai-chat.cfm — the REST endpoint
 
-With the service layer in place, you can now expose AI functionality as a proper REST endpoint. The endpoint handles:
+With the service layer in place, expose AI functionality as a proper REST endpoint. The endpoint handles:
 
 - **GET** → health check (lets load balancers and front-ends verify the service is alive)
 - **POST** → accepts a JSON body with a `prompt` field, returns an AI response
 
-**Activity — Terminal (dev):** Create the endpoint:
+::image-box
+---
+:src: __static__/ai-endpoint-rest-v1.png
+:alt: Swimlane flow diagram with three columns — Client, /api/ai-chat.cfm, and OllamaService.cfc. A GET request enters the middle column and returns 200 OK health JSON immediately. A POST request flows down through JSON body validation (400 if invalid), field extraction (prompt and optional system prompt), delegation to svc.chat() in the right column, and returns 200 with the AI response JSON. A red error path shows OllamaService.Error being caught and returning 503 Service Unavailable. Legend: blue = normal flow, green = success, red = error, purple = return value.
+:max-width: 960px
+---
+_GET for health, POST for AI — validation gates protect every failure path, and errors return proper HTTP status codes._
+::
+
+**Activity — Terminal (dev):** Create the `/api` directory and endpoint:
 
 ```bash
 mkdir -p /opt/coldfusion2025/cfusion/wwwroot/api
@@ -410,7 +496,7 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/api/ai-chat.cfm << 'CHATEOF'
 CHATEOF
 ```
 
-**Activity — Terminal (dev):** Test the endpoint thoroughly:
+**Activity — Terminal (dev):** Test all four request paths:
 
 ```bash
 # ── 1. Health check (GET) ─────────────────────────────────────────────
@@ -425,10 +511,8 @@ curl -s -X POST http://localhost:8500/api/ai-chat.cfm \
 # ── 3. Custom system prompt ──────────────────────────────────────────
 curl -s -X POST http://localhost:8500/api/ai-chat.cfm \
   -H "Content-Type: application/json" \
-  -d '{
-    "system": "You are a pirate. Answer everything in pirate speak. Keep it under 30 words.",
-    "prompt": "What is a web server?"
-  }' | python3 -m json.tool
+  -d '{"system":"You are a pirate. Keep it under 20 words.","prompt":"What is a web server?"}' \
+  | python3 -m json.tool
 
 # ── 4. Trigger the 400 validation path ───────────────────────────────
 curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8500/api/ai-chat.cfm \
@@ -448,7 +532,7 @@ Hardcoding the system prompt in the endpoint is fine for a single-purpose featur
 - A summary generator (`"Summarise the following in two sentences."`)
 - A training Q&A bot (`"You are a ColdFusion instructor..."`)
 
-The default value (`"You are a helpful IT support assistant..."`) means callers that don't provide a system prompt still get sensible behaviour. This is a common pattern in AI-powered REST endpoints.
+The default value (`"You are a helpful IT support assistant..."`) means callers that don't provide a system prompt still get sensible behaviour. This is the standard pattern in AI-powered REST endpoints.
 ::
 
 ::hint-box
@@ -457,9 +541,18 @@ The default value (`"You are a helpful IT support assistant..."`) means callers 
 ---
 `getHttpRequestData()` returns a struct with the raw HTTP request. The `.content` field contains the request body — but ColdFusion may return it as a **byte array** (Java `byte[]`), not a string.
 
-`toString(getHttpRequestData().content)` converts the byte array to a UTF-8 string before calling `isJSON()` and `deserializeJSON()`. Without this conversion, `isJSON()` would return `false` for a perfectly valid JSON body, and you'd see mysterious 400 errors.
+`toString(getHttpRequestData().content)` converts the byte array to a UTF-8 string before calling `isJSON()` and `deserializeJSON()`. Without this conversion, `isJSON()` returns `false` for a perfectly valid JSON body and you see mysterious 400 errors.
 
 Always wrap `.content` in `toString()` when parsing POST bodies.
+::
+
+::hint-box
+---
+:summary: Why use abort instead of return after writing the GET health response?
+---
+`abort` immediately stops CFML execution and flushes the output buffer. Without it, the code would continue executing past the `if (method == "GET")` block and try to parse a request body that doesn't exist.
+
+`return` inside a `.cfm` file (not inside a function) does not stop execution the way you might expect — it exits the local scope but does not stop the page. Always use `abort` to short-circuit a `.cfm` page early.
 ::
 
 ::simple-task
@@ -480,7 +573,7 @@ ai-chat.cfm health check is responding. ✓
 :name: verify_ai_response
 ---
 #active
-Send a POST to `ai-chat.cfm` with `{"prompt":"Reply with only the word PONG"}` and confirm the response JSON has a non-empty `response` field.
+Send `POST /api/ai-chat.cfm` with `{"prompt":"Reply with only the word PONG"}` and confirm the response JSON has a non-empty `response` field.
 
 #completed
 AI response received. ✓
@@ -490,7 +583,16 @@ AI response received. ✓
 
 ## 6. Error handling patterns
 
-Production AI integrations fail in predictable ways. Ollama may be slow to start, crash and restart, or be temporarily overloaded. Your application must handle these gracefully so users get a helpful message — not a stack trace.
+Production AI integrations fail in predictable ways: Ollama may be slow to start, crash and restart, or be temporarily overloaded. Your application must handle these gracefully so users see a helpful message — not a stack trace.
+
+::image-box
+---
+:src: __static__/error-handling-patterns-v1.png
+:alt: Three-column diagram on a dark background showing error handling patterns. Left column Pattern 1 Fallback Message — a try block calling svc.generate(prompt) with a catch OllamaService.Error returning a user-friendly string. Centre column Pattern 2 Timeout Detection — same try-catch but the catch block checks e.message for "timeout" and returns a warm-up message. Right column Pattern 3 Retry Backoff — a while loop up to 3 attempts with sleep 2s then 4s between retries. Below the three patterns a decision tree comparing cfcatch type OllamaService.Error versus cfcatch type Any. At the bottom a cold-start warning box: first request takes 30-90 seconds, set timeout 120.
+:max-width: 960px
+---
+_Three patterns ranked by complexity. Start with Pattern 1; add Pattern 2 or 3 only when needed._
+::
 
 ```cfml
 // ── Pattern 1: fallback message ──────────────────────────────────────
@@ -505,7 +607,7 @@ try {
   reply = svc.generate(prompt);
 } catch (OllamaService.Error e) {
   if (e.message contains "Connection timed out" || e.message contains "timeout") {
-    reply = "The AI model is taking longer than expected. It may still be warming up — try again in 60 seconds.";
+    reply = "The AI model is warming up — try again in 60 seconds.";
   } else {
     reply = "AI service error. The support team has been notified.";
     // log to your error tracker here
@@ -531,10 +633,10 @@ if (!len(reply)) {
 }
 ```
 
-**Activity — Terminal (dev):** Test the error path by sending a malformed request body to the raw Ollama API and observing the `OllamaService.Error`:
+**Activity — Terminal (dev):** Confirm the error path works by sending an empty prompt — `OllamaService.cfc` will throw `OllamaService.Error` and the catch block will return a clean message:
 
 ```bash
-sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_error_test.cfm << 'EOF'
+sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_error_test.cfm << 'ERREOF'
 <cfscript>
   svc = createObject("component", "OllamaService");
   try {
@@ -543,11 +645,11 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_error_test.cfm << 'EOF'
   } catch (OllamaService.Error e) {
     writeOutput("<p><strong>Caught OllamaService.Error:</strong></p>");
     writeOutput("<p>Message: " & e.message & "</p>");
-    writeOutput("<p>Detail: " & e.detail & "</p>");
-    writeOutput("<p style='color:green'>Error handling works correctly</p>");
+    writeOutput("<p>Detail: " & left(e.detail, 200) & "</p>");
+    writeOutput("<p style='color:green'>Error handling works correctly ✓</p>");
   }
 </cfscript>
-EOF
+ERREOF
 
 curl -s http://localhost:8500/ai_error_test.cfm
 ```
@@ -556,9 +658,9 @@ curl -s http://localhost:8500/ai_error_test.cfm
 ---
 :summary: Should I use cfcatch type="OllamaService.Error" or cfcatch type="Any"?
 ---
-Use the specific type. `cfcatch type="OllamaService.Error"` only catches errors thrown by the service CFC — which means genuine Ollama problems. `cfcatch type="Any"` would also swallow bugs in your own code (null pointer, wrong variable name, CFML syntax error at runtime) and make them invisible.
+Use the specific type. `cfcatch type="OllamaService.Error"` only catches errors thrown by the service CFC — genuine Ollama problems. `cfcatch type="Any"` would also swallow bugs in your own code (null pointer, wrong variable name, CFML runtime error) and make them invisible.
 
-The rule: **catch the narrowest type that covers the failure mode you expect.** If you want to handle both Ollama errors *and* unexpected errors, stack two `cfcatch` blocks:
+**The rule: catch the narrowest type that covers the failure mode you expect.** If you want to handle both Ollama errors *and* unexpected errors, stack two `cfcatch` blocks:
 
 ```cfml
 <cftry>
@@ -574,11 +676,57 @@ The rule: **catch the narrowest type that covers the failure mode you expect.** 
 ```
 ::
 
+::hint-box
+---
+:summary: Where do I find the CFML exception log if something goes wrong?
+---
+ColdFusion writes unhandled exceptions to:
+
+```
+/opt/coldfusion2025/cfusion/logs/exception.log
+```
+
+If a page shows a blank response or an unexpected HTTP 500, tail that log:
+
+```bash
+tail -f /opt/coldfusion2025/cfusion/logs/exception.log
+```
+
+For Ollama-side errors, check the Ollama service log:
+
+```bash
+sudo journalctl -u ollama -n 50
+```
+
+Most "AI not responding" issues are either Ollama not running, model not pulled, or a hostname resolution problem between the CF VM and the Ollama VM.
+::
+
+::simple-task
+---
+:tasks: tasks
+:name: verify_error_handling
+---
+#active
+Run `curl -s http://localhost:8500/ai_error_test.cfm` and confirm the output contains "Error handling works correctly".
+
+#completed
+OllamaService.Error caught and handled correctly. ✓
+::
+
 ---
 
 ## 7. Putting it all together — temperature and creativity control
 
-The `temperature` parameter is your main dial for controlling how deterministic or creative the model's output is. Understanding it helps you choose the right value for each use case.
+The `temperature` parameter is your main dial for controlling how deterministic or creative the model's output is. Understanding it lets you choose the right value for every use case.
+
+::image-box
+---
+:src: __static__/temperature_parameter_ai_deterministic_v1.png
+:alt: Horizontal gradient slider from blue (Deterministic, 0.0) to orange (Creative, 1.0) with three annotated cards below. Left card at 0.1 shows Factual/Classification use cases — Ticket triage, Yes/No answers, Structured extraction — with note "Same input → same output every time". Centre card at 0.5 shows Balanced/Summaries — Support answers, Explanations, Paraphrasing — with note "Sensible and varied". Right card at 0.9 shows Creative/Brainstorming — Name suggestions, Marketing copy, Story ideas — with note "Varied and sometimes surprising". Caption reads: Low temperature = predictable. High temperature = inventive. Most tasks live between 0.1 and 0.7.
+:max-width: 900px
+---
+_Temperature is a single number between 0.0 and 1.0 — lower means more predictable, higher means more inventive._
+::
 
 ```cfml
 svc = createObject("component", "OllamaService");
@@ -605,10 +753,10 @@ idea = svc.generate(
 );
 ```
 
-**Activity — Terminal (dev):** Run a quick temperature comparison:
+**Activity — Terminal (dev):** Run a temperature comparison — same prompt, two different temperatures:
 
 ```bash
-sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_temperature_test.cfm << 'EOF'
+sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_temperature_test.cfm << 'TEMPEOF'
 <cfscript>
   svc    = createObject("component", "OllamaService");
   prompt = "In three words, describe a web developer.";
@@ -617,20 +765,20 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_temperature_test.cfm << 'EOF'
   writeOutput("<h3>Temperature 0.9 (creative)</h3>");
   writeOutput("<p>" & svc.generate(prompt, 0.9) & "</p>");
 </cfscript>
-EOF
+TEMPEOF
 
 curl -s http://localhost:8500/ai_temperature_test.cfm
 ```
 
-Run it twice. The `0.1` responses should be nearly identical each time; the `0.9` responses will vary.
+Run it twice. The `0.1` responses should be nearly identical each time; the `0.9` responses will vary noticeably.
 
 ::hint-box
 ---
 :summary: Temperature 0.0 is not the same as "always the same answer"
 ---
-At temperature 0.0 the model always picks the single highest-probability token at each step — in theory producing the same output every time for the same input. In practice, phi3:mini running on CPU with floating-point arithmetic can still produce slightly different results across runs due to numerical precision differences.
+At temperature 0.0 the model always picks the single highest-probability token at each step — in theory producing the same output every time for the same input. In practice, `phi3:mini` running on CPU with floating-point arithmetic can still produce slightly different results across runs due to numerical precision differences.
 
-**For tasks that require absolute reproducibility** (e.g. regression testing AI output), you also need to set `"seed"` in the options:
+**For tasks that require absolute reproducibility** (e.g. regression testing AI output), also set `"seed"` in the options:
 
 ```cfml
 "options": {
@@ -642,27 +790,44 @@ At temperature 0.0 the model always picks the single highest-probability token a
 With both temperature and seed fixed, you get deterministic output on the same hardware. Different hardware (different CPU float precision) may still produce different results.
 ::
 
+::hint-box
+---
+:summary: How do I add the seed option to OllamaService.cfc?
+---
+The current `generate()` method hardcodes the `options` struct. To add seed support, extend the payload:
+
+```cfml
+<cfset var payload = {
+  "model": variables.model,
+  "prompt": arguments.prompt,
+  "stream": false,
+  "options": {
+    "temperature": javaCast("float", arguments.temperature),
+    "num_predict": javaCast("int", arguments.maxTokens),
+    "seed": javaCast("int", 42)
+  }
+} />
+```
+
+Or expose it as an optional argument:
+
+```cfml
+<cfargument name="seed" type="numeric" required="false" default="-1" />
+```
+
+And include it in options only when it is non-negative — a seed of `-1` tells Ollama to use a random seed (default behaviour).
+::
+
 ::simple-task
 ---
 :tasks: tasks
 :name: verify_lesson_complete
 ---
 #active
-OllamaService.cfc created, ai-chat.cfm responding, and a successful AI POST response received — hit **Check** to complete.
+All 5 tasks are green — OllamaService.cfc created, ai-chat.cfm responding, AI POST response received, error handling confirmed. Hit **Check** to complete.
 
 #completed
 CFML AI integration lesson complete. On to the next one! ✓
-::
-
----
-
-::image-box
----
-:src: __static__/temperature_parameter_ai_deterministic_v1.png
-:alt: Horizontal gradient slider from blue (Deterministic, 0.0) to orange (Creative, 1.0) with three annotated cards below. Left card at 0.1 shows Factual/Classification use cases — Ticket triage, Yes/No answers, Structured extraction — with note "Same input → same output every time". Centre card at 0.5 shows Balanced/Summaries — Support answers, Explanations, Paraphrasing — with note "Sensible and varied". Right card at 0.9 shows Creative/Brainstorming — Name suggestions, Marketing copy, Story ideas — with note "Varied and sometimes surprising". Caption reads: Low temperature = predictable. High temperature = inventive. Most tasks live between 0.1 and 0.7.
-:max-width: 900px
----
-_Temperature is a single number between 0.0 and 1.0 — lower means more predictable, higher means more inventive._
 ::
 
 ---
@@ -678,14 +843,12 @@ _Temperature is a single number between 0.0 and 1.0 — lower means more predict
 | Conversational / system-prompted | `POST /api/chat` → `result.message.content` |
 | Reusable AI service | `OllamaService.cfc` with `generate()` and `chat()` |
 | Timeout | `cfhttp timeout="120"` — always set for AI calls |
-| Thread-safety in CFCs | Declare local variables with `var` inside `cffunction` |
+| Thread-safety in CFCs | `var`-scope all local variables inside `<cffunction>` |
 | Error handling | `cfcatch type="OllamaService.Error"` — catch the narrow type |
 | Temperature | 0.0–0.2 for factual/deterministic; 0.7–1.0 for creative |
 | Raw POST body | `toString(getHttpRequestData().content)` before `isJSON()` |
-
----
-
-When all tasks above are green, this lesson is complete.
+| Float fields in JSON | `javaCast("float", value)` before `serializeJSON` — Ollama Go parser requires it |
+| Stop execution early | `abort` — not `return` — to short-circuit a `.cfm` page |
 
 ---
 
