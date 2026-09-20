@@ -57,14 +57,52 @@ CONF
 chown git:git /etc/gitea/app.ini
 chmod 640 /etc/gitea/app.ini
 
-echo ">>> Initialising Gitea DB and creating admin user..."
-# Run as git user to initialise the DB, then create the admin account
-sudo -u git "${GITEA_BIN}" admin user create \
+echo ">>> Initialising Gitea DB..."
+# Migrate the DB schema so it is ready before the service starts
+sudo -u git "${GITEA_BIN}" migrate \
+  --config /etc/gitea/app.ini \
+  --work-path /var/lib/gitea 2>/dev/null || true
+
+echo ">>> Writing Gitea first-boot admin-user setup script..."
+cat > /usr/local/bin/gitea-create-admin << 'SCRIPT'
+#!/bin/bash
+# Wait for Gitea API to be ready, then create the labadmin user.
+# Runs once at VM first boot via gitea-create-admin.service.
+set -eu
+for i in $(seq 1 30); do
+  if curl -sf http://localhost:3000/api/v1/version -o /dev/null 2>/dev/null; then
+    break
+  fi
+  sleep 2
+done
+/usr/local/bin/gitea admin user create \
   --config /etc/gitea/app.ini \
   --username labadmin \
   --password labpassword \
   --email lab@localhost \
   --admin \
   --must-change-password=false 2>/dev/null || true
+echo "Gitea admin user setup complete."
+SCRIPT
+chmod +x /usr/local/bin/gitea-create-admin
+
+echo ">>> Writing gitea-create-admin.service..."
+cat > /etc/systemd/system/gitea-create-admin.service << 'SVC'
+[Unit]
+Description=Create Gitea labadmin user on first boot
+After=gitea.service
+Requires=gitea.service
+
+[Service]
+Type=oneshot
+User=git
+ExecStart=/usr/local/bin/gitea-create-admin
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+SVC
+
+systemctl enable gitea-create-admin.service
 
 echo ">>> Gitea ${GITEA_VERSION} installed at ${GITEA_BIN}"

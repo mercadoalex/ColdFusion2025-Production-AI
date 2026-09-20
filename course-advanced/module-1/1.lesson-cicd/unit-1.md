@@ -328,7 +328,23 @@ After the push, switch to the **Gitea** tab and open `http://localhost:3000/laba
 ---
 The Gitea API returns an error object (no `full_name` field) when the operation fails. The most common causes:
 
-**1. Repository already exists** — you ran the command before.
+**1. "user does not exist [uid: 0, name: labadmin]"** — the admin account was not created when Gitea initialised. This happens if the VM was provisioned without completing the first-run setup. Fix it in one command:
+```bash
+sudo -u git gitea admin user create \
+  --config /etc/gitea/app.ini \
+  --username labadmin \
+  --password labpassword \
+  --email lab@localhost \
+  --admin \
+  --must-change-password=false
+# Then verify:
+curl -s -u labadmin:labpassword http://localhost:3000/api/v1/user \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('login','still broken'))"
+# Expected: labadmin
+```
+After the user is created, re-run the original `curl -s -X POST` command at the top of this activity.
+
+**2. Repository already exists** — you ran the command before.
 The repo is fine; just continue to step 2. Verify it exists:
 ```bash
 curl -s -u labadmin:labpassword http://localhost:3000/api/v1/repos/labadmin/cf-app \
@@ -336,17 +352,10 @@ curl -s -u labadmin:labpassword http://localhost:3000/api/v1/repos/labadmin/cf-a
 # Expected: labadmin/cf-app
 ```
 
-**2. Wrong credentials** — the `labadmin` user or password differs.
-Check with:
-```bash
-curl -s -u labadmin:labpassword http://localhost:3000/api/v1/user \
-  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('login','auth failed'))"
-# Expected: labadmin
-```
-
 **3. Gitea is not running** — the API returns an HTML error page that `json.load` fails to parse silently.
 ```bash
-curl -sf http://localhost:3000 -o /dev/null && echo "Gitea up" || echo "Gitea down — run: sudo systemctl start gitea"
+curl -sf http://localhost:3000 -o /dev/null && echo "Gitea up" || echo "Gitea down"
+sudo systemctl start gitea
 ```
 ::
 
