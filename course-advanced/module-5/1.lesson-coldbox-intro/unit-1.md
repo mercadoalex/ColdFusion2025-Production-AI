@@ -18,7 +18,51 @@ As ColdFusion applications grow, raw `.cfm` pages accumulate business logic, SQL
 | **View** | HTML rendering | Templates in `views/` |
 | **Controller** | Request routing, orchestration | Handlers in `handlers/` |
 
-ColdBox is the most widely adopted CFML MVC framework. It provides routing, dependency injection (WireBox), view rendering, RESTful conventions, and a testing harness (TestBox) — all in one cohesive package.
+ColdBox is the most widely adopted CFML MVC framework. It provides routing, dependency injection (WireBox), view rendering, RESTful conventions, and a testing harness (TestBox) — all in one cohesive packag
+::hint-box
+---
+:summary: The full story of MVC — origin, evolution, and where it lives today
+---
+**Where it came from**
+
+MVC was invented in **1979** by Trygve Reenskaug at Xerox PARC while designing the Smalltalk-80 programming environment. The idea was simple but radical: a graphical application should not mix "what the data is" with "how it looks" or "how the user interacts with it." Those three things change for different reasons — business logic rarely changes; UI changes constantly — so they should live in separate places.
+
+**The original three roles:**
+
+| Role | Original Smalltalk meaning | Web equivalent |
+|---|---|---|
+| **Model** | The domain objects and data | Database + business logic CFCs |
+| **View** | What the user sees | HTML templates |
+| **Controller** | Responds to user input, updates Model and View | Handler that processes HTTP requests |
+
+**How it spread**
+
+In the 1990s, Java's **Struts** framework (2000) brought MVC to server-side web development and became the dominant enterprise pattern for nearly a decade. Ruby on Rails (2004) made it mainstream for rapid web development, and its conventions ("convention over configuration") influenced every framework that came after — including ColdBox.
+
+Today MVC (or a close relative) is the default architecture in:
+- **Java** — Spring MVC, Jakarta EE
+- **Python** — Django (MTV variant), Flask
+- **PHP** — Laravel, Symfony
+- **JavaScript** — Angular (component-based MVC)
+- **Ruby** — Rails
+- **CFML** — ColdBox, FW/1
+
+**The variants that evolved from MVC**
+
+As applications grew more complex, developers adapted MVC:
+
+| Pattern | How it differs | Where you see it |
+|---|---|---|
+| **MVP** (Model-View-Presenter) | Presenter handles all UI logic; View is completely passive | Android, WinForms |
+| **MVVM** (Model-View-ViewModel) | ViewModel exposes data bindings; View reacts automatically | Vue.js, Angular, WPF, SwiftUI |
+| **MVA** (Model-View-Adapter) | Adapter decouples Model and View completely | Some desktop frameworks |
+
+**MVVM** is the most important variant to know in 2025. It's what drives every modern JavaScript front-end framework. The key idea: the **ViewModel** is a JavaScript object that the **View** (HTML template) binds to directly — change the data, the UI updates automatically, no manual DOM manipulation. This is how Vue, React (one-way binding), and Angular work.
+
+**MVC in ColdBox terms**
+
+ColdBox implements classic server-side MVC with one pragmatic adjustment: the "Controller" is called a **Handler**, and it handles both routing and action dispatch. The `Router.cfc` maps URLs to handler + action pairs, keeping routing concerns separate from business logic — a clean extension of the original pattern Reenskaug described in 1979.
+::
 
 ::image-box
 ---
@@ -84,16 +128,14 @@ myapp/
 
 Understanding the lifecycle tells you exactly where to put each type of code:
 
-```
-1. HTTP request arrives at the server
-2. Application.cfc.onRequestStart() — auth, security checks
-3. Router.cfc matches the URL → handler + action name
-4. Interceptors run (preHandler, preAction, etc.)
-5. Handler action executes — calls models, builds the event data
-6. View template renders using data set by the handler
-7. Layout wraps the view in the HTML shell
-8. Final response sent to the browser
-```
+::image-box
+---
+:src: __static__/coldbox-request-lifecycle-v1.png
+:alt: Vertical flowchart of the eight-step ColdBox request lifecycle — HTTP Request, Application.cfc onRequestStart, Router.cfc URL matching, Interceptors, Handler Action, View Template, Layout, HTTP Response — each step in a numbered box with a colour-coded left border progressing from blue to green
+:max-width: 620px
+---
+_Every ColdBox request passes through all eight stages in order — knowing this tells you exactly where to put each piece of code._
+::
 
 Key properties in `Application.cfc`:
 
