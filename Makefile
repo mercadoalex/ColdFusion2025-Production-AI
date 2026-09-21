@@ -59,9 +59,10 @@ build: check-docker
 		--build-arg COMMANDBOX_VERSION=$(COMMANDBOX_VERSION) \
 		--build-arg LUCEE_VERSION=$(LUCEE_VERSION) \
 		-t $(FULL_TAG) \
+		-t $(REGISTRY)/$(IMAGE_NAME):dev \
 		-f $(CUR_DIR)/rootfs/Dockerfile \
 		$(CUR_DIR)
-	@echo "\033[0;32mBuild complete: $(FULL_TAG)\033[0m"
+	@echo "\033[0;32mBuild complete: $(FULL_TAG) (also tagged :dev)\033[0m"
 
 ## build-with-cf: Build with a real ColdFusion installer (errors if not found)
 build-with-cf: check-installer check-docker
