@@ -23,7 +23,7 @@ tagz:
 - dependency-injection
 
 playground:
-  name: cf-training-advanced-7442b9e0
+  name: cf-training-devops-3039c6bb
 
 challenges:
   wirebox-di-49397f1b: {}

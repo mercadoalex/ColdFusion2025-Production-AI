@@ -24,7 +24,7 @@ tagz:
 - wirebox
 
 playground:
-  name: cf-training-advanced-7442b9e0
+  name: cf-training-devops-3039c6bb
 
 challenges:
   solid-principles-6a4f2c91: {}

@@ -22,7 +22,7 @@ tagz:
 - commandbox
 
 playground:
-  name: cf-training-advanced-7442b9e0
+  name: cf-training-devops-3039c6bb
 
 challenges:
   coldbox-scaffold-3a91a6cf: {}

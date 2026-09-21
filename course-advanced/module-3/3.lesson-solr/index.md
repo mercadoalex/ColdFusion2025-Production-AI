@@ -22,7 +22,7 @@ tagz:
 - search
 
 playground:
-  name: cf-training-advanced-7442b9e0
+  name: cf-training-devops-3039c6bb
 
 challenges:
   solr-search-7ec1ea17: {}

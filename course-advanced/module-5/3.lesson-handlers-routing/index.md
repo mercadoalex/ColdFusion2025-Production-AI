@@ -22,7 +22,7 @@ tagz:
 - routing
 
 playground:
-  name: cf-training-advanced-7442b9e0
+  name: cf-training-devops-3039c6bb
 
 challenges:
   coldbox-handlers-e49109ab: {}

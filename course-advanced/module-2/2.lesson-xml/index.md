@@ -23,7 +23,7 @@ tagz:
 - xslt
 
 playground:
-  name: cf-training-advanced-7442b9e0
+  name: cf-training-devops-3039c6bb
 
 challenges:
   xml-processing-b371ed76: {}

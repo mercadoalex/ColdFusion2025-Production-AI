@@ -23,7 +23,7 @@ tagz:
 - cfmail
 
 playground:
-  name: cf-training-advanced-7442b9e0
+  name: cf-training-devops-3039c6bb
 
 challenges:
   integration-001a9503: {}
