@@ -174,7 +174,7 @@ Switch to the **Terminal (ollama)** tab and run:
 RESPONSE=$(curl -s --max-time 120 http://localhost:11434/api/generate \
   -H "Content-Type: application/json" \
   -d '{"model":"phi3:mini","prompt":"List three use cases for ColdFusion in enterprise","stream":false}')
-echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
+echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])" | tee /tmp/ollama_completion.txt
 ```
 
 **Expected output** — you will see something like this (the exact wording varies, but it should be three coherent enterprise use cases):
@@ -276,7 +276,7 @@ RESPONSE=$(curl -s --max-time 120 http://localhost:11434/api/chat \
       }
     ]
   }')
-echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['message']['content'])"
+echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['message']['content'])" | tee /tmp/ollama_chat.txt
 ```
 
 The `system` message sets the assistant's persona and constraints — always include one for consistent, predictable output.
@@ -338,7 +338,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://ollama:11434/api/tags
 RESPONSE=$(curl -s --max-time 120 http://ollama:11434/api/generate \
   -H "Content-Type: application/json" \
   -d '{"model":"phi3:mini","prompt":"Say hello in one word","stream":false}')
-echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
+echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])" | tee /tmp/ollama_from_dev.txt
 ```
 
 This is the base URL you'll use in all ColdFusion code: **`http://ollama:11434`**.

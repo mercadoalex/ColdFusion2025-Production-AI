@@ -60,14 +60,14 @@ tasks:
     needs:
       - verify_phi3_present
     run: |
-      RESPONSE=$(curl -s --max-time 120 http://localhost:11434/api/generate \
-        -H "Content-Type: application/json" \
-        -d '{"model":"phi3:mini","prompt":"Reply with only the word PONG","stream":false}')
-      if ! echo "${RESPONSE}" | python3 -c "import sys,json; d=json.load(sys.stdin); assert len(d.get('response','')) > 0" 2>/dev/null; then
-        echo "Ollama completion returned empty response"
+      if [ ! -s /tmp/ollama_completion.txt ]; then
+        echo "Run the generate activity in section 3 — output should be saved to /tmp/ollama_completion.txt"
         exit 1
       fi
-      echo "Completion works ✓"
+      echo "Completion result found ✓"
+    hintcheck: |
+      echo "Run the curl command in section 3 and make sure it completes without error."
+      echo "The command should end with: | tee /tmp/ollama_completion.txt"
 
   verify_chat_endpoint:
     machine: ollama
@@ -75,14 +75,14 @@ tasks:
     needs:
       - verify_completion
     run: |
-      RESPONSE=$(curl -s --max-time 120 http://localhost:11434/api/chat \
-        -H "Content-Type: application/json" \
-        -d '{"model":"phi3:mini","stream":false,"messages":[{"role":"system","content":"Reply only with the word OK."},{"role":"user","content":"Acknowledge."}]}')
-      if ! echo "${RESPONSE}" | python3 -c "import sys,json; d=json.load(sys.stdin); assert len(d.get('message',{}).get('content','')) > 0" 2>/dev/null; then
-        echo "Ollama /api/chat returned empty message content"
+      if [ ! -s /tmp/ollama_chat.txt ]; then
+        echo "Run the chat activity in section 4 — output should be saved to /tmp/ollama_chat.txt"
         exit 1
       fi
-      echo "Chat endpoint works ✓"
+      echo "Chat result found ✓"
+    hintcheck: |
+      echo "Run the curl command in section 4 and make sure it completes without error."
+      echo "The command should end with: | tee /tmp/ollama_chat.txt"
 
   verify_reachable_from_dev:
     machine: cf-dev
@@ -96,6 +96,9 @@ tasks:
         exit 1
       fi
       echo "Ollama is reachable from cf-dev ✓"
+    hintcheck: |
+      echo "Run: curl -s -o /dev/null -w \"%{http_code}\" http://ollama:11434/api/tags"
+      echo "It should return 200. If not, check that the ollama VM is still running."
 
   verify_cf_dev_prompt:
     machine: cf-dev
@@ -103,14 +106,14 @@ tasks:
     needs:
       - verify_reachable_from_dev
     run: |
-      RESPONSE=$(curl -s --max-time 120 http://ollama:11434/api/generate \
-        -H "Content-Type: application/json" \
-        -d '{"model":"phi3:mini","prompt":"Reply with only the word HELLO","stream":false}')
-      if ! echo "${RESPONSE}" | python3 -c "import sys,json; d=json.load(sys.stdin); assert len(d.get('response','')) > 0" 2>/dev/null; then
-        echo "Prompt from cf-dev to Ollama returned empty response"
+      if [ ! -s /tmp/ollama_from_dev.txt ]; then
+        echo "Run the generate activity in section 5 — output should be saved to /tmp/ollama_from_dev.txt"
         exit 1
       fi
-      echo "cf-dev can send prompts to Ollama ✓"
+      echo "cf-dev prompt result found ✓"
+    hintcheck: |
+      echo "Run the curl command in section 5 (Terminal dev tab) and make sure it completes."
+      echo "The command should end with: | tee /tmp/ollama_from_dev.txt"
 
   verify_lesson_complete:
     machine: cf-dev
