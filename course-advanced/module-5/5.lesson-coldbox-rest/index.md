@@ -40,6 +40,9 @@ tasks:
         exit 1
       fi
       echo "API handler with renderData found ✓"
+    hintcheck: |
+      echo "Add renderData() to a handler action — e.g.:"
+      echo "  event.renderData(type='json', data=rc.tickets, statusCode=200);"
 
   verify_api_responds:
     machine: cf-dev
@@ -53,6 +56,9 @@ tasks:
         exit 1
       fi
       echo "API returns valid JSON ✓"
+    hintcheck: |
+      echo "Test with: curl -s http://localhost:8888/api/tickets"
+      echo "Make sure the server is running: cd ~/app && box server start"
 
   verify_lesson_complete:
     machine: cf-dev
@@ -61,4 +67,6 @@ tasks:
       - verify_api_responds
     run: |
       echo "ColdBox REST API lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

@@ -38,6 +38,9 @@ tasks:
         exit 1
       fi
       echo "java_demo.cfm is accessible ✓"
+    hintcheck: |
+      echo "Create java_demo.cfm in the CF webroot — follow the Activity in section 1."
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/java_demo.cfm ..."
 
   verify_createobject_java:
     machine: cf-dev
@@ -55,6 +58,8 @@ tasks:
         exit 1
       fi
       echo "Java object creation found ✓"
+    hintcheck: |
+      echo "java_demo.cfm must call createObject(\"java\", ...) to instantiate a Java class."
 
   verify_java_output:
     machine: cf-dev
@@ -68,6 +73,8 @@ tasks:
         exit 1
       fi
       echo "java_demo.cfm runs without errors ✓"
+    hintcheck: |
+      echo "Check for CFML errors: tail /opt/coldfusion2025/cfusion/logs/exception.log"
 
   verify_lesson_complete:
     machine: cf-dev
@@ -76,4 +83,6 @@ tasks:
       - verify_java_output
     run: |
       echo "Java integration lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

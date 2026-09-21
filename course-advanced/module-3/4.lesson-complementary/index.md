@@ -39,6 +39,9 @@ tasks:
         exit 1
       fi
       echo "pdf_demo.cfm is accessible ✓"
+    hintcheck: |
+      echo "Create pdf_demo.cfm — follow the cfdocument Activity in section 1."
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/pdf_demo.cfm ..."
 
   verify_cfdocument_used:
     machine: cf-dev
@@ -52,6 +55,8 @@ tasks:
         exit 1
       fi
       echo "cfdocument/cfpdf is used ✓"
+    hintcheck: |
+      echo "pdf_demo.cfm must contain <cfdocument> or <cfpdf> to generate a PDF."
 
   verify_spreadsheet_page:
     machine: cf-dev
@@ -65,6 +70,9 @@ tasks:
         exit 1
       fi
       echo "export.cfm exists ✓"
+    hintcheck: |
+      echo "Create export.cfm — follow the SpreadsheetNew() Activity in section 2."
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/export.cfm ..."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -73,4 +81,6 @@ tasks:
       - verify_spreadsheet_page
     run: |
       echo "Complementary features lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

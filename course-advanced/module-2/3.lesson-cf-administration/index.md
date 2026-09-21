@@ -40,6 +40,9 @@ tasks:
         exit 1
       fi
       echo "CF Admin is reachable (HTTP ${STATUS}) ✓"
+    hintcheck: |
+      echo "ColdFusion Admin is at http://localhost:8500/CFIDE/administrator/"
+      echo "It should be running automatically. If not: sudo systemctl restart coldfusion"
 
   verify_admin_api_script:
     machine: cf-dev
@@ -53,6 +56,9 @@ tasks:
         exit 1
       fi
       echo "admin_api_demo.cfm exists ✓"
+    hintcheck: |
+      echo "Create admin_api_demo.cfm — follow the Admin API Activity in section 2."
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/admin_api_demo.cfm ..."
 
   verify_admin_api_runs:
     machine: cf-dev
@@ -66,6 +72,9 @@ tasks:
         exit 1
       fi
       echo "admin_api_demo.cfm ran without errors ✓"
+    hintcheck: |
+      echo "Check CFML errors: tail /opt/coldfusion2025/cfusion/logs/exception.log"
+      echo "Common issue: wrong admin password — use 'admin' or check the Dockerfile."
 
   verify_cfconfig_file:
     machine: cf-dev
@@ -79,6 +88,9 @@ tasks:
         exit 1
       fi
       echo ".CFConfig.json found at ${FILE} ✓"
+    hintcheck: |
+      echo "Create .CFConfig.json — follow the CFConfig Activity in section 3."
+      echo "  box cfconfig export --to=/home/laborant/.CFConfig.json"
 
   verify_lesson_complete:
     machine: cf-dev
@@ -87,4 +99,6 @@ tasks:
       - verify_cfconfig_file
     run: |
       echo "CF Administration lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

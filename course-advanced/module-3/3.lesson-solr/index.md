@@ -38,6 +38,10 @@ tasks:
         exit 1
       fi
       echo "Solr is running on port 8983 ✓"
+    hintcheck: |
+      echo "Solr starts automatically. If not ready, wait 30 s, then:"
+      echo "  curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8983/solr/"
+      echo "Or check: sudo systemctl status solr"
 
   verify_collection_exists:
     machine: cf-dev
@@ -51,6 +55,9 @@ tasks:
         exit 1
       fi
       echo "Solr collection exists ✓"
+    hintcheck: |
+      echo "Create the Solr collection — follow the cfcollection Activity in section 2."
+      echo "The collection must be named 'students' or 'training'."
 
   verify_search_page:
     machine: cf-dev
@@ -64,6 +71,9 @@ tasks:
         exit 1
       fi
       echo "search.cfm is accessible ✓"
+    hintcheck: |
+      echo "Create search.cfm — follow the cfsearch Activity in section 3."
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/search.cfm ..."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -72,4 +82,6 @@ tasks:
       - verify_search_page
     run: |
       echo "Solr lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

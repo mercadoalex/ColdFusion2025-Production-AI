@@ -40,6 +40,9 @@ tasks:
         exit 1
       fi
       echo "SSH from cf-dev → cf-prod works ✓"
+    hintcheck: |
+      echo "Test with: ssh -o StrictHostKeyChecking=no laborant@cf-prod 'echo ok'"
+      echo "If it fails, check that SSH keys were provisioned during lab setup."
 
   verify_deploy_script:
     machine: cf-dev
@@ -56,6 +59,9 @@ tasks:
         exit 1
       fi
       echo "deploy.sh exists and references cf-prod ✓"
+    hintcheck: |
+      echo "Create ~/deploy.sh with the deployment commands — see the Activity in section 2."
+      echo "It must contain 'cf-prod' (the target hostname)."
 
   verify_deployed_file:
     machine: cf-prod
@@ -68,6 +74,9 @@ tasks:
         exit 1
       fi
       echo "Deployment marker present on cf-prod ✓"
+    hintcheck: |
+      echo "Run: ~/deploy.sh"
+      echo "Then check: ssh laborant@cf-prod 'ls /opt/coldfusion2025/cfusion/wwwroot/deploy_marker.txt'"
 
   verify_lesson_complete:
     machine: cf-dev
@@ -76,4 +85,6 @@ tasks:
       - verify_deployed_file
     run: |
       echo "Production deployment lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

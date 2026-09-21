@@ -32,12 +32,15 @@ tasks:
     machine: cf-dev
     user: laborant
     run: |
-      BODY=$(curl -s http://localhost:8500/schedule_setup.cfm)
-      if echo "${BODY}" | grep -qi "error\|exception"; then
-        echo "schedule_setup.cfm threw an error"
+      FILE="/opt/coldfusion2025/cfusion/wwwroot/schedule_setup.cfm"
+      if [ ! -f "${FILE}" ]; then
+        echo "schedule_setup.cfm not found — create it following the Activity in section 1"
         exit 1
       fi
-      echo "schedule_setup.cfm ran without errors ✓"
+      echo "schedule_setup.cfm found ✓"
+    hintcheck: |
+      echo "Create schedule_setup.cfm — follow the cfschedule Activity in section 1."
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/schedule_setup.cfm ..."
 
   verify_cfschedule_used:
     machine: cf-dev
@@ -51,6 +54,8 @@ tasks:
         exit 1
       fi
       echo "cfschedule is used ✓"
+    hintcheck: |
+      echo "schedule_setup.cfm must contain a <cfschedule> or cfschedule() call to register a task."
 
   verify_task_page_exists:
     machine: cf-dev
@@ -64,6 +69,10 @@ tasks:
         exit 1
       fi
       echo "Task target page exists ✓"
+    hintcheck: |
+      echo "Create the scheduled task target file:"
+      echo "  mkdir -p /opt/coldfusion2025/cfusion/wwwroot/tasks"
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/tasks/nightly_report.cfm ..."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -72,4 +81,6 @@ tasks:
       - verify_task_page_exists
     run: |
       echo "Scheduling lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

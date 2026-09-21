@@ -39,6 +39,9 @@ tasks:
         exit 1
       fi
       echo "xml_demo.cfm is accessible ✓"
+    hintcheck: |
+      echo "Create xml_demo.cfm — follow the Activity in section 1 (cfxml / XmlNew)."
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/xml_demo.cfm ..."
 
   verify_xpath_usage:
     machine: cf-dev
@@ -52,6 +55,8 @@ tasks:
         exit 1
       fi
       echo "XML parsing/XPath usage found ✓"
+    hintcheck: |
+      echo "xml_demo.cfm must use XmlSearch(), XmlParse(), or <cfxml> — add an XPath query."
 
   verify_xslt_page:
     machine: cf-dev
@@ -65,6 +70,9 @@ tasks:
         exit 1
       fi
       echo "xslt_demo.cfm is accessible ✓"
+    hintcheck: |
+      echo "Create xslt_demo.cfm — follow the XmlTransform Activity in section 3."
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/xslt_demo.cfm ..."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -73,4 +81,6 @@ tasks:
       - verify_xslt_page
     run: |
       echo "XML processing lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

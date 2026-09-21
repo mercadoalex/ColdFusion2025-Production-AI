@@ -41,6 +41,9 @@ tasks:
         exit 1
       fi
       echo "ColdBox app scaffolded ✓"
+    hintcheck: |
+      echo "Scaffold the app with: box coldbox create app name=MyApp skeleton=AdvancedScript"
+      echo "Run from: /home/laborant/app/"
 
   verify_app_running:
     machine: cf-dev
@@ -54,6 +57,9 @@ tasks:
         exit 1
       fi
       echo "App running on port 8888 ✓"
+    hintcheck: |
+      echo "Start the app with CommandBox: cd /home/laborant/app && box server start"
+      echo "The server should bind to port 8888."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -62,4 +68,6 @@ tasks:
       - verify_app_running
     run: |
       echo "ColdBox scaffold lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

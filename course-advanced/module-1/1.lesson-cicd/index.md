@@ -40,6 +40,9 @@ tasks:
         exit 1
       fi
       echo "Gitea is running ✓"
+    hintcheck: |
+      echo "Gitea starts automatically. If not ready yet, wait 30 s, then:"
+      echo "  curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000"
 
   verify_repo_pushed:
     machine: cf-dev
@@ -55,6 +58,9 @@ tasks:
         exit 1
       fi
       echo "Repository cf-app exists in Gitea ✓"
+    hintcheck: |
+      echo "Create and push the repo with: cd ~/app && git remote add origin ... && git push"
+      echo "Then verify: curl -u labadmin:labpassword http://localhost:3000/api/v1/repos/labadmin/cf-app"
 
   verify_dockerfile_exists:
     machine: cf-dev
@@ -67,6 +73,8 @@ tasks:
         exit 1
       fi
       echo "Dockerfile found ✓"
+    hintcheck: |
+      echo "Create ~/app/Dockerfile — follow the Activity in the Containerisation section."
 
   verify_github_actions_workflow:
     machine: cf-dev
@@ -80,6 +88,8 @@ tasks:
         exit 1
       fi
       echo "Gitea Actions workflow found at ${FILE} ✓"
+    hintcheck: |
+      echo "Create .gitea/workflows/deploy.yml — follow the CI/CD Pipeline Activity."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -88,4 +98,6 @@ tasks:
       - verify_github_actions_workflow
     run: |
       echo "DevOps lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

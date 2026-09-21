@@ -41,6 +41,9 @@ tasks:
         exit 1
       fi
       echo "ColdBox installed ✓"
+    hintcheck: |
+      echo "Install ColdBox with CommandBox:"
+      echo "  cd /home/laborant/app && box install coldbox"
 
   verify_lesson_complete:
     machine: cf-dev
@@ -49,4 +52,6 @@ tasks:
       - verify_coldbox_installed
     run: |
       echo "ColdBox intro lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

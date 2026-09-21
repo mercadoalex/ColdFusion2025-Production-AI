@@ -38,6 +38,9 @@ tasks:
         exit 1
       fi
       echo "Handler found: $HANDLER ✓"
+    hintcheck: |
+      echo "Create a handler: box coldbox create handler name=Main actions=index"
+      echo "Or manually create ~/app/handlers/Main.cfc"
 
   verify_handler_action:
     machine: cf-dev
@@ -51,6 +54,8 @@ tasks:
         exit 1
       fi
       echo "Handler action found ✓"
+    hintcheck: |
+      echo "Handlers must have at least one function (action). Add: function index(event,rc,prc) {}"
 
   verify_route_responds:
     machine: cf-dev
@@ -64,6 +69,9 @@ tasks:
         exit 1
       fi
       echo "Route responds with 200 ✓"
+    hintcheck: |
+      echo "Make sure the CommandBox server is running: cd ~/app && box server start"
+      echo "Check Router.cfc has a default route pointing to your handler."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -72,4 +80,6 @@ tasks:
       - verify_route_responds
     run: |
       echo "Handlers & routing lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

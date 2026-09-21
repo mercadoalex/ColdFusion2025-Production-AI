@@ -39,6 +39,9 @@ tasks:
         exit 1
       fi
       echo "integration_demo.cfm is accessible ✓"
+    hintcheck: |
+      echo "Create integration_demo.cfm — follow the cfhttp Activity in section 1."
+      echo "  sudo tee /opt/coldfusion2025/cfusion/wwwroot/integration_demo.cfm ..."
 
   verify_cfhttp_used:
     machine: cf-dev
@@ -52,6 +55,8 @@ tasks:
         exit 1
       fi
       echo "cfhttp is used ✓"
+    hintcheck: |
+      echo "integration_demo.cfm must use <cfhttp> or cfhttp() to call an external URL."
 
   verify_cfmail_used:
     machine: cf-dev
@@ -65,6 +70,8 @@ tasks:
         exit 1
       fi
       echo "cfmail is used in ${COUNT} location(s) ✓"
+    hintcheck: |
+      echo "Create a CFML file that uses <cfmail> — follow the cfmail Activity in section 2."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -73,4 +80,6 @@ tasks:
       - verify_cfmail_used
     run: |
       echo "Integration lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

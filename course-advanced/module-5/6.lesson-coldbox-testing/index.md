@@ -38,6 +38,8 @@ tasks:
         exit 1
       fi
       echo "TestBox installed ✓"
+    hintcheck: |
+      echo "Install TestBox: cd /home/laborant/app && box install testbox"
 
   verify_test_spec_exists:
     machine: cf-dev
@@ -51,6 +53,9 @@ tasks:
         exit 1
       fi
       echo "Test spec found: $SPEC ✓"
+    hintcheck: |
+      echo "Create a spec: box coldbox create bdd name=MainSpec"
+      echo "Spec files should be in ~/app/tests/specs/ and end in Spec.cfc or Test.cfc"
 
   verify_tests_pass:
     machine: cf-dev
@@ -64,6 +69,9 @@ tasks:
         exit 1
       fi
       echo "All tests pass ✓"
+    hintcheck: |
+      echo "Run tests manually: curl -s 'http://localhost:8888/testbox/system/runners/TextRunner.cfm?directory=tests/specs'"
+      echo "Fix any failures shown in the output before this task turns green."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -72,4 +80,6 @@ tasks:
       - verify_tests_pass
     run: |
       echo "TestBox testing lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

@@ -40,6 +40,9 @@ tasks:
         exit 1
       fi
       echo "TicketNotifier.cfc exists ✓"
+    hintcheck: |
+      echo "Create /opt/coldfusion2025/cfusion/wwwroot/solid/TicketNotifier.cfc"
+      echo "Follow the SRP Activity in section 1."
 
   verify_ocp_interface:
     machine: cf-dev
@@ -57,6 +60,9 @@ tasks:
         exit 1
       fi
       echo "INotifier.cfc interface exists ✓"
+    hintcheck: |
+      echo "Create INotifier.cfc with: <cfinterface> ... </cfinterface>"
+      echo "See the OCP Activity in section 2."
 
   verify_solid_page:
     machine: cf-dev
@@ -64,17 +70,16 @@ tasks:
     needs:
       - verify_ocp_interface
     run: |
-      STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8500/solid/demo.cfm)
-      if [ "${STATUS}" != "200" ]; then
-        echo "solid/demo.cfm not accessible (HTTP ${STATUS})"
-        exit 1
-      fi
       BODY=$(curl -s http://localhost:8500/solid/demo.cfm)
-      if echo "${BODY}" | grep -qi "error\|exception"; then
-        echo "solid/demo.cfm returned a ColdFusion error"
+      STATUS=$?
+      if [ -z "${BODY}" ] || echo "${BODY}" | grep -qi "error\|exception"; then
+        echo "solid/demo.cfm is not accessible or returned a ColdFusion error"
         exit 1
       fi
       echo "solid/demo.cfm runs cleanly ✓"
+    hintcheck: |
+      echo "Create solid/demo.cfm — follow the final Activity in section 5."
+      echo "Check logs if it errors: tail /opt/coldfusion2025/cfusion/logs/exception.log"
 
   verify_lesson_complete:
     machine: cf-dev
@@ -83,4 +88,6 @@ tasks:
       - verify_solid_page
     run: |
       echo "SOLID principles lesson complete — course done! ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

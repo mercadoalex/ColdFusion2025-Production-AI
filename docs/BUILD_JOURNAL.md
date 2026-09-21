@@ -1064,3 +1064,26 @@ tasks:
 
 Keys used: `machine`, `user`, `run`, `needs`. Nothing else.
 
+
+---
+
+## Curl → Python3 Pipe Bug (Ollama lesson — Sep 21 2026)
+
+**Symptom:** `JSONDecodeError: Expecting value: line 1 column 1 (char 0)` when piping curl directly to python3.
+
+**Root cause:** Curl closes the pipe before python3 finishes reading stdin. The response body is valid JSON but python3 receives an empty string.
+
+**Broken pattern:**
+```bash
+curl -s http://ollama:11434/api/generate \
+  -d '...' | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
+```
+
+**Fixed pattern — always capture first, then pipe:**
+```bash
+RESPONSE=$(curl -s http://ollama:11434/api/generate -d '...')
+echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
+```
+
+Apply this pattern to **every** curl → python3 command in all lessons. Never pipe curl output directly to python3.
+

@@ -39,6 +39,8 @@ tasks:
         exit 1
       fi
       echo "docker-compose.yml found at ${FILE} ✓"
+    hintcheck: |
+      echo "Create ~/docker-compose.yml — follow the Activity in the Docker Compose section."
 
   verify_compose_has_cf:
     machine: cf-dev
@@ -52,6 +54,8 @@ tasks:
         exit 1
       fi
       echo "docker-compose.yml references ColdFusion ✓"
+    hintcheck: |
+      echo "Make sure docker-compose.yml has a 'coldfusion' service or port 8500 mapped."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -60,4 +64,6 @@ tasks:
       - verify_compose_has_cf
     run: |
       echo "Cloud deployment lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

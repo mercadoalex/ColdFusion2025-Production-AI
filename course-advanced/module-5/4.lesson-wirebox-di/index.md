@@ -39,6 +39,9 @@ tasks:
         exit 1
       fi
       echo "Service found: $SVC ✓"
+    hintcheck: |
+      echo "Create a service CFC in ~/app/models/ — e.g., TicketService.cfc"
+      echo "  box coldbox create model name=TicketService"
 
   verify_injection_used:
     machine: cf-dev
@@ -52,6 +55,9 @@ tasks:
         exit 1
       fi
       echo "WireBox injection found ✓"
+    hintcheck: |
+      echo "In your handler, inject the service with:"
+      echo "  property name='ticketService' inject='TicketService';"
 
   verify_lesson_complete:
     machine: cf-dev
@@ -60,4 +66,6 @@ tasks:
       - verify_injection_used
     run: |
       echo "WireBox DI lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---

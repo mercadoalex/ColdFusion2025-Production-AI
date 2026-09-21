@@ -35,6 +35,9 @@ tasks:
         exit 1
       fi
       echo "ColdFusion is running on cf-dev (HTTP ${STATUS}) ✓"
+    hintcheck: |
+      echo "ColdFusion should start automatically. If it hasn't, wait 30 s and try:"
+      echo "  curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8500/index.cfm"
 
   verify_ssh_to_prod:
     machine: cf-dev
@@ -50,6 +53,9 @@ tasks:
         exit 1
       fi
       echo "cf-prod is reachable from cf-dev via SSH ✓"
+    hintcheck: |
+      echo "Test SSH manually: ssh -o StrictHostKeyChecking=no laborant@cf-prod 'echo ok'"
+      echo "If it fails, the SSH key may not be set up — check ~/.ssh/authorized_keys on cf-prod."
 
   verify_lesson_complete:
     machine: cf-dev
@@ -58,4 +64,6 @@ tasks:
       - verify_ssh_to_prod
     run: |
       echo "Bridge lesson complete ✓"
+    hintcheck: |
+      echo "All previous tasks must be green before this turns green."
 ---
