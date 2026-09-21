@@ -171,10 +171,10 @@ Switch to the **Terminal (ollama)** tab and run:
 > ⏱️ **phi3:mini runs on CPU — the first response after a cold start can take 30–90 seconds.** The `--max-time 120` flag tells curl to wait up to 2 minutes before giving up.
 
 ```bash
-curl -s --max-time 120 http://localhost:11434/api/generate \
+RESPONSE=$(curl -s --max-time 120 http://localhost:11434/api/generate \
   -H "Content-Type: application/json" \
-  -d '{"model":"phi3:mini","prompt":"List three use cases for ColdFusion in enterprise","stream":false}' \
-  | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
+  -d '{"model":"phi3:mini","prompt":"List three use cases for ColdFusion in enterprise","stream":false}')
+echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
 ```
 
 **Expected output** — you will see something like this (the exact wording varies, but it should be three coherent enterprise use cases):
@@ -260,7 +260,7 @@ The purpose of this activity is to confirm that:
 Run the following in the **Terminal (ollama)** tab:
 
 ```bash
-curl -s --max-time 120 http://localhost:11434/api/chat \
+RESPONSE=$(curl -s --max-time 120 http://localhost:11434/api/chat \
   -H "Content-Type: application/json" \
   -d '{
     "model":  "phi3:mini",
@@ -275,7 +275,8 @@ curl -s --max-time 120 http://localhost:11434/api/chat \
         "content": "My printer shows offline in Windows but is physically on. What should I check?"
       }
     ]
-  }' | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['message']['content'])"
+  }')
+echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['message']['content'])"
 ```
 
 The `system` message sets the assistant's persona and constraints — always include one for consistent, predictable output.
@@ -334,10 +335,10 @@ Switch to the **Terminal (dev)** tab and run both commands:
 curl -s -o /dev/null -w "%{http_code}\n" http://ollama:11434/api/tags
 
 # Step 2 — send a prompt from cf-dev to the ollama VM (allow up to 2 min for CPU inference)
-curl -s --max-time 120 http://ollama:11434/api/generate \
+RESPONSE=$(curl -s --max-time 120 http://ollama:11434/api/generate \
   -H "Content-Type: application/json" \
-  -d '{"model":"phi3:mini","prompt":"Say hello in one word","stream":false}' \
-  | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
+  -d '{"model":"phi3:mini","prompt":"Say hello in one word","stream":false}')
+echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['response'])"
 ```
 
 This is the base URL you'll use in all ColdFusion code: **`http://ollama:11434`**.
