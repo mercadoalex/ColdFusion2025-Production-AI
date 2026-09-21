@@ -70,25 +70,21 @@ The key insight, inspired by how children learn language (simple words, high-qua
 
 ## 2. Explore the Ollama API
 
-**Activity:** Open the **Terminal (ollama)** tab and explore the API:
+**Activity — Terminal (ollama):** Run these three commands to confirm the API is alive, check the version, and get your first AI response.
 
 ```bash
-# List available models
+# Step 1 — list available models (phi3:mini should appear)
 curl -s http://localhost:11434/api/tags | python3 -m json.tool
 
-# Check the server version
-curl -s http://localhost:11434/api/version
+# Step 2 — check the server version
+curl -s http://localhost:11434/api/version | tee /tmp/ollama_version.txt
 
-# Generate a single completion (non-streaming — waits for full response)
-curl -s --max-time 120 http://localhost:11434/api/generate \
+# Step 3 — generate a single completion (waits for full response — allow up to 2 min)
+RESPONSE=$(curl -s --max-time 120 http://localhost:11434/api/generate \
   -H "Content-Type: application/json" \
-  -d '{
-    "model":  "phi3:mini",
-    "prompt": "In one sentence, what is ColdFusion?",
-    "stream": false
-  }' | python3 -m json.tool
+  -d '{"model":"phi3:mini","prompt":"In one sentence, what is ColdFusion?","stream":false}')
+echo "$RESPONSE" | python3 -m json.tool
 ```
-
 
 ::image-box
 ---
@@ -98,7 +94,6 @@ curl -s --max-time 120 http://localhost:11434/api/generate \
 ---
 _The full JSON response from `/api/generate` — the `response` field contains the model's answer._
 ::
-
 
 The key response fields:
 
@@ -115,7 +110,7 @@ The key response fields:
 :name: verify_ollama_running
 ---
 #active
-In the **Terminal (ollama)** tab, run `curl -s http://localhost:11434/api/tags` and confirm it returns HTTP 200.
+Runs automatically — turns green once the Ollama API on port 11434 responds to requests.
 
 #completed
 Ollama API is up and responding. ✓
@@ -127,10 +122,22 @@ Ollama API is up and responding. ✓
 :name: verify_phi3_present
 ---
 #active
-In the **Terminal (ollama)** tab, check the output of the previous command and confirm `phi3:mini` appears in the `models` list.
+Runs automatically — turns green once phi3:mini appears in the Ollama model list.
 
 #completed
 phi3:mini is loaded and available. ✓
+::
+
+::simple-task
+---
+:tasks: tasks
+:name: verify_api_explored
+---
+#active
+In the **Terminal (ollama)** tab, run Step 2 above (`curl .../api/version | tee /tmp/ollama_version.txt`). The version response confirms the API is reachable and working.
+
+#completed
+Ollama API version confirmed. ✓
 ::
 
 ---

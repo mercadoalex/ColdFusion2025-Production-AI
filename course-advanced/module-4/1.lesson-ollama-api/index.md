@@ -54,6 +54,21 @@ tasks:
       fi
       echo "phi3:mini is available ✓"
 
+  verify_api_explored:
+    machine: ollama
+    user: laborant
+    needs:
+      - verify_phi3_present
+    run: |
+      if [ ! -s /tmp/ollama_version.txt ]; then
+        echo "Run Step 2 in section 2 — curl .../api/version | tee /tmp/ollama_version.txt"
+        exit 1
+      fi
+      echo "Ollama API version confirmed ✓"
+    hintcheck: |
+      echo "In the Terminal (ollama) tab, run:"
+      echo "  curl -s http://localhost:11434/api/version | tee /tmp/ollama_version.txt"
+
   verify_completion:
     machine: ollama
     user: laborant

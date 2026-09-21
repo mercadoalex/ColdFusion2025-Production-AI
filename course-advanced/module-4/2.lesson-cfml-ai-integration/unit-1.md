@@ -172,10 +172,10 @@ TESTEOF
 
 > ⏱️ **The first request takes 30–90 seconds** while the model loads into RAM. Subsequent calls take 1–10 s.
 
-**Activity — Terminal (dev):** Hit the page with curl:
+**Activity — Terminal (dev):** Hit the page with curl and save the output:
 
 ```bash
-curl -s http://localhost:8500/ai_test.cfm
+curl -s http://localhost:8500/ai_test.cfm | tee /tmp/ai_test_output.txt
 ```
 
 > ⏱️ This curl may take 30–90 seconds on first call — phi3:mini is loading into RAM. Wait for the prompt to return before continuing.
@@ -250,10 +250,10 @@ If you see an HTML error page instead of your output, check `/opt/coldfusion2025
 :name: verify_ai_test_cfm
 ---
 #active
-Runs automatically — verifies `ai_test.cfm` exists, returns HTTP 200, and has a non-empty body.
+Runs automatically — turns green once `ai_test.cfm` is created in the webroot. Complete the Activity above to create it.
 
 #completed
-ai_test.cfm is responding with AI-generated content. ✓
+ai_test.cfm found. ✓
 ::
 
 ---
@@ -561,11 +561,11 @@ CHATEOF
 # ── 1. Health check (GET) ─────────────────────────────────────────────
 curl -s http://localhost:8500/api/ai-chat.cfm | python3 -m json.tool
 
-# ── 2. Ask a real question (POST) ────────────────────────────────────
+# ── 2. Ask a real question (POST) — save output for task verification ─
 curl -s -X POST http://localhost:8500/api/ai-chat.cfm \
   -H "Content-Type: application/json" \
   -d '{"prompt":"In two sentences, what is ColdFusion used for?"}' \
-  | python3 -m json.tool
+  | tee /tmp/ai_response.txt | python3 -m json.tool
 
 # ── 3. Custom system prompt ──────────────────────────────────────────
 curl -s -X POST http://localhost:8500/api/ai-chat.cfm \
@@ -579,6 +579,8 @@ curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8500/api/ai-ch
   -d '{"not_a_prompt": "missing field"}'
 # Expected: 400
 ```
+
+> 💾 Step 2 saves the AI response to `/tmp/ai_response.txt` — the task box below uses this file to verify you got a real AI response without re-running the inference call.
 
 ::hint-box
 ---
@@ -632,10 +634,10 @@ ai-chat.cfm health check is responding. ✓
 :name: verify_ai_response
 ---
 #active
-Send `POST /api/ai-chat.cfm` with `{"prompt":"Reply with only the word PONG"}` and confirm the response JSON has a non-empty `response` field.
+Runs automatically — turns green once `/tmp/ai_response.txt` exists with a non-empty `response` field. Run Step 2 in the Activity above (the POST with `tee /tmp/ai_response.txt`).
 
 #completed
-AI response received. ✓
+AI response confirmed. ✓
 ::
 
 ---
@@ -692,7 +694,7 @@ if (!len(reply)) {
 }
 ```
 
-**Activity — Terminal (dev):** Confirm the error path works by sending an empty prompt — `OllamaService.cfc` will throw `OllamaService.Error` and the catch block will return a clean message:
+**Activity — Terminal (dev):** Create `ai_error_test.cfm` and save its output for task verification:
 
 ```bash
 sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_error_test.cfm << 'ERREOF'
@@ -710,8 +712,10 @@ sudo tee /opt/coldfusion2025/cfusion/wwwroot/ai_error_test.cfm << 'ERREOF'
 </cfscript>
 ERREOF
 
-curl -s http://localhost:8500/ai_error_test.cfm
+curl -s http://localhost:8500/ai_error_test.cfm | tee /tmp/ai_error_test.txt
 ```
+
+> 💾 The output is saved to `/tmp/ai_error_test.txt` — the task box below checks this file so it does not re-trigger AI inference in a loop.
 
 ::hint-box
 ---
@@ -766,7 +770,7 @@ Most "AI not responding" issues are either Ollama not running, model not pulled,
 :name: verify_error_handling
 ---
 #active
-Run `curl -s http://localhost:8500/ai_error_test.cfm` and confirm the output contains "Error handling works correctly".
+Runs automatically — turns green once `/tmp/ai_error_test.txt` exists and contains "Error handling works correctly". Run the `curl ... | tee /tmp/ai_error_test.txt` command in the Activity above.
 
 #completed
 OllamaService.Error caught and handled correctly. ✓
