@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="-apple-system,Segoe UI,sans-serif">
+  <rect width="900" height="400" fill="#f8f9fa" rx="12"/>
+  <text x="450" y="36" text-anchor="middle" font-size="17" font-weight="700" fill="#1f2328">Task Execution Lifecycle</text>
+
+  <!-- Step boxes -->
+  <!-- 1 -->
+  <rect x="30" y="70" width="140" height="90" rx="8" fill="#e8f0fe" stroke="#3b82d4" stroke-width="2"/>
+  <circle cx="100" cy="95" r="14" fill="#3b82d4"/>
+  <text x="100" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+  <text x="100" y="124" text-anchor="middle" font-size="11.5" font-weight="600" fill="#3b82d4">cfschedule</text>
+  <text x="100" y="140" text-anchor="middle" font-size="10.5" fill="#57606a">action="update"</text>
+  <text x="100" y="155" text-anchor="middle" font-size="10.5" fill="#57606a">Register task</text>
+
+  <!-- Arrow 1→2 -->
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0,9 3.5,0 7" fill="#3b82d4"/></marker>
+    <marker id="b" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0,9 3.5,0 7" fill="#57606a"/></marker>
+  </defs>
+  <line x1="172" y1="115" x2="208" y2="115" stroke="#3b82d4" stroke-width="2" marker-end="url(#a)"/>
+  <text x="190" y="109" text-anchor="middle" font-size="9.5" fill="#3b82d4">stored</text>
+
+  <!-- 2 -->
+  <rect x="210" y="70" width="140" height="90" rx="8" fill="#f1f8f1" stroke="#2d7a2d" stroke-width="2"/>
+  <circle cx="280" cy="95" r="14" fill="#2d7a2d"/>
+  <text x="280" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">2</text>
+  <text x="280" y="124" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2d7a2d">Trigger time</text>
+  <text x="280" y="140" text-anchor="middle" font-size="10.5" fill="#57606a">interval fires</text>
+  <text x="280" y="155" text-anchor="middle" font-size="10.5" fill="#57606a">(daily / cron / once)</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="352" y1="115" x2="388" y2="115" stroke="#3b82d4" stroke-width="2" marker-end="url(#a)"/>
+  <text x="370" y="109" text-anchor="middle" font-size="9.5" fill="#3b82d4">fires</text>
+
+  <!-- 3 -->
+  <rect x="390" y="70" width="140" height="90" rx="8" fill="#fff0e8" stroke="#e05252" stroke-width="2"/>
+  <circle cx="460" cy="95" r="14" fill="#e05252"/>
+  <text x="460" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">3</text>
+  <text x="460" y="124" text-anchor="middle" font-size="11.5" font-weight="600" fill="#e05252">HTTP GET</text>
+  <text x="460" y="140" text-anchor="middle" font-size="10.5" fill="#57606a">localhost:8500</text>
+  <text x="460" y="155" text-anchor="middle" font-size="10.5" fill="#57606a">/tasks/page.cfm</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="532" y1="115" x2="568" y2="115" stroke="#3b82d4" stroke-width="2" marker-end="url(#a)"/>
+  <text x="550" y="109" text-anchor="middle" font-size="9.5" fill="#3b82d4">executes</text>
+
+  <!-- 4 -->
+  <rect x="570" y="70" width="140" height="90" rx="8" fill="#f3f0fd" stroke="#7c5cd8" stroke-width="2"/>
+  <circle cx="640" cy="95" r="14" fill="#7c5cd8"/>
+  <text x="640" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">4</text>
+  <text x="640" y="124" text-anchor="middle" font-size="11.5" font-weight="600" fill="#7c5cd8">CFML runs</text>
+  <text x="640" y="140" text-anchor="middle" font-size="10.5" fill="#57606a">query / email /</text>
+  <text x="640" y="155" text-anchor="middle" font-size="10.5" fill="#57606a">cleanup / report</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="712" y1="115" x2="748" y2="115" stroke="#3b82d4" stroke-width="2" marker-end="url(#a)"/>
+  <text x="730" y="109" text-anchor="middle" font-size="9.5" fill="#3b82d4">logs</text>
+
+  <!-- 5 -->
+  <rect x="750" y="70" width="120" height="90" rx="8" fill="#fff8e8" stroke="#b45309" stroke-width="2"/>
+  <circle cx="810" cy="95" r="14" fill="#b45309"/>
+  <text x="810" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">5</text>
+  <text x="810" y="124" text-anchor="middle" font-size="11.5" font-weight="600" fill="#b45309">cflog()</text>
+  <text x="810" y="140" text-anchor="middle" font-size="10.5" fill="#57606a">scheduler.log</text>
+  <text x="810" y="155" text-anchor="middle" font-size="10.5" fill="#57606a">written</text>
+
+  <!-- ── interval reference table ── -->
+  <rect x="30" y="200" width="840" height="175" rx="10" fill="#fff" stroke="#e5e7eb" stroke-width="1.5"/>
+  <rect x="30" y="200" width="840" height="36" rx="10" fill="#3b82d4"/>
+  <rect x="30" y="222" width="840" height="14" fill="#3b82d4"/>
+  <text x="450" y="222" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">cfschedule Interval Reference</text>
+
+  <!-- Header row -->
+  <line x1="30" y1="252" x2="870" y2="252" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="130" y="248" text-anchor="middle" font-size="11" font-weight="600" fill="#1f2328">interval value</text>
+  <text x="380" y="248" text-anchor="middle" font-size="11" font-weight="600" fill="#1f2328">meaning</text>
+  <text x="660" y="248" text-anchor="middle" font-size="11" font-weight="600" fill="#1f2328">example use case</text>
+  <line x1="250" y1="236" x2="250" y2="375" stroke="#e5e7eb" stroke-width="1"/>
+  <line x1="510" y1="236" x2="510" y2="375" stroke="#e5e7eb" stroke-width="1"/>
+
+  <!-- rows -->
+  <text x="130" y="272" text-anchor="middle" font-size="11" fill="#3b82d4" font-family="monospace">"daily"</text>
+  <text x="380" y="272" text-anchor="middle" font-size="11" fill="#57606a">Once per day at startTime</text>
+  <text x="660" y="272" text-anchor="middle" font-size="11" fill="#57606a">Nightly reports, DB cleanup</text>
+
+  <line x1="30" y1="280" x2="870" y2="280" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="130" y="297" text-anchor="middle" font-size="11" fill="#3b82d4" font-family="monospace">"weekly"</text>
+  <text x="380" y="297" text-anchor="middle" font-size="11" fill="#57606a">Once per week</text>
+  <text x="660" y="297" text-anchor="middle" font-size="11" fill="#57606a">Weekly digest emails</text>
+
+  <line x1="30" y1="305" x2="870" y2="305" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="130" y="322" text-anchor="middle" font-size="11" fill="#3b82d4" font-family="monospace">"monthly"</text>
+  <text x="380" y="322" text-anchor="middle" font-size="11" fill="#57606a">Once per month</text>
+  <text x="660" y="322" text-anchor="middle" font-size="11" fill="#57606a">Monthly invoice generation</text>
+
+  <line x1="30" y1="330" x2="870" y2="330" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="130" y="347" text-anchor="middle" font-size="11" fill="#3b82d4" font-family="monospace">900  (seconds)</text>
+  <text x="380" y="347" text-anchor="middle" font-size="11" fill="#57606a">Every 15 minutes</text>
+  <text x="660" y="347" text-anchor="middle" font-size="11" fill="#57606a">Cache warm-up, health checks</text>
+
+  <line x1="30" y1="355" x2="870" y2="355" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="130" y="372" text-anchor="middle" font-size="11" fill="#3b82d4" font-family="monospace">"once"</text>
+  <text x="380" y="372" text-anchor="middle" font-size="11" fill="#57606a">Run one time only</text>
+  <text x="660" y="372" text-anchor="middle" font-size="11" fill="#57606a">One-off data migrations</text>
+</svg>

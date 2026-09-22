@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="-apple-system,Segoe UI,sans-serif">
+  <!-- Background -->
+  <rect width="900" height="480" fill="#f8f9fa" rx="12"/>
+
+  <!-- Title -->
+  <text x="450" y="38" text-anchor="middle" font-size="17" font-weight="700" fill="#1f2328">ColdFusion Scheduler — How It Works</text>
+
+  <!-- ── CF Engine Box ── -->
+  <rect x="30" y="70" width="220" height="340" rx="10" fill="#fff" stroke="#3b82d4" stroke-width="2"/>
+  <rect x="30" y="70" width="220" height="44" rx="10" fill="#3b82d4"/>
+  <rect x="30" y="100" width="220" height="14" fill="#3b82d4"/>
+  <text x="140" y="97" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">ColdFusion Engine</text>
+
+  <!-- Clock icon inside CF box -->
+  <circle cx="140" cy="168" r="36" fill="#e8f0fe" stroke="#3b82d4" stroke-width="1.5"/>
+  <circle cx="140" cy="168" r="3" fill="#3b82d4"/>
+  <line x1="140" y1="168" x2="140" y2="145" stroke="#3b82d4" stroke-width="2" stroke-linecap="round"/>
+  <line x1="140" y1="168" x2="157" y2="168" stroke="#3b82d4" stroke-width="2" stroke-linecap="round"/>
+  <text x="140" y="220" text-anchor="middle" font-size="11.5" fill="#57606a">Built-in Task Scheduler</text>
+
+  <!-- Task list in CF box -->
+  <rect x="52" y="238" width="176" height="22" rx="4" fill="#e8f0fe"/>
+  <text x="140" y="253" text-anchor="middle" font-size="11" fill="#3b82d4" font-weight="600">NightlyReport  02:00 daily</text>
+  <rect x="52" y="266" width="176" height="22" rx="4" fill="#f1f8f1"/>
+  <text x="140" y="281" text-anchor="middle" font-size="11" fill="#2d7a2d">CacheWarmup   */15 min</text>
+  <rect x="52" y="294" width="176" height="22" rx="4" fill="#fff8e8"/>
+  <text x="140" y="309" text-anchor="middle" font-size="11" fill="#b45309">CleanupOld    Sun 03:00</text>
+
+  <text x="140" y="358" text-anchor="middle" font-size="10.5" fill="#57606a">cfschedule( action="update" )</text>
+  <text x="140" y="374" text-anchor="middle" font-size="10.5" fill="#57606a">cfschedule( action="list" )</text>
+  <text x="140" y="390" text-anchor="middle" font-size="10.5" fill="#57606a">cfschedule( action="run" )</text>
+
+  <!-- ── HTTP Arrow CF → CFML page ── -->
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#e05252"/>
+    </marker>
+    <marker id="arr2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <line x1="252" y1="240" x2="368" y2="180" stroke="#e05252" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arr)"/>
+  <rect x="270" y="190" width="88" height="22" rx="4" fill="#fff0f0"/>
+  <text x="314" y="205" text-anchor="middle" font-size="10.5" fill="#e05252" font-weight="600">HTTP GET</text>
+  <text x="314" y="218" text-anchor="middle" font-size="9.5" fill="#e05252">localhost:8500</text>
+
+  <!-- ── Task Page Box ── -->
+  <rect x="370" y="60" width="230" height="160" rx="10" fill="#fff" stroke="#2d7a2d" stroke-width="2"/>
+  <rect x="370" y="60" width="230" height="44" rx="10" fill="#2d7a2d"/>
+  <rect x="370" y="90" width="230" height="14" fill="#2d7a2d"/>
+  <text x="485" y="87" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">Task Target Page</text>
+  <text x="485" y="113" text-anchor="middle" font-size="11" fill="#2d7a2d" font-weight="600">tasks/nightly_report.cfm</text>
+  <text x="485" y="132" text-anchor="middle" font-size="10.5" fill="#57606a">① Check cgi.REMOTE_ADDR</text>
+  <text x="485" y="149" text-anchor="middle" font-size="10.5" fill="#57606a">② Do work (query, email…)</text>
+  <text x="485" y="166" text-anchor="middle" font-size="10.5" fill="#57606a">③ cflog( file="scheduler" )</text>
+  <text x="485" y="183" text-anchor="middle" font-size="10.5" fill="#57606a">④ writeOutput("OK")</text>
+  <text x="485" y="207" text-anchor="middle" font-size="10" fill="#b45309">⚠  Normal CFML page — guard it!</text>
+
+  <!-- ── Log File Box ── -->
+  <rect x="370" y="280" width="230" height="110" rx="10" fill="#fff" stroke="#b45309" stroke-width="2"/>
+  <rect x="370" y="280" width="230" height="36" rx="10" fill="#b45309"/>
+  <rect x="370" y="302" width="230" height="14" fill="#b45309"/>
+  <text x="485" y="302" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">scheduler.log</text>
+  <text x="390" y="332" font-size="10" fill="#57606a" font-family="monospace">INFO nightly_report started</text>
+  <text x="390" y="349" font-size="10" fill="#57606a" font-family="monospace">INFO Open tickets: 14</text>
+  <text x="390" y="366" font-size="10" fill="#57606a" font-family="monospace">INFO nightly_report completed</text>
+
+  <!-- Arrow task page → log -->
+  <line x1="485" y1="222" x2="485" y2="278" stroke="#b45309" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <rect x="440" y="243" width="90" height="18" rx="3" fill="#fff8e8"/>
+  <text x="485" y="256" text-anchor="middle" font-size="10" fill="#b45309">cflog() writes</text>
+
+  <!-- ── CF Admin Box ── -->
+  <rect x="650" y="60" width="218" height="310" rx="10" fill="#fff" stroke="#7c5cd8" stroke-width="2"/>
+  <rect x="650" y="60" width="218" height="44" rx="10" fill="#7c5cd8"/>
+  <rect x="650" y="90" width="218" height="14" fill="#7c5cd8"/>
+  <text x="759" y="87" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">CF Admin UI</text>
+  <text x="759" y="115" text-anchor="middle" font-size="11" fill="#7c5cd8">Scheduled Tasks panel</text>
+
+  <!-- Admin rows -->
+  <rect x="665" y="126" width="188" height="24" rx="4" fill="#f3f0fd"/>
+  <text x="759" y="143" text-anchor="middle" font-size="10.5" fill="#7c5cd8">NightlyReport ● Active</text>
+  <rect x="665" y="156" width="188" height="24" rx="4" fill="#f3f0fd"/>
+  <text x="759" y="173" text-anchor="middle" font-size="10.5" fill="#7c5cd8">CacheWarmup  ● Active</text>
+  <rect x="665" y="186" width="188" height="24" rx="4" fill="#f3f0fd"/>
+  <text x="759" y="203" text-anchor="middle" font-size="10.5" fill="#7c5cd8">CleanupOld   ⏸ Paused</text>
+
+  <line x1="759" y1="216" x2="759" y2="236" stroke="#ccc" stroke-width="1"/>
+  <text x="759" y="252" text-anchor="middle" font-size="11" fill="#57606a">Admin API</text>
+  <text x="759" y="270" text-anchor="middle" font-size="10.5" fill="#57606a" font-family="monospace">cfide.adminapi</text>
+  <text x="759" y="287" text-anchor="middle" font-size="10.5" fill="#57606a" font-family="monospace">.scheduler</text>
+  <text x="759" y="310" text-anchor="middle" font-size="10" fill="#57606a">.getAllTasks()</text>
+  <text x="759" y="327" text-anchor="middle" font-size="10" fill="#57606a">.getTask("Name")</text>
+  <text x="759" y="344" text-anchor="middle" font-size="10" fill="#57606a">.deleteTask("Name")</text>
+
+  <!-- Arrow CF → Admin -->
+  <line x1="252" y1="300" x2="648" y2="200" stroke="#7c5cd8" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arr2)"/>
+  <rect x="395" y="222" width="120" height="18" rx="3" fill="#f3f0fd"/>
+  <text x="455" y="235" text-anchor="middle" font-size="10" fill="#7c5cd8">manage via Admin API</text>
+
+  <!-- Bottom legend -->
+  <rect x="30" y="430" width="840" height="36" rx="6" fill="#fff" stroke="#e5e7eb" stroke-width="1"/>
+  <circle cx="60" cy="448" r="6" fill="#e05252"/>
+  <text x="74" y="452" font-size="10.5" fill="#57606a">Scheduler fires HTTP GET internally</text>
+  <circle cx="270" cy="448" r="6" fill="#2d7a2d"/>
+  <text x="284" y="452" font-size="10.5" fill="#57606a">Task page does work + logs</text>
+  <circle cx="460" cy="448" r="6" fill="#b45309"/>
+  <text x="474" y="452" font-size="10.5" fill="#57606a">Output goes to scheduler.log — not browser</text>
+  <circle cx="700" cy="448" r="6" fill="#7c5cd8"/>
+  <text x="714" y="452" font-size="10.5" fill="#57606a">Manage via CF Admin or API</text>
+</svg>

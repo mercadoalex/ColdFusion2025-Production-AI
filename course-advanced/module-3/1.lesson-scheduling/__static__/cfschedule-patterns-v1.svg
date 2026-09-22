@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="-apple-system,Segoe UI,sans-serif">
+  <rect width="900" height="420" fill="#f8f9fa" rx="12"/>
+  <text x="450" y="36" text-anchor="middle" font-size="17" font-weight="700" fill="#1f2328">Reliable Scheduled Task Patterns</text>
+
+  <!-- Pattern 1: Guard -->
+  <rect x="30" y="60" width="400" height="160" rx="10" fill="#fff" stroke="#e05252" stroke-width="2"/>
+  <rect x="30" y="60" width="400" height="36" rx="10" fill="#e05252"/>
+  <rect x="30" y="82" width="400" height="14" fill="#e05252"/>
+  <text x="230" y="82" text-anchor="middle" font-size="12.5" font-weight="600" fill="#fff">① Access Guard — Block External Calls</text>
+  <text x="50" y="114" font-size="10.5" fill="#57606a" font-family="monospace">if (cgi.REMOTE_ADDR != "127.0.0.1" &amp;&amp;</text>
+  <text x="50" y="131" font-size="10.5" fill="#57606a" font-family="monospace">    cgi.REMOTE_ADDR != "::1") {</text>
+  <text x="50" y="148" font-size="10.5" fill="#e05252" font-family="monospace">  cfheader(statuscode=403);</text>
+  <text x="50" y="165" font-size="10.5" fill="#e05252" font-family="monospace">  abort;</text>
+  <text x="50" y="182" font-size="10.5" fill="#57606a" font-family="monospace">}</text>
+  <text x="230" y="208" text-anchor="middle" font-size="10" fill="#57606a">Task pages are plain HTTP — anyone can hit them without a guard.</text>
+
+  <!-- Pattern 2: cftry -->
+  <rect x="470" y="60" width="400" height="160" rx="10" fill="#fff" stroke="#2d7a2d" stroke-width="2"/>
+  <rect x="470" y="60" width="400" height="36" rx="10" fill="#2d7a2d"/>
+  <rect x="470" y="82" width="400" height="14" fill="#2d7a2d"/>
+  <text x="670" y="82" text-anchor="middle" font-size="12.5" font-weight="600" fill="#fff">② Wrap Work in try/catch</text>
+  <text x="490" y="114" font-size="10.5" fill="#57606a" font-family="monospace">try {</text>
+  <text x="490" y="131" font-size="10.5" fill="#57606a" font-family="monospace">  queryExecute("DELETE FROM ...");</text>
+  <text x="490" y="148" font-size="10.5" fill="#2d7a2d" font-family="monospace">  cflog(text="cleanup OK: #rows# rows");</text>
+  <text x="490" y="165" font-size="10.5" fill="#57606a" font-family="monospace">} catch(any e) {</text>
+  <text x="490" y="182" font-size="10.5" fill="#e05252" font-family="monospace">  cflog(text="ERROR: #e.message#");</text>
+  <text x="490" y="199" font-size="10.5" fill="#57606a" font-family="monospace">}</text>
+  <text x="670" y="218" text-anchor="middle" font-size="10" fill="#57606a">An unhandled exception silently kills the task — always catch.</text>
+
+  <!-- Pattern 3: cflog -->
+  <rect x="30" y="250" width="260" height="150" rx="10" fill="#fff" stroke="#b45309" stroke-width="2"/>
+  <rect x="30" y="250" width="260" height="36" rx="10" fill="#b45309"/>
+  <rect x="30" y="272" width="260" height="14" fill="#b45309"/>
+  <text x="160" y="272" text-anchor="middle" font-size="12.5" font-weight="600" fill="#fff">③ Log Everything</text>
+  <text x="160" y="300" text-anchor="middle" font-size="10.5" fill="#57606a">cflog( file="scheduler",</text>
+  <text x="160" y="317" text-anchor="middle" font-size="10.5" fill="#57606a">       text="started at #now()#" );</text>
+  <text x="160" y="340" text-anchor="middle" font-size="10" fill="#57606a">No browser to see output.</text>
+  <text x="160" y="357" text-anchor="middle" font-size="10" fill="#57606a">cflog is your only window.</text>
+  <text x="160" y="378" text-anchor="middle" font-size="10" fill="#b45309">tail -f cfusion/logs/scheduler.log</text>
+
+  <!-- Pattern 4: idempotent -->
+  <rect x="320" y="250" width="260" height="150" rx="10" fill="#fff" stroke="#7c5cd8" stroke-width="2"/>
+  <rect x="320" y="250" width="260" height="36" rx="10" fill="#7c5cd8"/>
+  <rect x="320" y="272" width="260" height="14" fill="#7c5cd8"/>
+  <text x="450" y="272" text-anchor="middle" font-size="12.5" font-weight="600" fill="#fff">④ Make Tasks Idempotent</text>
+  <text x="450" y="300" text-anchor="middle" font-size="10.5" fill="#57606a">Running the task twice should</text>
+  <text x="450" y="317" text-anchor="middle" font-size="10.5" fill="#57606a">produce the same result as once.</text>
+  <text x="450" y="342" text-anchor="middle" font-size="10" fill="#7c5cd8">Use WHERE clauses, UPSERT,</text>
+  <text x="450" y="359" text-anchor="middle" font-size="10" fill="#7c5cd8">or status flags — not blind INSERT.</text>
+  <text x="450" y="380" text-anchor="middle" font-size="10" fill="#57606a">Retries and double-fires happen.</text>
+
+  <!-- Pattern 5: timeout -->
+  <rect x="610" y="250" width="260" height="150" rx="10" fill="#fff" stroke="#3b82d4" stroke-width="2"/>
+  <rect x="610" y="250" width="260" height="36" rx="10" fill="#3b82d4"/>
+  <rect x="610" y="272" width="260" height="14" fill="#3b82d4"/>
+  <text x="740" y="272" text-anchor="middle" font-size="12.5" font-weight="600" fill="#fff">⑤ Set requestTimeOut</text>
+  <text x="740" y="300" text-anchor="middle" font-size="10.5" fill="#57606a">cfschedule(</text>
+  <text x="740" y="317" text-anchor="middle" font-size="10.5" fill="#3b82d4">  requestTimeOut = 120,</text>
+  <text x="740" y="334" text-anchor="middle" font-size="10.5" fill="#57606a">  ...</text>
+  <text x="740" y="351" text-anchor="middle" font-size="10.5" fill="#57606a">);</text>
+  <text x="740" y="375" text-anchor="middle" font-size="10" fill="#57606a">Default is very long. A runaway</text>
+  <text x="740" y="390" text-anchor="middle" font-size="10" fill="#57606a">task will starve your thread pool.</text>
+</svg>
