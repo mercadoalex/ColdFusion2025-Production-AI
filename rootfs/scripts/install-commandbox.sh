@@ -36,8 +36,12 @@ apt-get clean
 rm -rf /var/lib/apt/lists/*
 
 # 4. Verify
-box version || { echo "[BOX] ERROR: box CLI not functional"; exit 1; }
-echo "[BOX] CommandBox installed: $(box version 2>/dev/null)"
+BOX_VER=$(box version 2>&1 || true)
+if ! echo "${BOX_VER}" | grep -qi "commandbox"; then
+  echo "[BOX] ERROR: box CLI not functional: ${BOX_VER}"
+  exit 1
+fi
+echo "[BOX] CommandBox installed: ${BOX_VER}"
 
 # ─── Pre-bake the student app scaffold ───────────────────────────────────────
 echo "[BOX] Creating student app scaffold at ${APP_DIR}..."
@@ -152,7 +156,7 @@ fi
 # CommandBox finds it in the cache and skips the ForgeBox download entirely.
 # Cache path: /opt/commandbox/packages/forgebox/coldbox/<version>/
 # The file must be named coldbox-<version>.zip to match ForgeBox slug resolution.
-COLDBOX_ZIP=$(ls /tmp/cf-downloads/coldbox-*.zip 2>/dev/null | sort -V | tail -1)
+COLDBOX_ZIP=$(ls /tmp/cf-downloads/coldbox-*.zip 2>/dev/null | sort -V | tail -1 || true)
 if [ -n "${COLDBOX_ZIP}" ]; then
   COLDBOX_VERSION=$(basename "${COLDBOX_ZIP}" | sed 's/coldbox-//;s/\.zip//')
   CB_PKG_CACHE="${CB_HOME}/packages/forgebox/coldbox/${COLDBOX_VERSION}"

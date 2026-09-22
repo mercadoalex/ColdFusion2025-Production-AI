@@ -153,14 +153,16 @@ EOF
 COPY rootfs/scripts/install-coldfusion.sh /tmp/install-coldfusion.sh
 COPY rootfs/cf-config/neo-datasource.xml  /tmp/neo-datasource.xml
 COPY downloads/ /tmp/cf-downloads/
-RUN bash /tmp/install-coldfusion.sh && \
-    rm -rf /tmp/cf-downloads
+RUN bash /tmp/install-coldfusion.sh
+# NOTE: /tmp/cf-downloads is intentionally kept alive for Layer 4 (CommandBox)
+# and Layer 9 (code-server). Cleaned up after all consumers are done.
 
 # =============================================================================
 # LAYER 4 — CommandBox CLI + Lucee 5
 # =============================================================================
 COPY rootfs/scripts/install-commandbox.sh /tmp/install-commandbox.sh
-RUN bash /tmp/install-commandbox.sh
+RUN bash /tmp/install-commandbox.sh && \
+    rm -rf /tmp/cf-downloads
 
 # =============================================================================
 # LAYER 5 — Seed app and wwwroot
@@ -240,6 +242,9 @@ ENV HOME=/home/${LAB_USER}
 # Per-user tools
 COPY rootfs/scripts/get-code-server.sh /tmp/
 COPY rootfs/scripts/get-fzf.sh         /tmp/
+# Re-stage the pre-downloaded .deb so get-code-server.sh can use the local file
+# (downloads/ was consumed and cleaned in Layer 4; this is a targeted re-copy)
+COPY downloads/code-server_4.135.0_amd64.deb /tmp/cf-downloads/code-server_4.135.0_amd64.deb
 RUN bash /tmp/get-code-server.sh
 RUN bash /tmp/get-fzf.sh
 RUN bash /tmp/customize-bashrc.sh && \
