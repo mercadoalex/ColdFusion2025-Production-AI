@@ -24,8 +24,8 @@ playground:
             interfaces:
                 - network: local
           resources:
-            cpuCount: 2
-            ramSize: 2Gi
+            cpuCount: 4
+            ramSize: 4Gi
 
         - name: cf-prod
           users:
@@ -39,8 +39,8 @@ playground:
             interfaces:
                 - network: local
           resources:
-            cpuCount: 2
-            ramSize: 2Gi
+            cpuCount: 4
+            ramSize: 4Gi
 
         - name: ollama
           users:

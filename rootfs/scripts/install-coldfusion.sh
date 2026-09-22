@@ -167,10 +167,11 @@ echo "[CF] Writing neo-datasource.xml..."
 cp /tmp/neo-datasource.xml "${CF_LIB}/neo-datasource.xml"
 
 # ─── Patch JVM heap in jvm.config ─────────────────────────────────────────────
-# The ZIP ships with -Xms256m -Xmx1024m — keep Xms, lower Xmx for microVM
+# Premium seats: 4 CPU / 4Gi RAM — restore Xmx to 1024m and bump Xms to 512m
 if [ -f "${CF_BIN}/jvm.config" ]; then
   echo "[CF] Patching jvm.config heap..."
-  sed -i 's/-Xmx[0-9]*[mMgG]/-Xmx512m/' "${CF_BIN}/jvm.config"
+  sed -i 's/-Xms[0-9]*[mMgG]/-Xms512m/' "${CF_BIN}/jvm.config"
+  sed -i 's/-Xmx[0-9]*[mMgG]/-Xmx1024m/' "${CF_BIN}/jvm.config"
 fi
 
 # ─── Accept EULA ─────────────────────────────────────────────────────────────

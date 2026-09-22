@@ -25,8 +25,8 @@ playground:
             interfaces:
                 - network: local
           resources:
-            cpuCount: 2
-            ramSize: 2Gi
+            cpuCount: 4
+            ramSize: 4Gi
     tabs:
         - id: terminal-dev-machine
           kind: terminal

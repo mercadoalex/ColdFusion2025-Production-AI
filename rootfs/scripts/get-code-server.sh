@@ -39,7 +39,7 @@ Description=code-server
 Type=exec
 User=$LAB_USER
 Restart=on-failure
-Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/go/bin" "HOME=$HOME"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/go/bin" "HOME=$HOME" "NODE_OPTIONS=--max-old-space-size=256"
 EnvironmentFile=-/etc/default/%p
 EOF
 

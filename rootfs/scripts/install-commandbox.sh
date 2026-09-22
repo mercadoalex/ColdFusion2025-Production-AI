@@ -70,8 +70,8 @@ cat > "${APP_DIR}/server.json" <<EOF
     }
   },
   "jvm": {
-    "heapSize": "256m",
-    "minHeapSize": "128m",
+    "heapSize": "512m",
+    "minHeapSize": "256m",
     "args": "-cp /opt/coldfusion2025/cfusion/lib/h2-2.2.224.jar"
   },
   "openbrowser": false,
