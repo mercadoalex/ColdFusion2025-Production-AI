@@ -54,6 +54,15 @@ CFCs give you inheritance, interfaces, abstract components, final classes/method
 
 ### The violation
 
+::image-box
+---
+:src: __static__/srp-violation-v1.png
+:alt: Diagram showing a single TicketService.cfc box with three arrows pointing outward — one to a database (labelled "updates DB"), one to an email server (labelled "sends email"), and one to a log file (labelled "writes audit log") — annotated with three separate "reason to change" labels, one per responsibility
+:max-width: 860px
+---
+_One class, three reasons to change — a textbook SRP violation._
+::
+
 ```cfml
 // TicketService.cfc — does everything: business logic + email + logging
 component {
