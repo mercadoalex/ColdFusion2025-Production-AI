@@ -209,6 +209,56 @@ component extends="BaseNotifier" {
 
 **LSP violation to avoid:** a subclass that overrides a method and narrows its behaviour — for example, throwing an exception for inputs the base class accepts, or returning a different type. In CFML, covariance support (since CF 2021) means return types can be refined in subclasses without violating LSP.
 
+::hint-box
+---
+:summary: The L in SOLID — Barbara Liskov and the substitution principle
+---
+::image-box
+---
+:src: __static__/liskov-substitution-principle-v1.png
+:alt: Diagram illustrating the Liskov Substitution Principle — a base class T on the left with a subclass S on the right, connected by an inheritance arrow. A program block at the top points to T with a label "uses T". Below, the same program block points to S with a label "still works correctly". A red counter-example shows a Square subclassing Rectangle, with setWidth() and setHeight() overridden to force equal sides, breaking the expected rectangle behaviour.
+:max-width: 860px
+---
+_If S is a subtype of T, any program using T must work correctly when S is substituted in._
+::
+
+The **L** in SOLID stands for the **Liskov Substitution Principle**, introduced by Barbara Liskov in her 1987 keynote address "Data Abstraction and Hierarchy." It states:
+
+> *If S is a subtype of T, then objects of type T may be replaced with objects of type S without altering any of the desirable properties of the program.*
+
+In plain terms: a subclass must honour every contract its base class makes. If your code works with a `TicketRepository`, it must work equally well with a `CachedTicketRepository` or `ReadOnlyTicketRepository` substituted in — same inputs accepted, same outputs returned, no surprise exceptions.
+
+**The classic violation — Square extends Rectangle:**
+
+```cfml
+// Rectangle.cfc
+component {
+  function setWidth(w)  { variables.width  = w; }
+  function setHeight(h) { variables.height = h; }
+  function area()       { return variables.width * variables.height; }
+}
+
+// Square.cfc extends Rectangle — VIOLATES LSP
+component extends="Rectangle" {
+  function setWidth(w) {
+    // Forces equal sides — breaks Rectangle's contract
+    variables.width  = w;
+    variables.height = w;
+  }
+  function setHeight(h) {
+    variables.width  = h;
+    variables.height = h;
+  }
+}
+```
+
+Any code that calls `rect.setWidth(5); rect.setHeight(10);` and expects `area()` to return `50` will silently return `100` when a `Square` is passed in instead. The subclass narrowed the behaviour the base class guaranteed.
+
+**The fix:** don't model a Square as a subtype of Rectangle. Both should implement a shared `Shape` interface with an `area()` method, with no inheritance relationship between them.
+
+**Why this matters in ColdFusion specifically:** CFML covariance (CF 2021+) lets you refine return types in subclasses — that is LSP-safe. What is not safe is narrowing accepted input, throwing exceptions for inputs the base class accepted, or changing observable side effects.
+::
+
 ---
 
 ## I — Interface Segregation Principle
