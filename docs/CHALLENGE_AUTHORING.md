@@ -210,7 +210,7 @@ tasks:
 ```
 
 **Critical rules:**
-- NO `name:` field — the platform assigns the slug at creation time
+- NO `name:` or `slug:` fields — the platform assigns the slug at creation time and rejects these with HTTP 400
 - `playground.name` must exactly match `labctl playground list`
 - Task names: lowercase, underscores only, no hyphens
 
@@ -378,3 +378,20 @@ challenges won't appear but can still be pulled and are accessible to the author
 |---|---|
 | Foundations (Course 1) | `cf-alex-edcdf975` |
 | Advanced — Production & AI (Course 2) | `cf-training-advanced-7442b9e0` |
+
+---
+
+## 8. Updating a playground manifest
+
+There is **no** `labctl playground push` command. Use `update`:
+
+```bash
+# Advanced playground
+labctl playground update cf-training-advanced-7442b9e0 --file playground/playground.yaml
+
+# Foundations playground
+labctl playground update cf-alex-edcdf975 --file playground/playground-foundations.yaml
+```
+
+The `--file` flag takes an absolute or relative path to the YAML manifest.
+`-f` (shorthand) does **not** exist for this subcommand — use the full `--file`.

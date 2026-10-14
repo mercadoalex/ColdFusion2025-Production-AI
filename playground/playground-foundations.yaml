@@ -48,7 +48,7 @@ playground:
           number: 8888
     accessControl:
         canList:
-            - owner
+            - anyone
         canRead:
             - anyone
         canStart:

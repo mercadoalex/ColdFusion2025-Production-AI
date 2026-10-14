@@ -10,6 +10,15 @@ name: ai-helpdesk-unit-1
 
 In the previous lesson you built `OllamaService.cfc` and proved it can talk to `phi3:mini`. That was the plumbing. This lesson is the feature — something a real user benefits from.
 
+::image-box
+---
+:src: __static__/business-modernization-ai-pow-help-desk-v1.png
+:alt: Business-level diagram showing a traditional help desk on the left — a support engineer manually reading tickets, assigning priorities, and writing status reports — compared to an AI-powered help desk on the right where phi3:mini auto-triages tickets and generates executive summaries, freeing the team for higher-value work
+:max-width: 960px
+---
+_AI modernises the help desk at two levels: per-ticket triage and queue-wide executive summaries._
+::
+
 The Help Desk application already has tickets in a database, a REST API, and users who need to work through a queue. AI makes two things dramatically faster:
 
 1. **Auto-triage** — instead of a support engineer reading each ticket and manually deciding the priority, the model reads the description, considers the department, and suggests a priority level plus a step-by-step resolution guide. Takes ~5 seconds. Replaces 5–10 minutes of manual reading.

@@ -31,6 +31,14 @@ _ColdFusion talks to Solr in two ways: via cfindex/cfsearch (native integration)
 ---
 :summary: Other full-text search options — how does Solr compare?
 ---
+::image-box
+---
+:src: __static__/apache-solr-logo-v1.png
+:alt: Apache Solr logo — the word Solr in orange with the Apache feather above it
+:max-width: 200px
+---
+::
+
 Solr is not the only choice. Here is how the main options compare, so you can make an informed decision for your own projects:
 
 | Engine | Best for | Notes |

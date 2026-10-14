@@ -102,7 +102,7 @@ playground:
 
     accessControl:
         canList:
-            - owner
+            - anyone
         canRead:
             - anyone
         canStart:

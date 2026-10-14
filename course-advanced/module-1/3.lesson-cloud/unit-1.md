@@ -13,10 +13,10 @@ Traditional ColdFusion deployments run on a single, manually configured server. 
 ::image-box
 ---
 :src: __static__/docker-compose-architecture-v1.png
-:alt: Docker Compose architecture diagram showing three containers — cf-app (ColdFusion 2025, port 8500), db (MySQL 8, port 3306), and nginx (reverse proxy, port 80) — connected on a shared docker bridge network labelled app-network, with the developer laptop on the left connecting to nginx
+:alt: Docker Compose architecture diagram showing two containers — cf-app (ColdFusion 2025, port 8500) and db (MySQL 8, port 3306) — connected on a shared docker bridge network labelled app-network, with the developer laptop on the left connecting directly to cf-app
 :max-width: 900px
 ---
-_A Docker Compose multi-container stack: ColdFusion + MySQL + Nginx on one host._
+_A Docker Compose multi-container stack: ColdFusion + MySQL on one host._
 ::
 
 | Concept | Traditional | Docker |
@@ -43,8 +43,6 @@ Create `/home/laborant/cf-cloud/docker-compose.yml`:
 
 ```bash
 tee /home/laborant/cf-cloud/docker-compose.yml << 'EOF'
-version: "3.9"
-
 services:
 
   # ── ColdFusion 2025 application ────────────────────────────────────
@@ -99,7 +97,7 @@ EOF
 
 ::hint-box
 ---
-:summary: What does depends_on with condition: service_healthy do?
+:summary: 'What does depends_on with condition: service_healthy do?'
 ---
 `depends_on` with `condition: service_healthy` tells Docker Compose not to start `cf-app` until the `db` service passes its health check (in this case, `mysqladmin ping`). Without this, ColdFusion would start before MySQL is ready and fail to create its datasource connection pool.
 
@@ -201,7 +199,7 @@ sudo tee /home/laborant/cf-cloud/app/health.cfm << 'EOF'
   cfheader(name="Content-Type", value="application/json");
   try {
     // Quick DB connectivity check
-    queryExecute("SELECT 1", {}, {datasource: application.datasource ?: "training_db"});
+    queryExecute("SELECT 1", {}, {datasource: "training_db"});
     cfheader(statuscode=200, statustext="OK");
     writeOutput(serializeJSON({ "status": "ok", "ts": now() }));
   } catch (any e) {
@@ -228,47 +226,94 @@ docker-compose.yml references ColdFusion. ✓
 
 ## 3. Deploying to AWS Elastic Beanstalk
 
-Elastic Beanstalk (EB) is AWS's managed platform-as-a-service for Docker applications. You push a `docker-compose.yml` (or a `Dockerrun.aws.json`) and EB handles provisioning, scaling, and load balancing.
+::hint-box
+---
+:summary: AWS is one option — the same pattern works on Azure, GCP, and beyond
+---
+This lesson uses AWS because it is the most widely used cloud provider and Elastic Beanstalk gives the shortest path from a `docker-compose.yml` to a running environment. The underlying pattern — build an image, push to a registry, deploy a compose file — is identical on every major cloud:
 
-**The deployment flow:**
+| Cloud | Managed container service | Image registry |
+|---|---|---|
+| **AWS** | Elastic Beanstalk / ECS / EKS | ECR |
+| **Azure** | Azure App Service / AKS | Azure Container Registry |
+| **Google Cloud** | Cloud Run / GKE | Artifact Registry |
+| **IBM Cloud** | Code Engine / IKS | IBM Container Registry |
+| **Oracle Cloud** | Container Instances / OKE | OCIR |
 
+The `docker-compose.yml` and `Application.cfc` you built in sections 1 and 2 do not change regardless of where you deploy. The only differences are authentication commands and registry URLs — the structure is the same. Once you understand the AWS flow, reading the equivalent docs for any other provider takes minutes.
+::
+
+Elastic Beanstalk (EB) is AWS's managed platform-as-a-service for Docker applications. You give it a `docker-compose.yml` and it handles provisioning, load balancing, and scaling — no manual EC2 setup.
+
+The deployment is four steps. Each one maps directly to something you already have:
+
+**Step 1 — Tag and push your image to Amazon ECR**
+
+ECR is AWS's private Docker registry. You tag your local image with the ECR address and push it — the same `docker push` you already know, pointed at AWS instead of Docker Hub.
+
+```bash
+# Authenticate the local Docker daemon with ECR
+aws ecr get-login-password --region us-east-1 \
+  | docker login --username AWS --password-stdin \
+    <account>.dkr.ecr.us-east-1.amazonaws.com
+
+# Tag and push
+docker tag cf-app:latest <account>.dkr.ecr.us-east-1.amazonaws.com/cf-app:latest
+docker push <account>.dkr.ecr.us-east-1.amazonaws.com/cf-app:latest
 ```
-1. Push image to Amazon ECR (or GHCR)
-   docker tag cf-app:latest <account>.dkr.ecr.<region>.amazonaws.com/cf-app:latest
-   docker push <account>.dkr.ecr.<region>.amazonaws.com/cf-app:latest
 
-2. Create EB application
-   eb init cf-helpdesk --platform docker --region us-east-1
+**Step 2 — Initialise the EB application**
 
-3. Deploy
-   eb deploy
+`eb init` tells the EB CLI which region to use and that you are deploying a Docker application. It creates a local `.elasticbeanstalk/config.yml` — commit this alongside your `docker-compose.yml`.
 
-4. Open in browser
-   eb open
+```bash
+eb init cf-helpdesk --platform docker --region us-east-1
 ```
+
+**Step 3 — Deploy**
+
+EB reads your `docker-compose.yml`, pulls the image from ECR, provisions an EC2 instance (or auto-scaling group), and starts the containers. The `health.cfm` endpoint you built in section 2 is what EB's load balancer polls to decide whether the environment is healthy.
+
+```bash
+eb deploy
+```
+
+**Step 4 — Open in browser**
+
+```bash
+eb open
+```
+
+::image-box
+---
+:src: __static__/aws-eb-console-v1.png
+:alt: AWS Elastic Beanstalk console showing a cf-helpdesk environment with health status Ok, a green health indicator, the environment URL, and the running EC2 instance type t2.micro
+:max-width: 960px
+---
+_The Elastic Beanstalk console after a successful `eb deploy` — environment health green, URL live._
+::
 
 ::hint-box
 ---
-:summary: AWS Free Tier is enough for testing
+:summary: You won't run eb deploy in the lab — and that's fine
 ---
-AWS Free Tier includes 750 hours/month of `t2.micro` EC2 — enough to run one Elastic Beanstalk environment continuously. Create a free account at https://aws.amazon.com/free/ to try this in practice.
+The lab environment does not include an AWS account. The hands-on work in this lesson — the Compose file, the environment variable pattern, and the health endpoint — is what you would carry into a real deployment unchanged. The `eb` commands above are exactly what you would run; nothing else changes between the lab and production.
 
-For the purposes of this lesson, configuring the Compose file and health endpoint is the hands-on goal. The `eb deploy` commands are shown for reference — you're not expected to have an AWS account in the lab.
+AWS Free Tier includes 750 hours/month of `t2.micro` EC2 — enough to run one Elastic Beanstalk environment continuously at no cost. When you're ready to try it for real: https://aws.amazon.com/free/
 ::
 
 ---
 
-## 4. Key production considerations
+## What you built
 
-| Concern | Solution |
-|---|---|
-| **Secrets management** | AWS Secrets Manager or Parameter Store — never in `docker-compose.yml` |
-| **Session persistence** | CF sessions need shared Redis/DB backing across instances |
-| **Log aggregation** | Mount CF logs to CloudWatch or use a log forwarder sidecar |
-| **SSL termination** | At the ALB level — CF serves plain HTTP behind the load balancer |
-| **Datasource connection pool** | Tune `maxConnections` for RDS — start with 10, monitor |
+You started with the fundamental problem — a ColdFusion app that only runs on one specific, hand-configured server — and worked through every layer of the solution:
 
----
+1. **A `docker-compose.yml`** that captures the entire stack (ColdFusion + MySQL) as code, with a health check that ensures CF never starts before the database is ready.
+2. **An `Application.cfc`** that reads all configuration from environment variables, so the same image runs in dev, staging, and production without modification.
+3. **A `health.cfm` endpoint** that gives load balancers a reliable signal — 200 when the app is healthy, 503 when it isn't.
+4. **An Elastic Beanstalk deployment flow** that takes those three artifacts and puts them on AWS with one command.
+
+The pattern scales. Swap MySQL for RDS, add an ALB in front, store secrets in Parameter Store instead of environment variables — each of those is a configuration change, not a code change. That is exactly what the twelve-factor methodology buys you.
 
 ## Key concepts reference
 
@@ -276,9 +321,10 @@ For the purposes of this lesson, configuring the Compose file and health endpoin
 |---|---|
 | Multi-container app | `docker-compose.yml` with `services:` |
 | Service startup order | `depends_on: condition: service_healthy` + `healthcheck:` |
-| Environment config | `System.getenv()` in Application.cfc |
+| Environment config | `System.getenv()` in `Application.cfc` |
 | Health check endpoint | `health.cfm` returning 200/503 |
-| AWS deployment | Elastic Beanstalk + ECR |
+| Image registry | Amazon ECR |
+| AWS deployment | Elastic Beanstalk + `eb deploy` |
 
 ---
 
@@ -310,3 +356,4 @@ Apply what you have covered in this lesson with the challenge below.
 :challenge: challenges.cloud-deployment-fe9fc951
 ---
 ::
+

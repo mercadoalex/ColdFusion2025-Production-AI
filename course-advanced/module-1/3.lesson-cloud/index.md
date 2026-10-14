@@ -33,14 +33,14 @@ tasks:
     machine: cf-dev
     user: laborant
     run: |
-      FILE=$(find /home/laborant -name "docker-compose.yml" -o -name "docker-compose.yaml" 2>/dev/null | head -1)
+      FILE=$(find /home/laborant/cf-cloud -name "docker-compose.yml" -o -name "docker-compose.yaml" 2>/dev/null | head -1)
       if [ -z "${FILE}" ]; then
-        echo "No docker-compose.yml found under /home/laborant"
+        echo "No docker-compose.yml found under /home/laborant/cf-cloud"
         exit 1
       fi
       echo "docker-compose.yml found at ${FILE} ✓"
     hintcheck: |
-      echo "Create ~/docker-compose.yml — follow the Activity in the Docker Compose section."
+      echo "Create ~/cf-cloud/docker-compose.yml — follow the Activity in the Docker Compose section."
 
   verify_compose_has_cf:
     machine: cf-dev
@@ -48,7 +48,7 @@ tasks:
     needs:
       - verify_compose_file
     run: |
-      FILE=$(find /home/laborant -name "docker-compose.yml" -o -name "docker-compose.yaml" 2>/dev/null | head -1)
+      FILE=$(find /home/laborant/cf-cloud -name "docker-compose.yml" -o -name "docker-compose.yaml" 2>/dev/null | head -1)
       if ! grep -qi "coldfusion\|cf-server\|8500" "${FILE}" 2>/dev/null; then
         echo "docker-compose.yml does not reference ColdFusion"
         exit 1

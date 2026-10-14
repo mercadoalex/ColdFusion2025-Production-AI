@@ -1,19 +1,21 @@
 ---
 kind: challenge
 
-title: 'Build a CI/CD Pipeline for a ColdFusion Microservice'
+title: 'Ship a ColdFusion App with Gitea Actions and Docker'
 
 description: |
-  Create a Dockerfile that packages a ColdFusion microservice and a GitHub Actions
-  workflow that builds and pushes the image automatically on every push to main.
+  Containerise a ColdFusion application with Docker, push it to a local registry
+  via a Gitea Actions pipeline, and deploy it to cf-prod over SSH — the complete
+  DevOps loop from code push to running container.
 
 categories:
   - programming
 
 tagz:
   - coldfusion
-  - github-actions
+  - devops
   - docker
+  - gitea-actions
 
 difficulty: medium
 
@@ -21,117 +23,212 @@ createdAt: "2026-09-03"
 updatedAt: "2026-09-03"
 
 playground:
-  name: cf-training-advanced-7442b9e0
+  name: cf-training-devops-3039c6bb
 
 tasks:
-  create_dockerfile:
+  dockerfile_in_repo:
     machine: cf-dev
     user: laborant
     run: |
-      FILE="/home/laborant/microservice/Dockerfile"
+      FILE="/home/laborant/app/Dockerfile"
       if [ ! -f "${FILE}" ]; then
-        echo "Dockerfile not found at ${FILE}"
+        echo "Dockerfile not found at /home/laborant/app/Dockerfile"
         exit 1
       fi
-      if ! grep -qi "FROM\|EXPOSE 8500\|acceptEULA" "${FILE}"; then
-        echo "Dockerfile does not look like a ColdFusion Dockerfile"
+      if ! grep -qi "coldfusion2025\|acceptEULA" "${FILE}"; then
+        echo "Dockerfile does not use adobecoldfusion/coldfusion2025 or set acceptEULA"
         exit 1
       fi
-      echo "ColdFusion Dockerfile found ✓"
+      if ! grep -qi "EXPOSE 8500" "${FILE}"; then
+        echo "Dockerfile does not EXPOSE 8500"
+        exit 1
+      fi
+      echo "ColdFusion Dockerfile found and valid ✓"
+    hintcheck: |
+      echo "Create /home/laborant/app/Dockerfile using FROM adobecoldfusion/coldfusion2025:latest"
+      echo "It must include ENV acceptEULA=YES and EXPOSE 8500."
 
-  create_workflow:
+  workflow_in_repo:
     machine: cf-dev
     user: laborant
     needs:
-      - create_dockerfile
+      - dockerfile_in_repo
     run: |
-      WORKFLOW=$(find /home/laborant/microservice -path "*/.github/workflows/*.yml" \
-                   -o -path "*/.github/workflows/*.yaml" 2>/dev/null | head -1)
+      WORKFLOW=$(find /home/laborant/app -path "*/.gitea/workflows/*.yml" \
+                   -o -path "*/.gitea/workflows/*.yaml" 2>/dev/null | head -1)
       if [ -z "${WORKFLOW}" ]; then
-        echo "No GitHub Actions workflow found under .github/workflows/"
+        echo "No Gitea Actions workflow found under .gitea/workflows/"
         exit 1
       fi
-      if ! grep -qi "docker\|push\|build" "${WORKFLOW}"; then
-        echo "Workflow does not contain docker build/push steps"
+      if ! grep -qi "docker.*build\|build.*docker" "${WORKFLOW}"; then
+        echo "Workflow does not contain a docker build step"
         exit 1
       fi
-      echo "GitHub Actions workflow with docker steps found ✓"
+      if ! grep -qi "docker.*push\|push.*docker\|localhost:5000" "${WORKFLOW}"; then
+        echo "Workflow does not push the image to the local registry"
+        exit 1
+      fi
+      echo "Gitea Actions workflow with docker build and push found ✓"
+    hintcheck: |
+      echo "Create /home/laborant/app/.gitea/workflows/deploy.yml"
+      echo "It must contain docker build and docker push steps targeting localhost:5000."
 
-  verify_health_endpoint:
+  image_in_registry:
     machine: cf-dev
     user: laborant
     needs:
-      - create_workflow
+      - workflow_in_repo
     run: |
-      APP_DIR="/home/laborant/microservice/app"
-      if [ ! -d "${APP_DIR}" ]; then
-        echo "No app/ directory found in microservice project"
+      TAGS=$(curl -s http://localhost:5000/v2/cf-app/tags/list 2>/dev/null)
+      if ! echo "${TAGS}" | python3 -c "import sys,json; tags=json.load(sys.stdin).get('tags') or []; assert len(tags)>0" 2>/dev/null; then
+        echo "No cf-app image found in the local registry at localhost:5000"
+        echo "Push the repo to Gitea — the workflow should build and push the image automatically."
         exit 1
       fi
-      HEALTH=$(find "${APP_DIR}" -name "health.cfm" 2>/dev/null | head -1)
-      if [ -z "${HEALTH}" ]; then
-        echo "health.cfm not found — add a health check endpoint"
-        exit 1
-      fi
-      echo "health.cfm found ✓"
+      echo "cf-app image present in local registry ✓"
+    hintcheck: |
+      echo "Push your code to Gitea: cd /home/laborant/app && git push"
+      echo "Then check the Gitea Actions tab — the pipeline should build and push the image."
+      echo "Verify: curl -s http://localhost:5000/v2/cf-app/tags/list"
 ---
 
-## Build a CI/CD Pipeline for a ColdFusion Microservice
+## Ship a ColdFusion App with Gitea Actions and Docker
 
-Your task is to create a standalone ColdFusion microservice project at `/home/laborant/microservice/` that is ready for automated CI/CD.
+You will build the complete DevOps loop: a Dockerfile that packages your ColdFusion app, a Gitea Actions pipeline that builds and pushes the image on every push, and a registry that stores the tagged image ready for deployment.
 
-### Requirements
+Work in `/home/laborant/app/` — the same project you used during the lesson.
 
-1. Create a `Dockerfile` at `/home/laborant/microservice/Dockerfile` that:
-   - Uses `adobecoldfusion/coldfusion2025:latest` as the base image
-   - Sets `acceptEULA=YES`
-   - Copies an `app/` directory into the CF webroot
-   - Exposes port `8500`
+---
 
-2. Create a GitHub Actions workflow at `/home/laborant/microservice/.github/workflows/deploy.yml` that:
-   - Triggers on push to `main`
-   - Contains steps to build and push a Docker image
+### Task 1 — Write a valid ColdFusion Dockerfile
 
-3. Create a health check endpoint at `/home/laborant/microservice/app/health.cfm`
+Create `/home/laborant/app/Dockerfile`:
 
-### Hints
+```bash
+cd /home/laborant/app
 
-- Use `mkdir -p` to create all the required directories at once
-- The workflow file must end in `.yml` or `.yaml`
-- The Dockerfile must contain `FROM`, `acceptEULA`, and `EXPOSE 8500`
+tee Dockerfile << 'EOF'
+FROM adobecoldfusion/coldfusion2025:latest
+
+ENV acceptEULA=YES
+ENV password=admin
+
+COPY app/ /opt/coldfusion2025/cfusion/wwwroot/
+
+EXPOSE 8500
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -sf http://localhost:8500/index.cfm || exit 1
+EOF
+```
+
+Commit it:
+
+```bash
+git add Dockerfile
+git commit -m "add Dockerfile"
+```
 
 ::simple-task
 ---
 :tasks: tasks
-:name: create_dockerfile
+:name: dockerfile_in_repo
 ---
 #active
-Create `/home/laborant/microservice/Dockerfile` with a ColdFusion base image and port 8500 exposed.
+Create `/home/laborant/app/Dockerfile` using `adobecoldfusion/coldfusion2025:latest`, `ENV acceptEULA=YES`, and `EXPOSE 8500`.
 
 #completed
-ColdFusion Dockerfile found. ✓
+ColdFusion Dockerfile found and valid. ✓
 ::
 
+---
+
+### Task 2 — Create a Gitea Actions workflow that builds and pushes the image
+
+Create `/home/laborant/app/.gitea/workflows/deploy.yml`:
+
+```bash
+mkdir -p /home/laborant/app/.gitea/workflows
+
+tee /home/laborant/app/.gitea/workflows/deploy.yml << 'EOF'
+name: Build and push CF image
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t localhost:5000/cf-app:${{ gitea.sha }} .
+          docker tag localhost:5000/cf-app:${{ gitea.sha }} localhost:5000/cf-app:latest
+
+      - name: Push to local registry
+        run: |
+          docker push localhost:5000/cf-app:${{ gitea.sha }}
+          docker push localhost:5000/cf-app:latest
+EOF
+```
+
+Commit and push:
+
+```bash
+git add .gitea/workflows/deploy.yml
+git commit -m "add Gitea Actions pipeline"
+git push
+```
+
 ::simple-task
 ---
 :tasks: tasks
-:name: create_workflow
+:name: workflow_in_repo
 ---
 #active
-Create a GitHub Actions workflow under `.github/workflows/` with Docker build and push steps.
+Create `.gitea/workflows/deploy.yml` with `docker build` and `docker push` steps targeting `localhost:5000`.
 
 #completed
-GitHub Actions workflow found. ✓
+Gitea Actions workflow with docker build and push found. ✓
 ::
 
+---
+
+### Task 3 — Confirm the image landed in the local registry
+
+After `git push`, open the **Gitea** tab (`http://localhost:3000`) and check **Actions** — the pipeline should appear and run. When it goes green, verify the image is in the registry:
+
+```bash
+curl -s http://localhost:5000/v2/cf-app/tags/list | python3 -m json.tool
+```
+
+Expected output:
+
+```json
+{
+    "name": "cf-app",
+    "tags": [
+        "latest",
+        "a3f82c9b14..."
+    ]
+}
+```
+
+If the pipeline failed, check the Actions log in Gitea for the exact error. Common causes: the Act Runner is not registered (see the hint box in the lesson), or the local registry at `localhost:5000` is not running (`docker ps | grep registry`).
+
 ::simple-task
 ---
 :tasks: tasks
-:name: verify_health_endpoint
+:name: image_in_registry
 ---
 #active
-Create `app/health.cfm` inside your microservice project.
+Push your code to Gitea, let the pipeline run, then confirm `http://localhost:5000/v2/cf-app/tags/list` returns at least one tag.
 
 #completed
-health.cfm found. ✓
+cf-app image present in the local registry. ✓
 ::

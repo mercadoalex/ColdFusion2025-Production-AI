@@ -929,6 +929,20 @@ This pattern — read → validate → clamp → cast — prevents both malforme
 
 ---
 
+::simple-task
+---
+:tasks: tasks
+:name: verify_lesson_complete
+---
+#active
+Runs automatically — turns green once all previous tasks pass.
+
+#completed
+CFML AI integration lesson complete. On to the next one! ✓
+::
+
+---
+
 ## Put It Into Practice
 
 > *"Artificial intelligence is whatever hasn't been done yet."*
@@ -940,18 +954,4 @@ Apply what you have covered in this lesson with the challenge below.
 ---
 :challenge: challenges.cfml-ai-integration-c3d196db
 ---
-::
-
----
-
-::simple-task
----
-:tasks: tasks
-:name: verify_lesson_complete
----
-#active
-Runs automatically — turns green once all previous tasks pass.
-
-#completed
-CFML AI integration lesson complete. On to the next one! ✓
 ::

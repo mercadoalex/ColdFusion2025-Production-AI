@@ -333,7 +333,7 @@ _Your Gitea dashboard after the push — repository created, branch `main` exist
 
 ::hint-box
 ---
-:summary: ⚠️ "Repo created: error" — what does that mean?
+:summary: '⚠️ "Repo created: error" — what does that mean?'
 ---
 The Gitea API returns an error object (no `full_name` field) when the operation fails. The most common causes:
 
@@ -730,7 +730,7 @@ Steps within a job always run **in order**, top to bottom. If a step fails (non-
 
 ::hint-box
 ---
-:summary: ⚠️ "No matching online runner with label: ubuntu-latest" — how to fix it
+:summary: '⚠️ "No matching online runner with label: ubuntu-latest" — how to fix it'
 ---
 The Act Runner is either not installed or not registered against Gitea. The runner is the agent that actually executes the workflow steps — without it, jobs sit waiting forever.
 
@@ -952,19 +952,6 @@ Start with a smoke test, then graduate to full TestBox runs as your test suite g
 
 ---
 
-## Put It Into Practice
-
-> *"First, solve the problem. Then, write the code."*
-> — John Johnson
-
-Apply what you have covered in this lesson with the challenge below. You'll wire together a Dockerfile and a Gitea Actions workflow for a ColdFusion microservice.
-
-::card
----
-:challenge: challenges.cicd-pipelines-9fa2ce74
----
-::
-
 ::simple-task
 ---
 :tasks: tasks
@@ -975,4 +962,19 @@ Runs automatically — turns green once all previous tasks pass.
 
 #completed
 DevOps lesson complete. On to the next one! ✓
+::
+
+---
+
+## Put It Into Practice
+
+> *"First, solve the problem. Then, write the code."*
+> — John Johnson
+
+Apply what you have covered in this lesson with the challenge below. You will containerise a ColdFusion app, write a Gitea Actions pipeline, and confirm the image lands in the local registry.
+
+::card
+---
+:challenge: challenges.cicd-pipelines-9fa2ce74
+---
 ::

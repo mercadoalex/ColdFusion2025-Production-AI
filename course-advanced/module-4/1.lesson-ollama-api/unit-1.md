@@ -6,6 +6,54 @@ title: Introduction to Ollama and Local LLMs
 name: intro-ollama-local-llms-unit-1
 ---
 
+## AI and the SDLC — why this module exists
+
+Software development has changed more in the last two years than in the previous ten. AI is no longer a research topic or a specialised toolchain — it is present at every stage of the software development lifecycle, and that presence is accelerating.
+
+**Where AI has already landed in the SDLC:**
+
+| Stage | What AI is doing today |
+|---|---|
+| **Planning** | Generating user stories, estimating effort, flagging scope risks |
+| **Design** | Producing architecture options, writing API specs from requirements |
+| **Development** | Code completion, test generation, code review, refactoring suggestions |
+| **Testing** | Generating test cases, identifying edge cases, analysing coverage gaps |
+| **Deployment** | Writing pipeline YAML, diagnosing failed builds, generating rollback plans |
+| **Operations** | Log summarisation, anomaly explanation, incident triage |
+| **Documentation** | Writing inline docs, changelogs, runbooks from code |
+
+The question for any development team today is not *"should we use AI?"* — it is *"where in our workflow does AI add the most leverage, and how do we integrate it safely?"*
+
+For ColdFusion teams, the answer increasingly involves AI-powered features inside the application itself: ticket triage, document summarisation, intelligent search, conversational interfaces. That is what this module teaches.
+
+---
+
+### How Adobe is integrating AI into ColdFusion
+
+Adobe did not wait for the ecosystem to catch up. ColdFusion 2025 ships with native AI capabilities built directly into the language — no third-party SDK, no separate service layer required.
+
+**What Adobe shipped in ColdFusion 2025:**
+
+- **`<cfai>` / `aiChat()` tag and function** — send a prompt to a configured AI provider and receive a response in one line of CFML. Supports OpenAI, Azure OpenAI, and any OpenAI-compatible endpoint (which includes Ollama).
+- **AI Services in the CF Administrator** — configure AI provider connections (API key, base URL, model) centrally, then reference them by name from code — the same pattern as datasources.
+- **`aiImage()`** — generate or analyse images via a configured vision model.
+- **`aiEmbedding()`** — produce vector embeddings from text, enabling semantic search and retrieval-augmented generation (RAG) patterns directly in CFML.
+- **`aiExtract()`** — structured data extraction from unstructured text, returning typed CFML structs.
+
+::hint-box
+---
+:summary: Why this module uses cfhttp + Ollama instead of the native cfai tag
+---
+The native `cfai` tag is the right choice for production Adobe ColdFusion deployments. This module deliberately goes one level lower — calling the Ollama HTTP API directly with `cfhttp` — for two reasons:
+
+1. **Understanding before abstraction.** Knowing what happens under the hood (an HTTP POST to `/api/generate`, a JSON response with a `response` field) makes you a better user of the high-level tag. When something breaks, you'll know exactly where to look.
+2. **Portability.** The `cfhttp` pattern works on Lucee as well as Adobe CF, on self-hosted Ollama, on any OpenAI-compatible endpoint, and in air-gapped environments. The same `OllamaService.cfc` you build in this module can be dropped into any CFML codebase.
+
+Once you've completed this module, mapping what you built to the `cfai` tag takes minutes — you'll recognise every parameter.
+::
+
+---
+
 ## Running AI without the cloud
 
 Most AI tutorials require an OpenAI API key, internet access, and per-token billing. This course takes a different approach: **phi3:mini** runs entirely on the `ollama` VM in your lab — no API keys, no cloud calls, no cost. The same pattern works in air-gapped environments and on-premise enterprise deployments.
@@ -376,6 +424,105 @@ cf-dev can send prompts to Ollama across the private network. ✓
 
 ---
 
+## 6. Using the native cfai tag with Ollama
+
+You have been calling Ollama directly with `cfhttp`. ColdFusion 2025 ships a higher-level abstraction — the `cfai` tag and `aiChat()` function — that wraps exactly the same HTTP calls behind a configured service name. Because Ollama exposes an OpenAI-compatible API at `/v1`, you can point CF's AI Services at the lab VM and use the native tag with no code changes to Ollama itself.
+
+### Step 1 — Verify Ollama's OpenAI-compatible layer is active
+
+Run this on the **Terminal (ollama)** tab:
+
+```bash
+curl -s http://localhost:11434/v1/models | python3 -m json.tool
+```
+
+You should see a JSON object with a `data` array listing `phi3:mini`. If it returns a 404, your Ollama version predates the `/v1` layer — upgrade with `ollama --version` and check against 0.1.24+.
+
+### Step 2 — Register Ollama as an AI Service in the CF Administrator
+
+Open the CF Administrator on `cf-dev` at **http://localhost:8500/CFIDE/administrator/** and navigate to **AI Services → Add Provider**.
+
+::image-box
+---
+:src: __static__/cf-admin-ai-service-ollama-v1.png
+:alt: ColdFusion 2025 Administrator showing the AI Services configuration screen with a new provider form. Fields filled in: Name "ollama-local", Provider type "OpenAI (Compatible)", Base URL "http://ollama:11434/v1", API Key "ollama", Default model "phi3:mini". A green Test Connection button is visible at the bottom.
+:max-width: 860px
+---
+_Registering Ollama as an OpenAI-compatible AI Service in the CF Administrator. The API key value is arbitrary — Ollama ignores it but CF requires a non-empty string._
+::
+
+Fill in the fields:
+
+| Field | Value | Notes |
+|---|---|---|
+| **Name** | `ollama-local` | This becomes the `serviceName` in your CFML |
+| **Provider type** | `OpenAI (Compatible)` | Not "OpenAI" — that hardcodes the OpenAI base URL |
+| **Base URL** | `http://ollama:11434/v1` | The `/v1` prefix is required |
+| **API Key** | `ollama` | Ollama ignores this — any non-empty string works |
+| **Default model** | `phi3:mini` | Must match a pulled model name |
+
+Click **Test Connection** — it should return a green success response.
+
+### Step 3 — Call Ollama with cfai
+
+Once the service is registered, a prompt that previously required 10+ lines of `cfhttp` code becomes one tag:
+
+**Tag syntax:**
+
+```cfml
+<cfai action="chat"
+      serviceName="ollama-local"
+      prompt="In two sentences, what is ColdFusion used for in enterprise?"
+      result="aiResult" />
+
+<cfoutput>#aiResult.text#</cfoutput>
+```
+
+**Script syntax:**
+
+```cfml
+aiResult = aiChat(
+    serviceName = "ollama-local",
+    prompt      = "In two sentences, what is ColdFusion used for in enterprise?"
+);
+writeOutput( aiResult.text );
+```
+
+The `aiResult` struct contains:
+
+| Key | Type | Content |
+|---|---|---|
+| `text` | string | The model's response |
+| `model` | string | Model name used (`phi3:mini`) |
+| `usage.promptTokens` | integer | Tokens consumed by the prompt |
+| `usage.completionTokens` | integer | Tokens in the response |
+
+::hint-box
+---
+:summary: cfai vs cfhttp — when to use which
+---
+| | `cfai` / `aiChat()` | `cfhttp` to Ollama |
+|---|---|---|
+| **Requires** | Adobe CF 2025+ | Any CFML engine (Lucee, CF 2018+) |
+| **Config location** | CF Administrator | Code / environment variables |
+| **Switching providers** | Change `serviceName` | Change base URL string |
+| **Access to raw response** | Limited | Full JSON — every field |
+| **Best for** | Production CF 2025 apps | Portability, Lucee, custom endpoints |
+
+Use `cfai` when you are building on Adobe CF 2025 and want the simplest possible integration. Use `cfhttp` when you need portability, raw response access, or are running on Lucee.
+::
+
+::image-box
+---
+:src: __static__/cfai-tag-output-ollama-v1.png
+:alt: ColdFusion browser output showing the result of a cfai chat call — the aiResult.text field printed to the page containing phi3:mini's two-sentence answer about ColdFusion enterprise use cases
+:max-width: 860px
+---
+_`cfai` output in the browser — same phi3:mini response, one tag instead of ten lines._
+::
+
+---
+
 ## Key concepts reference
 
 | Concept | Detail |
@@ -385,8 +532,10 @@ cf-dev can send prompts to Ollama across the private network. ✓
 | Single prompt | `POST /api/generate` — `prompt` field, `stream: false` |
 | Conversational | `POST /api/chat` — `messages` array with `role` + `content` |
 | URL from cf-dev | `http://ollama:11434` |
-| No auth needed | Local network — no API key required |
+| OpenAI-compatible layer | `http://ollama:11434/v1` — required for `cfai` |
+| No auth needed | Local network — any non-empty string works as API key |
 | Temperature | 0.0–1.0; lower = more deterministic |
+| Native CF tag | `cfai action="chat" serviceName="ollama-local"` |
 
 ---
 
