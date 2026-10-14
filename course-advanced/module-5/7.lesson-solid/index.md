@@ -26,6 +26,9 @@ tagz:
 playground:
   name: cf-training-advanced-7442b9e0
 
+challenges:
+  solid-a10481e3: {}
+
 tasks:
   verify_srp_cfc:
     machine: cf-dev

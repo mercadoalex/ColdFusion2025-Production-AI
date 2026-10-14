@@ -364,6 +364,7 @@ challenges won't appear but can still be pulled and are accessible to the author
 | `course-advanced/challenges/wirebox-di` | `wirebox-di-49397f1b` |
 | `course-advanced/challenges/coldbox-rest` | `coldbox-rest-b4e57e76` |
 | `course-advanced/challenges/coldbox-testing` | `coldbox-testing-132cd670` |
+| `challenges/solid` | `solid-a10481e3` |
 
 ### Courses
 
