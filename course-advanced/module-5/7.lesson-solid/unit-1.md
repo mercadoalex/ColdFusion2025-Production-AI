@@ -474,10 +474,4 @@ SOLID principles lesson complete. Course complete — well done! ✓
 > *"The only way to go fast is to go well."*
 > — Robert C. Martin (Uncle Bob)
 
-Apply what you have covered in this lesson with the challenge below.
-
-::card
----
-:challenge: challenges.solid-principles-6a4f2c91
----
-::
+Apply what you have covered in this lesson — build the SOLID demo files described in the activities above.
